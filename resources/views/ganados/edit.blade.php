@@ -144,16 +144,38 @@
                            value="{{ $ganado->precio }}">
                 </div>
 
+                {{-- STOCK --}}
+                <div class="form-group mb-3">
+                    <label>Stock (Cantidad) *</label>
+                    <input type="number" name="stock" class="form-control" min="0"
+                           value="{{ $ganado->stock ?? 0 }}" required>
+                    <small class="form-text text-muted">Ingrese la cantidad disponible de ganado</small>
+                </div>
+
                 {{-- IMAGEN --}}
                 <div class="form-group mb-3">
                     <label>Imagen</label><br>
 
                     @if($ganado->imagen)
-                        <img src="{{ asset('storage/'.$ganado->imagen) }}" width="120" class="mb-2">
-                        <p class="text-muted">Imagen actual</p>
+                        <div class="mb-3">
+                            <img src="{{ asset('storage/'.$ganado->imagen) }}" 
+                                 alt="{{ $ganado->nombre }}" 
+                                 class="img-thumbnail" 
+                                 style="max-width: 200px; max-height: 200px; object-fit: cover; cursor: pointer;"
+                                 onclick="window.open('{{ asset('storage/'.$ganado->imagen) }}', '_blank')"
+                                 title="Click para ver imagen completa">
+                            <p class="text-muted mt-2">
+                                <i class="fas fa-image"></i> Imagen actual (click para ampliar)
+                            </p>
+                        </div>
+                    @else
+                        <p class="text-muted">
+                            <i class="fas fa-image"></i> Sin imagen actual
+                        </p>
                     @endif
 
-                    <input type="file" name="imagen" class="form-control">
+                    <input type="file" name="imagen" class="form-control" accept="image/*">
+                    <small class="form-text text-muted">Formatos permitidos: JPG, PNG, GIF. Tamaño máximo: 2MB</small>
                 </div>
 
                 <button type="submit" class="btn btn-primary">

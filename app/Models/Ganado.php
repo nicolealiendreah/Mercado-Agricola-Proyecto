@@ -11,12 +11,14 @@ class Ganado extends Model
 
     protected $fillable = [
         'nombre',
+        'user_id',
         'tipo_animal_id',
         'raza_id',
         'edad',
         'tipo_peso_id',
         'sexo',
         'precio',
+        'stock',
         'imagen',
         'descripcion',
         'categoria_id',
@@ -51,5 +53,13 @@ class Ganado extends Model
     public function datoSanitario()
     {
         return $this->belongsTo(DatoSanitario::class, 'dato_sanitario_id');
+    }
+
+    /**
+     * Relación: un ganado pertenece a un usuario
+     */
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
     }
 }

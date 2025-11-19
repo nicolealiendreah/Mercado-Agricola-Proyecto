@@ -33,31 +33,116 @@
             Accede con tu cuenta para continuar. Según tu rol, te llevaremos a tu panel.
           </p>
 
-          <form onsubmit="return false;">
-            <div class="form-group">
-              <label class="mb-1">Correo</label>
-              <input type="email" class="form-control form-control-lg login-input" placeholder="Correo Electrónico">
+          <?php if(session('success')): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="fas fa-check-circle"></i> <?php echo e(session('success')); ?>
+
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
             </div>
+          <?php endif; ?>
+
+          <?php if(session('error')): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="fas fa-exclamation-circle"></i> <?php echo e(session('error')); ?>
+
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          <?php endif; ?>
+
+          <?php if($errors->any()): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <h6 class="alert-heading">
+                <i class="fas fa-exclamation-triangle"></i> Errores de validación:
+              </h6>
+              <ul class="mb-0 small">
+                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                  <li><?php echo e($error); ?></li>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+              </ul>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          <?php endif; ?>
+
+          <form action="<?php echo e(route('login.post')); ?>" method="POST">
+            <?php echo csrf_field(); ?>
+
             <div class="form-group">
-              <label class="mb-1">Contraseña</label>
-              <input type="password" class="form-control form-control-lg login-input" placeholder="Contraseña">
+              <label class="mb-1">Correo Electrónico *</label>
+              <input type="email" 
+                     name="email" 
+                     class="form-control form-control-lg login-input <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                     placeholder="Correo Electrónico"
+                     value="<?php echo e(old('email')); ?>"
+                     required
+                     autofocus>
+              <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <div class="invalid-feedback"><?php echo e($message); ?></div>
+              <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+            </div>
+
+            <div class="form-group">
+              <label class="mb-1">Contraseña *</label>
+              <input type="password" 
+                     name="password" 
+                     class="form-control form-control-lg login-input <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                     placeholder="Contraseña"
+                     required>
+              <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                <div class="invalid-feedback"><?php echo e($message); ?></div>
+              <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-3">
               <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="remember">
+                <input type="checkbox" 
+                       class="custom-control-input" 
+                       id="remember" 
+                       name="remember">
                 <label class="custom-control-label" for="remember">Recuérdame</label>
               </div>
               <a href="#" class="small">¿Olvidaste tu contraseña?</a>
             </div>
 
-            <a href="<?php echo e(route('home')); ?>" class="btn btn-success btn-lg btn-block">
-            Entrar
-            </a>
-
+            <button type="submit" class="btn btn-success btn-lg btn-block">
+              <i class="fas fa-sign-in-alt"></i> Entrar
+            </button>
 
             <p class="text-center mt-3 mb-0">
-            ¿No tienes cuenta? <a href="<?php echo e(route('register.demo')); ?>" class="font-weight-bold">Crear cuenta</a>
+              ¿No tienes cuenta? <a href="<?php echo e(route('register')); ?>" class="font-weight-bold">Crear cuenta</a>
             </p>
           </form>
         </div>

@@ -12,10 +12,10 @@
   <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 </head>
 
-<body class="hold-transition layout-top-nav {{ request()->routeIs('login.demo','register.demo') ? 'no-topbar' : '' }}">
+<body class="hold-transition layout-top-nav {{ request()->routeIs('login','register') ? 'no-topbar' : '' }}">
 <div class="wrapper">
 
-  @if (!request()->routeIs('login.demo','register.demo'))
+  @if (!request()->routeIs('login','register'))
   <nav class="main-header navbar navbar-expand navbar-white navbar-light border-0 project-topbar">
     <div class="container">
       <a href="{{ route('home') }}" class="navbar-brand d-flex align-items-center">
@@ -34,11 +34,47 @@
           <li class="nav-item">
             <a class="nav-link text-white" href="{{ route('ads.index') }}">Anuncios</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link btn btn-success text-white px-3 ml-lg-2" href="{{ route('ads.create') }}">
-              Publicita tu Anuncio <i class="fas fa-plus ml-1"></i>
-            </a>
-          </li>
+          @auth
+            <li class="nav-item dropdown">
+              <a class="nav-link text-white dropdown-toggle" href="#" data-toggle="dropdown">
+                <i class="fas fa-user-circle"></i> {{ auth()->user()->name }}
+                <span class="badge badge-light ml-1">{{ auth()->user()->role_name }}</span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right">
+                <a href="{{ route('home') }}" class="dropdown-item">
+                  <i class="fas fa-home mr-2"></i> Inicio
+                </a>
+                @if(auth()->user()->isCliente())
+                  <a href="{{ route('solicitar-vendedor') }}" class="dropdown-item">
+                    <i class="fas fa-user-tie mr-2"></i> Ser Vendedor
+                  </a>
+                @endif
+                @if(auth()->user()->isAdmin())
+                  <a href="{{ route('admin.solicitudes-vendedor.index') }}" class="dropdown-item">
+                    <i class="fas fa-clipboard-list mr-2"></i> Panel Admin
+                  </a>
+                @endif
+                <div class="dropdown-divider"></div>
+                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                  @csrf
+                  <button type="submit" class="dropdown-item">
+                    <i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
+                  </button>
+                </form>
+              </div>
+            </li>
+          @else
+            <li class="nav-item">
+              <a class="nav-link text-white" href="{{ route('login') }}">
+                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link btn btn-success text-white px-3 ml-lg-2" href="{{ route('register') }}">
+                Registrarse <i class="fas fa-user-plus ml-1"></i>
+              </a>
+            </li>
+          @endauth
         </ul>
       </div>
     </div>

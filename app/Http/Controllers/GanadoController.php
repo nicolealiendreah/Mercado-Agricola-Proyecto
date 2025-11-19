@@ -25,6 +25,15 @@ class GanadoController extends Controller
     }
 
     /**
+     * Muestra el detalle de un ganado.
+     */
+    public function show(Ganado $ganado)
+    {
+        $ganado->load(['categoria', 'tipoAnimal', 'tipoPeso', 'raza', 'datoSanitario']);
+        return view('ganados.show', compact('ganado'));
+    }
+
+    /**
      * Muestra el formulario de creación.
      */
    public function create()
@@ -60,6 +69,7 @@ class GanadoController extends Controller
         'sexo'            => 'nullable|string',
         'descripcion'     => 'nullable|string',
         'precio'          => 'nullable|numeric|min:0',
+        'stock'            => 'required|integer|min:0',
         'imagen'          => 'nullable|image|max:2048',
         'categoria_id'    => 'required|exists:categorias,id',
         'fecha_publicacion' => 'nullable|date',
@@ -77,6 +87,7 @@ class GanadoController extends Controller
         'sexo' => $request->sexo,
         'descripcion' => $request->descripcion,
         'precio' => $request->precio,
+        'stock' => $request->stock,
         'categoria_id' => $request->categoria_id,
         'fecha_publicacion' => $request->fecha_publicacion,
         'ubicacion' => $request->ubicacion,
@@ -87,6 +98,9 @@ class GanadoController extends Controller
     if ($request->hasFile('imagen')) {
         $data['imagen'] = $request->file('imagen')->store('ganados', 'public');
     }
+
+    // Asignar el usuario autenticado
+    $data['user_id'] = auth()->id();
 
     Ganado::create($data);
 
@@ -100,6 +114,12 @@ class GanadoController extends Controller
      */
     public function edit(Ganado $ganado)
 {
+    // Verificar permisos: solo el dueño o admin puede editar
+    if (!auth()->user()->isAdmin() && $ganado->user_id !== auth()->id()) {
+        return redirect()->route('ganados.index')
+            ->with('error', 'No tienes permisos para editar este anuncio.');
+    }
+
     $tipo_animals = TipoAnimal::orderBy('nombre')->get();
     $categorias   = Categoria::orderBy('nombre')->get();
     $tipoPesos    = TipoPeso::orderBy('nombre')->get();
@@ -122,6 +142,12 @@ class GanadoController extends Controller
      */
  public function update(Request $request, Ganado $ganado)
 {
+    // Verificar permisos: solo el dueño o admin puede actualizar
+    if (!auth()->user()->isAdmin() && $ganado->user_id !== auth()->id()) {
+        return redirect()->route('ganados.index')
+            ->with('error', 'No tienes permisos para editar este anuncio.');
+    }
+
     $request->validate([
         'nombre' => 'required|string|max:255',
         'tipo_animal_id' => 'required|exists:tipo_animals,id',
@@ -131,6 +157,7 @@ class GanadoController extends Controller
         'sexo' => 'nullable|string',
         'descripcion' => 'nullable|string',
         'precio' => 'nullable|numeric|min:0',
+        'stock' => 'required|integer|min:0',
         'tipo_peso_id' => 'required|exists:tipo_pesos,id',
         'imagen' => 'nullable|image|max:2048',
         'categoria_id' => 'required|exists:categorias,id',
@@ -152,6 +179,7 @@ class GanadoController extends Controller
         'sexo' => $request->sexo,
         'descripcion' => $request->descripcion,
         'precio' => $request->precio,
+        'stock' => $request->stock,
         'categoria_id' => $request->categoria_id,
         'ubicacion' => $request->ubicacion,
         'latitud' => $request->latitud,
@@ -181,6 +209,12 @@ class GanadoController extends Controller
      */
     public function destroy(Ganado $ganado)
     {
+        // Verificar permisos: solo el dueño o admin puede eliminar
+        if (!auth()->user()->isAdmin() && $ganado->user_id !== auth()->id()) {
+            return redirect()->route('ganados.index')
+                ->with('error', 'No tienes permisos para eliminar este anuncio.');
+        }
+
         if ($ganado->imagen && Storage::disk('public')->exists($ganado->imagen)) {
             Storage::disk('public')->delete($ganado->imagen);
         }

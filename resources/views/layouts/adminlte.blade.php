@@ -21,8 +21,60 @@
         <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="{{ url('/') }}" class="nav-link">Inicio</a>
+        <a href="{{ route('home') }}" class="nav-link">Inicio</a>
       </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      @auth
+        <li class="nav-item dropdown">
+          <a class="nav-link" data-toggle="dropdown" href="#">
+            <i class="fas fa-user-circle"></i>
+            <span class="d-none d-md-inline ml-1">{{ auth()->user()->name }}</span>
+            <span class="badge badge-info ml-1">{{ auth()->user()->role_name }}</span>
+          </a>
+          <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+            <span class="dropdown-item dropdown-header">
+              {{ auth()->user()->name }}
+              <br>
+              <small>{{ auth()->user()->email }}</small>
+            </span>
+            <div class="dropdown-divider"></div>
+            <a href="{{ route('home') }}" class="dropdown-item">
+              <i class="fas fa-home mr-2"></i> Ir al Inicio
+            </a>
+            @if(auth()->user()->isCliente())
+              <a href="{{ route('solicitar-vendedor') }}" class="dropdown-item">
+                <i class="fas fa-user-tie mr-2"></i> Ser Vendedor
+              </a>
+            @endif
+            @if(auth()->user()->isAdmin())
+              <a href="{{ route('admin.solicitudes-vendedor.index') }}" class="dropdown-item">
+                <i class="fas fa-clipboard-list mr-2"></i> Solicitudes de Vendedor
+              </a>
+            @endif
+            <div class="dropdown-divider"></div>
+            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+              @csrf
+              <button type="submit" class="dropdown-item dropdown-footer">
+                <i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
+              </button>
+            </form>
+          </div>
+        </li>
+      @else
+        <li class="nav-item">
+          <a href="{{ route('login') }}" class="nav-link">
+            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ route('register') }}" class="nav-link">
+            <i class="fas fa-user-plus"></i> Registrarse
+          </a>
+        </li>
+      @endauth
     </ul>
   </nav>
   <!-- /.navbar -->
@@ -39,73 +91,109 @@
 
         <ul class="nav nav-pills nav-sidebar flex-column">
 
-          <!-- ORGÁNICOS -->
-          <li class="nav-item">
-            <a href="{{ route('organicos.index') }}"
-               class="nav-link {{ request()->routeIs('organicos.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-leaf"></i>
-              <p>Orgánicos</p>
-            </a>
-          </li>
+          @auth
+            {{-- ===== OPCIONES PARA VENDEDOR Y ADMIN ===== --}}
+            @if(auth()->user()->isVendedor() || auth()->user()->isAdmin())
+              <!-- GANADO -->
+              <li class="nav-item">
+                <a href="{{ route('ganados.index') }}"
+                   class="nav-link {{ request()->routeIs('ganados.*') ? 'active' : '' }}">
+                  <i class="nav-icon fas fa-cow"></i>
+                  <p>Animales</p>
+                </a>
+              </li>
 
-          <!-- MAQUINARIA -->
-          <li class="nav-item">
-            <a href="{{ route('maquinarias.index') }}"
-               class="nav-link {{ request()->routeIs('maquinarias.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-tractor"></i>
-              <p>Maquinaria</p>
-            </a>
-          </li>
+              <!-- MAQUINARIA -->
+              <li class="nav-item">
+                <a href="{{ route('maquinarias.index') }}"
+                   class="nav-link {{ request()->routeIs('maquinarias.*') ? 'active' : '' }}">
+                  <i class="nav-icon fas fa-tractor"></i>
+                  <p>Maquinaria</p>
+                </a>
+              </li>
 
-          <!-- TIPOS DE ANIMAL -->
-          <li class="nav-item">
-            <a href="{{ route('tipo_animals.index') }}"
-               class="nav-link {{ request()->routeIs('tipo_animals.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-paw"></i>
-              <p>Tipos de Animal</p>
-            </a>
-          </li>
+              <!-- ORGÁNICOS -->
+              <li class="nav-item">
+                <a href="{{ route('organicos.index') }}"
+                   class="nav-link {{ request()->routeIs('organicos.*') ? 'active' : '' }}">
+                  <i class="nav-icon fas fa-leaf"></i>
+                  <p>Orgánicos</p>
+                </a>
+              </li>
+            @endif
 
-          <!-- CATEGORÍAS -->
-          <li class="nav-item">
-            <a href="{{ route('categorias.index') }}"
-               class="nav-link {{ request()->routeIs('categorias.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-tags"></i>
-              <p>Categorías</p>
-            </a>
-          </li>
+            {{-- ===== OPCIONES SOLO PARA ADMIN ===== --}}
+            @if(auth()->user()->isAdmin())
+              <li class="nav-header">CONFIGURACIÓN</li>
+              
+              <!-- CATEGORÍAS -->
+              <li class="nav-item">
+                <a href="{{ route('admin.categorias.index') }}"
+                   class="nav-link {{ request()->routeIs('admin.categorias.*') ? 'active' : '' }}">
+                  <i class="nav-icon fas fa-tags"></i>
+                  <p>Categorías</p>
+                </a>
+              </li>
 
-          <!-- TIPO DE PESO -->
-          <li class="nav-item">
-            <a href="{{ route('tipo-pesos.index') }}"
-               class="nav-link {{ request()->routeIs('tipo-pesos.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-weight-hanging"></i>
-              <p>Tipo de Peso</p>
-            </a>
-          </li>
+              <!-- TIPOS DE ANIMAL -->
+              <li class="nav-item">
+                <a href="{{ route('admin.tipo_animals.index') }}"
+                   class="nav-link {{ request()->routeIs('admin.tipo_animals.*') ? 'active' : '' }}">
+                  <i class="nav-icon fas fa-paw"></i>
+                  <p>Tipos de Animal</p>
+                </a>
+              </li>
 
-          <!-- GANADO -->
-          <li class="nav-item">
-            <a href="{{ route('ganados.index') }}"
-               class="nav-link {{ request()->routeIs('ganados.*') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-cow"></i>
-              <p>Animales</p>
-            </a>
-          </li>
-<li class="nav-item">
-    <a href="{{ route('datos-sanitarios.index') }}"
-       class="nav-link {{ request()->routeIs('datos-sanitarios.*') ? 'active' : '' }}">
-        <i class="nav-icon fas fa-syringe"></i>
-        <p>Datos Sanitarios</p>
-    </a>
-</li>
-<li class="nav-item">
-    <a href="{{ route('razas.index') }}" 
-       class="nav-link {{ request()->routeIs('razas.*') ? 'active' : '' }}">
-        <i class="nav-icon fas fa-dna"></i>
-        <p>Razas</p>
-    </a>
-</li>
+              <!-- TIPO DE PESO -->
+              <li class="nav-item">
+                <a href="{{ route('admin.tipo-pesos.index') }}"
+                   class="nav-link {{ request()->routeIs('admin.tipo-pesos.*') ? 'active' : '' }}">
+                  <i class="nav-icon fas fa-weight-hanging"></i>
+                  <p>Tipo de Peso</p>
+                </a>
+              </li>
+
+              <!-- DATOS SANITARIOS -->
+              <li class="nav-item">
+                <a href="{{ route('admin.datos-sanitarios.index') }}"
+                   class="nav-link {{ request()->routeIs('admin.datos-sanitarios.*') ? 'active' : '' }}">
+                  <i class="nav-icon fas fa-syringe"></i>
+                  <p>Datos Sanitarios</p>
+                </a>
+              </li>
+
+              <!-- RAZAS -->
+              <li class="nav-item">
+                <a href="{{ route('admin.razas.index') }}" 
+                   class="nav-link {{ request()->routeIs('admin.razas.*') ? 'active' : '' }}">
+                  <i class="nav-icon fas fa-dna"></i>
+                  <p>Razas</p>
+                </a>
+              </li>
+
+              <li class="nav-header">GESTIÓN</li>
+
+              <!-- SOLICITUDES DE VENDEDOR -->
+              <li class="nav-item">
+                <a href="{{ route('admin.solicitudes-vendedor.index') }}"
+                   class="nav-link {{ request()->routeIs('admin.solicitudes-vendedor.*') ? 'active' : '' }}">
+                  <i class="nav-icon fas fa-clipboard-list"></i>
+                  <p>Solicitudes de Vendedor</p>
+                </a>
+              </li>
+            @endif
+
+            {{-- ===== OPCIONES SOLO PARA CLIENTE ===== --}}
+            @if(auth()->user()->isCliente())
+              <li class="nav-item">
+                <a href="{{ route('solicitar-vendedor') }}"
+                   class="nav-link {{ request()->routeIs('solicitar-vendedor*') ? 'active' : '' }}">
+                  <i class="nav-icon fas fa-user-tie"></i>
+                  <p>Solicitar ser Vendedor</p>
+                </a>
+              </li>
+            @endif
+          @endauth
 
         </ul>
 

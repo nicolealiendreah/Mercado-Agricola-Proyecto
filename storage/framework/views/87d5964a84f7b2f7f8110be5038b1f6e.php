@@ -12,10 +12,10 @@
   <link rel="stylesheet" href="<?php echo e(asset('css/custom.css')); ?>">
 </head>
 
-<body class="hold-transition layout-top-nav <?php echo e(request()->routeIs('login.demo','register.demo') ? 'no-topbar' : ''); ?>">
+<body class="hold-transition layout-top-nav <?php echo e(request()->routeIs('login','register') ? 'no-topbar' : ''); ?>">
 <div class="wrapper">
 
-  <?php if(!request()->routeIs('login.demo','register.demo')): ?>
+  <?php if(!request()->routeIs('login','register')): ?>
   <nav class="main-header navbar navbar-expand navbar-white navbar-light border-0 project-topbar">
     <div class="container">
       <a href="<?php echo e(route('home')); ?>" class="navbar-brand d-flex align-items-center">
@@ -34,11 +34,48 @@
           <li class="nav-item">
             <a class="nav-link text-white" href="<?php echo e(route('ads.index')); ?>">Anuncios</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link btn btn-success text-white px-3 ml-lg-2" href="<?php echo e(route('ads.create')); ?>">
-              Publicita tu Anuncio <i class="fas fa-plus ml-1"></i>
-            </a>
-          </li>
+          <?php if(auth()->guard()->check()): ?>
+            <li class="nav-item dropdown">
+              <a class="nav-link text-white dropdown-toggle" href="#" data-toggle="dropdown">
+                <i class="fas fa-user-circle"></i> <?php echo e(auth()->user()->name); ?>
+
+                <span class="badge badge-light ml-1"><?php echo e(auth()->user()->role_name); ?></span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right">
+                <a href="<?php echo e(route('home')); ?>" class="dropdown-item">
+                  <i class="fas fa-home mr-2"></i> Inicio
+                </a>
+                <?php if(auth()->user()->isCliente()): ?>
+                  <a href="<?php echo e(route('solicitar-vendedor')); ?>" class="dropdown-item">
+                    <i class="fas fa-user-tie mr-2"></i> Ser Vendedor
+                  </a>
+                <?php endif; ?>
+                <?php if(auth()->user()->isAdmin()): ?>
+                  <a href="<?php echo e(route('admin.solicitudes-vendedor.index')); ?>" class="dropdown-item">
+                    <i class="fas fa-clipboard-list mr-2"></i> Panel Admin
+                  </a>
+                <?php endif; ?>
+                <div class="dropdown-divider"></div>
+                <form action="<?php echo e(route('logout')); ?>" method="POST" class="d-inline">
+                  <?php echo csrf_field(); ?>
+                  <button type="submit" class="dropdown-item">
+                    <i class="fas fa-sign-out-alt mr-2"></i> Cerrar Sesión
+                  </button>
+                </form>
+              </div>
+            </li>
+          <?php else: ?>
+            <li class="nav-item">
+              <a class="nav-link text-white" href="<?php echo e(route('login')); ?>">
+                <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link btn btn-success text-white px-3 ml-lg-2" href="<?php echo e(route('register')); ?>">
+                Registrarse <i class="fas fa-user-plus ml-1"></i>
+              </a>
+            </li>
+          <?php endif; ?>
         </ul>
       </div>
     </div>

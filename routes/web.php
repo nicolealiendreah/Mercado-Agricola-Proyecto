@@ -8,40 +8,80 @@ use App\Http\Controllers\TipoAnimalController;
 use App\Http\Controllers\TipoPesoController;
 use App\Http\Controllers\DatoSanitarioController;
 use App\Http\Controllers\RazaController;
+use App\Http\Controllers\SolicitudVendedorController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 
 // 1) Raíz -> login (pantalla principal)
 Route::redirect('/', '/login');
 
-// 2) Login (solo UI)
-Route::view('/login', 'public.auth.login')->name('login.demo');
-// Registro (solo UI)
-Route::view('/registro', 'public.auth.register')->name('register.demo');
+// 2) Autenticación
+Route::middleware('guest')->group(function () {
+    // Login
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+    
+    // Registro
+    Route::get('/registro', [RegisterController::class, 'showRegisterForm'])->name('register');
+    Route::post('/registro', [RegisterController::class, 'register'])->name('register.post');
+});
 
+// Logout (solo para usuarios autenticados)
+Route::middleware('auth')->post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // 3) Home público (portada con hero)
-Route::view('/inicio', 'public.home')->name('home');
+Route::get('/inicio', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // 4) Páginas públicas
-Route::view('/anuncios', 'public.ads.index')->name('ads.index');
+Route::get('/anuncios', [App\Http\Controllers\HomeController::class, 'anuncios'])->name('ads.index');
 Route::view('/publicar', 'public.ads.create')->name('ads.create');
 
-// 5) CRUDs (panel)
-Route::resource('organicos', OrganicoController::class)->names('organicos');
-Route::resource('maquinarias', MaquinariaController::class)->names('maquinarias');
+// ============================================
+// RUTAS POR ROLES
+// ============================================
 
+// ===== ADMINISTRADOR =====
+// Solo ADMIN puede acceder a configuración y parámetros
+Route::middleware(['auth', 'role.admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Gestión de solicitudes de vendedor
+    Route::get('/solicitudes-vendedor', [SolicitudVendedorController::class, 'index'])->name('solicitudes-vendedor.index');
+    Route::get('/solicitudes-vendedor/{solicitudVendedor}', [SolicitudVendedorController::class, 'show'])->name('solicitudes-vendedor.show');
+    Route::post('/solicitudes-vendedor/{id}/aprobar', [SolicitudVendedorController::class, 'aprobar'])->name('solicitudes-vendedor.aprobar');
+    Route::post('/solicitudes-vendedor/{id}/rechazar', [SolicitudVendedorController::class, 'rechazar'])->name('solicitudes-vendedor.rechazar');
+    
+    // Parámetros del sistema (solo ADMIN)
+    Route::resource('categorias', App\Http\Controllers\CategoriaController::class);
+    Route::resource('tipo_animals', TipoAnimalController::class);
+    Route::resource('tipo-pesos', TipoPesoController::class);
+    Route::resource('datos-sanitarios', DatoSanitarioController::class);
+    Route::resource('razas', RazaController::class);
+    Route::resource('tipo_maquinarias', App\Http\Controllers\TipoMaquinariaController::class);
+    Route::resource('marcas_maquinarias', App\Http\Controllers\MarcaMaquinariaController::class);
+});
 
-Route::resource('categorias', App\Http\Controllers\CategoriaController::class);
+// ===== VENDEDOR Y ADMINISTRADOR =====
+// VENDEDOR y ADMIN pueden publicar productos
+Route::middleware(['auth', 'role.vendedor'])->group(function () {
+    // Publicación de productos (crear, editar, eliminar)
+    Route::resource('ganados', GanadoController::class)->except(['index', 'show']);
+    Route::resource('maquinarias', MaquinariaController::class)->except(['index', 'show'])->names('maquinarias');
+    Route::resource('organicos', OrganicoController::class)->except(['index', 'show'])->names('organicos');
+});
 
+// ===== TODOS LOS USUARIOS AUTENTICADOS =====
+// Rutas de visualización que todos pueden ver (solo lectura)
+Route::middleware('auth')->group(function () {
+    Route::get('ganados', [GanadoController::class, 'index'])->name('ganados.index');
+    Route::get('ganados/{ganado}', [GanadoController::class, 'show'])->name('ganados.show');
+    Route::get('maquinarias', [MaquinariaController::class, 'index'])->name('maquinarias.index');
+    Route::get('maquinarias/{maquinaria}', [MaquinariaController::class, 'show'])->name('maquinarias.show');
+    Route::get('organicos', [OrganicoController::class, 'index'])->name('organicos.index');
+    Route::get('organicos/{organico}', [OrganicoController::class, 'show'])->name('organicos.show');
+});
 
-Route::resource('ganados', GanadoController::class);
-
-Route::resource('tipo_animals', TipoAnimalController::class);
-Route::resource('tipo-pesos', TipoPesoController::class);
-Route::resource('datos-sanitarios', DatoSanitarioController::class);
-Route::resource('razas', RazaController::class);
-
-
-
-
-
-
+// ===== CLIENTE =====
+// CLIENTE puede solicitar ser vendedor
+Route::middleware(['auth', 'role.cliente'])->group(function () {
+    Route::get('/solicitar-vendedor', [SolicitudVendedorController::class, 'create'])->name('solicitar-vendedor');
+    Route::post('/solicitar-vendedor', [SolicitudVendedorController::class, 'store'])->name('solicitar-vendedor.store');
+});

@@ -17,14 +17,30 @@
         </div>
       </form>
 
-      <a href="{{ route('maquinarias.create') }}" class="btn btn-success btn-sm mr-2">Nueva</a>
+      @if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin()))
+          <a href="{{ route('maquinarias.create') }}" class="btn btn-success btn-sm mr-2">Nueva</a>
+      @endif
       <a href="{{ route('organicos.index') }}" class="btn btn-info btn-sm">Ir a Orgánicos</a>
     </div>
   </div>
 
   <div class="card-body p-0">
     @if(session('ok'))
-      <div class="alert alert-success m-3">{{ session('ok') }}</div>
+      <div class="alert alert-success alert-dismissible fade show m-3">
+        <i class="fas fa-check-circle"></i> {{ session('ok') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    @endif
+
+    @if(session('error'))
+      <div class="alert alert-danger alert-dismissible fade show m-3">
+        <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
     @endif
 
     <div class="table-responsive">
@@ -39,8 +55,8 @@
           <tr>
             <td>{{ $m->id }}</td>
             <td><a href="{{ route('maquinarias.show',$m) }}">{{ $m->nombre }}</a></td>
-            <td>{{ $m->tipo }}</td>
-            <td>{{ $m->marca }}</td>
+            <td>{{ $m->tipoMaquinaria->nombre ?? '—' }}</td>
+            <td>{{ $m->marcaMaquinaria->nombre ?? '—' }}</td>
             <td>{{ number_format($m->precio_dia,2) }}</td>
             <td>
               @php
@@ -49,11 +65,20 @@
               <span class="badge badge-{{ $map[$m->estado] ?? 'light' }}">{{ str_replace('_',' ',$m->estado) }}</span>
             </td>
             <td class="text-right pr-3">
-              <a href="{{ route('maquinarias.edit',$m) }}" class="btn btn-sm btn-primary">Editar</a>
-              <form action="{{ route('maquinarias.destroy',$m) }}" method="post" class="d-inline">
-                @csrf @method('DELETE')
-                <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?')">Eliminar</button>
-              </form>
+              @if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin()))
+                {{-- Solo mostrar botones si es el dueño o admin --}}
+                @if(auth()->user()->isAdmin() || $m->user_id == auth()->id())
+                  <a href="{{ route('maquinarias.edit',$m) }}" class="btn btn-sm btn-primary">Editar</a>
+                  <form action="{{ route('maquinarias.destroy',$m) }}" method="post" class="d-inline">
+                    @csrf @method('DELETE')
+                    <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?')">Eliminar</button>
+                  </form>
+                @else
+                  <a href="{{ route('maquinarias.show',$m) }}" class="btn btn-sm btn-info">Ver</a>
+                @endif
+              @else
+                <a href="{{ route('maquinarias.show',$m) }}" class="btn btn-sm btn-info">Ver</a>
+              @endif
             </td>
           </tr>
         @empty

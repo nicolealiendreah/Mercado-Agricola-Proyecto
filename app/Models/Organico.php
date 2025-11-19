@@ -19,6 +19,7 @@ class Organico extends Model
      */
     protected $fillable = [
         'nombre',
+        'user_id',
         'categoria_id',
         'precio',
         'stock',
@@ -32,5 +33,13 @@ class Organico extends Model
     public function categoria()
     {
         return $this->belongsTo(Categoria::class, 'categoria_id', 'id');
+    }
+
+    /**
+     * Relación: un orgánico pertenece a un usuario
+     */
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class);
     }
 }

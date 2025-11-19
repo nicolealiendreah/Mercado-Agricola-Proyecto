@@ -16,11 +16,9 @@ class StoreMaquinariaRequest extends FormRequest
         return [
             'nombre' => 'required|string|max:255',
             'categoria_id' => 'required|exists:categorias,id',
-
-            'tipo' => 'required|string|max:255',
-            'marca' => 'required|string|max:255',
+            'tipo_maquinaria_id' => 'required|exists:tipo_maquinarias,id',
+            'marca_maquinaria_id' => 'required|exists:marcas_maquinarias,id',
             'modelo' => 'nullable|string|max:255',
-
             'precio_dia' => 'required|numeric|min:0',
             'estado' => 'required|string|max:255',
             'descripcion' => 'nullable|string|max:5000',
@@ -32,6 +30,10 @@ class StoreMaquinariaRequest extends FormRequest
         return [
             'categoria_id.required' => 'La categoría es obligatoria.',
             'categoria_id.exists'   => 'La categoría seleccionada no es válida.',
+            'tipo_maquinaria_id.required' => 'El tipo de maquinaria es obligatorio.',
+            'tipo_maquinaria_id.exists'   => 'El tipo de maquinaria seleccionado no es válido.',
+            'marca_maquinaria_id.required' => 'La marca de maquinaria es obligatoria.',
+            'marca_maquinaria_id.exists'   => 'La marca de maquinaria seleccionada no es válida.',
         ];
     }
 }

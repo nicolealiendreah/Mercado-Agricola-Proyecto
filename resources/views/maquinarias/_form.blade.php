@@ -15,11 +15,29 @@
     </select>
 </div>
 
-<div class="form-group"><label>Tipo *</label>
-  <input name="tipo" class="form-control" value="{{ old('tipo', $maquinaria->tipo ?? '') }}" required>
+<div class="form-group">
+    <label>Tipo de Maquinaria *</label>
+    <select name="tipo_maquinaria_id" class="form-control" required>
+        <option value="">Seleccione un tipo de maquinaria</option>
+        @foreach($tipo_maquinarias as $tipo)
+            <option value="{{ $tipo->id }}"
+                {{ old('tipo_maquinaria_id', $maquinaria->tipo_maquinaria_id ?? '') == $tipo->id ? 'selected' : '' }}>
+                {{ $tipo->nombre }}
+            </option>
+        @endforeach
+    </select>
 </div>
-<div class="form-group"><label>Marca *</label>
-  <input name="marca" class="form-control" value="{{ old('marca', $maquinaria->marca ?? '') }}" required>
+<div class="form-group">
+    <label>Marca de Maquinaria *</label>
+    <select name="marca_maquinaria_id" class="form-control" required>
+        <option value="">Seleccione una marca de maquinaria</option>
+        @foreach($marcas_maquinarias as $marca)
+            <option value="{{ $marca->id }}"
+                {{ old('marca_maquinaria_id', $maquinaria->marca_maquinaria_id ?? '') == $marca->id ? 'selected' : '' }}>
+                {{ $marca->nombre }}
+            </option>
+        @endforeach
+    </select>
 </div>
 <div class="form-group"><label>Modelo</label>
   <input name="modelo" class="form-control" value="{{ old('modelo', $maquinaria->modelo ?? '') }}">

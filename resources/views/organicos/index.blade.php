@@ -16,13 +16,29 @@
       </div>
     </form>
 
-    <a href="{{ route('organicos.create') }}" class="btn btn-success btn-sm mr-2">Nuevo</a>
+    @if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin()))
+        <a href="{{ route('organicos.create') }}" class="btn btn-success btn-sm mr-2">Nuevo</a>
+    @endif
     <a href="{{ route('maquinarias.index') }}" class="btn btn-info btn-sm">Ir a Maquinarias</a>
   </div>
 
   <div class="card-body p-0">
     @if(session('ok'))
-      <div class="alert alert-success m-3">{{ session('ok') }}</div>
+      <div class="alert alert-success alert-dismissible fade show m-3">
+        <i class="fas fa-check-circle"></i> {{ session('ok') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    @endif
+
+    @if(session('error'))
+      <div class="alert alert-danger alert-dismissible fade show m-3">
+        <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
     @endif
 
     <div class="table-responsive">
@@ -56,12 +72,21 @@
             <td>{{ $o->stock }}</td>
 
             <td class="text-right pr-3">
-              <a href="{{ route('organicos.edit', $o) }}" class="btn btn-sm btn-primary">Editar</a>
+              @if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin()))
+                {{-- Solo mostrar botones si es el dueño o admin --}}
+                @if(auth()->user()->isAdmin() || $o->user_id == auth()->id())
+                  <a href="{{ route('organicos.edit', $o) }}" class="btn btn-sm btn-primary">Editar</a>
 
-              <form action="{{ route('organicos.destroy', $o) }}" method="post" class="d-inline">
-                @csrf @method('DELETE')
-                <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?')">Eliminar</button>
-              </form>
+                  <form action="{{ route('organicos.destroy', $o) }}" method="post" class="d-inline">
+                    @csrf @method('DELETE')
+                    <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?')">Eliminar</button>
+                  </form>
+                @else
+                  <a href="{{ route('organicos.show', $o) }}" class="btn btn-sm btn-info">Ver</a>
+                @endif
+              @else
+                <a href="{{ route('organicos.show', $o) }}" class="btn btn-sm btn-info">Ver</a>
+              @endif
             </td>
           </tr>
         @empty

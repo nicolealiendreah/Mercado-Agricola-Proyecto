@@ -33,7 +33,9 @@ public function create()
 
     public function store(StoreOrganicoRequest $request)
     {
-        Organico::create($request->validated());
+        $data = $request->validated();
+        $data['user_id'] = auth()->id();
+        Organico::create($data);
         return redirect()->route('organicos.index')->with('ok', 'Orgánico creado');
     }
 
@@ -44,6 +46,12 @@ public function create()
 
     public function edit(\App\Models\Organico $organico)
 {
+    // Verificar permisos: solo el dueño o admin puede editar
+    if (!auth()->user()->isAdmin() && $organico->user_id !== auth()->id()) {
+        return redirect()->route('organicos.index')
+            ->with('error', 'No tienes permisos para editar este anuncio.');
+    }
+
     $categorias = \App\Models\Categoria::orderBy('nombre')->get();
     return view('organicos.edit', compact('organico', 'categorias'));
 }
@@ -51,12 +59,24 @@ public function create()
 
     public function update(UpdateOrganicoRequest $request, Organico $organico)
     {
+        // Verificar permisos: solo el dueño o admin puede actualizar
+        if (!auth()->user()->isAdmin() && $organico->user_id !== auth()->id()) {
+            return redirect()->route('organicos.index')
+                ->with('error', 'No tienes permisos para editar este anuncio.');
+        }
+
         $organico->update($request->validated());
         return redirect()->route('organicos.index')->with('ok', 'Orgánico actualizado');
     }
 
     public function destroy(Organico $organico)
     {
+        // Verificar permisos: solo el dueño o admin puede eliminar
+        if (!auth()->user()->isAdmin() && $organico->user_id !== auth()->id()) {
+            return redirect()->route('organicos.index')
+                ->with('error', 'No tienes permisos para eliminar este anuncio.');
+        }
+
         $organico->delete();
         return redirect()->route('organicos.index')->with('ok', 'Orgánico eliminado');
     }

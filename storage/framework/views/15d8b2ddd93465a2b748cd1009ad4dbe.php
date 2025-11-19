@@ -16,11 +16,31 @@
     </select>
 </div>
 
-<div class="form-group"><label>Tipo *</label>
-  <input name="tipo" class="form-control" value="<?php echo e(old('tipo', $maquinaria->tipo ?? '')); ?>" required>
+<div class="form-group">
+    <label>Tipo de Maquinaria *</label>
+    <select name="tipo_maquinaria_id" class="form-control" required>
+        <option value="">Seleccione un tipo de maquinaria</option>
+        <?php $__currentLoopData = $tipo_maquinarias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tipo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($tipo->id); ?>"
+                <?php echo e(old('tipo_maquinaria_id', $maquinaria->tipo_maquinaria_id ?? '') == $tipo->id ? 'selected' : ''); ?>>
+                <?php echo e($tipo->nombre); ?>
+
+            </option>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </select>
 </div>
-<div class="form-group"><label>Marca *</label>
-  <input name="marca" class="form-control" value="<?php echo e(old('marca', $maquinaria->marca ?? '')); ?>" required>
+<div class="form-group">
+    <label>Marca de Maquinaria *</label>
+    <select name="marca_maquinaria_id" class="form-control" required>
+        <option value="">Seleccione una marca de maquinaria</option>
+        <?php $__currentLoopData = $marcas_maquinarias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $marca): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <option value="<?php echo e($marca->id); ?>"
+                <?php echo e(old('marca_maquinaria_id', $maquinaria->marca_maquinaria_id ?? '') == $marca->id ? 'selected' : ''); ?>>
+                <?php echo e($marca->nombre); ?>
+
+            </option>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </select>
 </div>
 <div class="form-group"><label>Modelo</label>
   <input name="modelo" class="form-control" value="<?php echo e(old('modelo', $maquinaria->modelo ?? '')); ?>">

@@ -34,31 +34,86 @@
             Accede con tu cuenta para continuar. Según tu rol, te llevaremos a tu panel.
           </p>
 
-          <form onsubmit="return false;">
-            <div class="form-group">
-              <label class="mb-1">Correo</label>
-              <input type="email" class="form-control form-control-lg login-input" placeholder="Correo Electrónico">
+          @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              <i class="fas fa-check-circle"></i> {{ session('success') }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
             </div>
+          @endif
+
+          @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          @endif
+
+          @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              <h6 class="alert-heading">
+                <i class="fas fa-exclamation-triangle"></i> Errores de validación:
+              </h6>
+              <ul class="mb-0 small">
+                @foreach ($errors->all() as $error)
+                  <li>{{ $error }}</li>
+                @endforeach
+              </ul>
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          @endif
+
+          <form action="{{ route('login.post') }}" method="POST">
+            @csrf
+
             <div class="form-group">
-              <label class="mb-1">Contraseña</label>
-              <input type="password" class="form-control form-control-lg login-input" placeholder="Contraseña">
+              <label class="mb-1">Correo Electrónico *</label>
+              <input type="email" 
+                     name="email" 
+                     class="form-control form-control-lg login-input @error('email') is-invalid @enderror" 
+                     placeholder="Correo Electrónico"
+                     value="{{ old('email') }}"
+                     required
+                     autofocus>
+              @error('email')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
+
+            <div class="form-group">
+              <label class="mb-1">Contraseña *</label>
+              <input type="password" 
+                     name="password" 
+                     class="form-control form-control-lg login-input @error('password') is-invalid @enderror" 
+                     placeholder="Contraseña"
+                     required>
+              @error('password')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-3">
               <div class="custom-control custom-checkbox">
-                <input type="checkbox" class="custom-control-input" id="remember">
+                <input type="checkbox" 
+                       class="custom-control-input" 
+                       id="remember" 
+                       name="remember">
                 <label class="custom-control-label" for="remember">Recuérdame</label>
               </div>
               <a href="#" class="small">¿Olvidaste tu contraseña?</a>
             </div>
 
-            <a href="{{ route('home') }}" class="btn btn-success btn-lg btn-block">
-            Entrar
-            </a>
-
+            <button type="submit" class="btn btn-success btn-lg btn-block">
+              <i class="fas fa-sign-in-alt"></i> Entrar
+            </button>
 
             <p class="text-center mt-3 mb-0">
-            ¿No tienes cuenta? <a href="{{ route('register.demo') }}" class="font-weight-bold">Crear cuenta</a>
+              ¿No tienes cuenta? <a href="{{ route('register') }}" class="font-weight-bold">Crear cuenta</a>
             </p>
           </form>
         </div>

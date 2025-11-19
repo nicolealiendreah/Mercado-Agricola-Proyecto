@@ -134,6 +134,12 @@
                 </div>
 
                 <div class="form-group mb-3">
+                    <label for="stock">Stock (Cantidad) *</label>
+                    <input type="number" name="stock" id="stock" class="form-control" min="0" value="<?php echo e(old('stock', 0)); ?>" required>
+                    <small class="form-text text-muted">Ingrese la cantidad disponible de ganado</small>
+                </div>
+
+                <div class="form-group mb-3">
                     <label for="imagen">Imagen</label>
                     <input type="file" name="imagen" id="imagen" class="form-control">
                 </div>

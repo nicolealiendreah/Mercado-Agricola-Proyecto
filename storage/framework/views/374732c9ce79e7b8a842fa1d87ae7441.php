@@ -15,13 +15,31 @@
       </div>
     </form>
 
-    <a href="<?php echo e(route('organicos.create')); ?>" class="btn btn-success btn-sm mr-2">Nuevo</a>
+    <?php if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin())): ?>
+        <a href="<?php echo e(route('organicos.create')); ?>" class="btn btn-success btn-sm mr-2">Nuevo</a>
+    <?php endif; ?>
     <a href="<?php echo e(route('maquinarias.index')); ?>" class="btn btn-info btn-sm">Ir a Maquinarias</a>
   </div>
 
   <div class="card-body p-0">
     <?php if(session('ok')): ?>
-      <div class="alert alert-success m-3"><?php echo e(session('ok')); ?></div>
+      <div class="alert alert-success alert-dismissible fade show m-3">
+        <i class="fas fa-check-circle"></i> <?php echo e(session('ok')); ?>
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    <?php endif; ?>
+
+    <?php if(session('error')): ?>
+      <div class="alert alert-danger alert-dismissible fade show m-3">
+        <i class="fas fa-exclamation-circle"></i> <?php echo e(session('error')); ?>
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
     <?php endif; ?>
 
     <div class="table-responsive">
@@ -56,12 +74,21 @@
             <td><?php echo e($o->stock); ?></td>
 
             <td class="text-right pr-3">
-              <a href="<?php echo e(route('organicos.edit', $o)); ?>" class="btn btn-sm btn-primary">Editar</a>
+              <?php if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin())): ?>
+                
+                <?php if(auth()->user()->isAdmin() || $o->user_id == auth()->id()): ?>
+                  <a href="<?php echo e(route('organicos.edit', $o)); ?>" class="btn btn-sm btn-primary">Editar</a>
 
-              <form action="<?php echo e(route('organicos.destroy', $o)); ?>" method="post" class="d-inline">
-                <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
-                <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?')">Eliminar</button>
-              </form>
+                  <form action="<?php echo e(route('organicos.destroy', $o)); ?>" method="post" class="d-inline">
+                    <?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?>
+                    <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?')">Eliminar</button>
+                  </form>
+                <?php else: ?>
+                  <a href="<?php echo e(route('organicos.show', $o)); ?>" class="btn btn-sm btn-info">Ver</a>
+                <?php endif; ?>
+              <?php else: ?>
+                <a href="<?php echo e(route('organicos.show', $o)); ?>" class="btn btn-sm btn-info">Ver</a>
+              <?php endif; ?>
             </td>
           </tr>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>

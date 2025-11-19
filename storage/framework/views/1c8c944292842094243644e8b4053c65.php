@@ -5,15 +5,30 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3 mb-0">Lista de Ganado</h1>
-        <a href="<?php echo e(route('ganados.create')); ?>" class="btn btn-success">
-            <i class="fas fa-plus-circle"></i> Nuevo Registro
-        </a>
+        <?php if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin())): ?>
+            <a href="<?php echo e(route('ganados.create')); ?>" class="btn btn-success">
+                <i class="fas fa-plus-circle"></i> Nuevo Registro
+            </a>
+        <?php endif; ?>
     </div>
 
     <?php if(session('success')): ?>
-        <div class="alert alert-success">
-            <?php echo e(session('success')); ?>
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle"></i> <?php echo e(session('success')); ?>
 
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    <?php endif; ?>
+
+    <?php if(session('error')): ?>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle"></i> <?php echo e(session('error')); ?>
+
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
     <?php endif; ?>
 
@@ -35,6 +50,7 @@
                         <th>Fecha Publicación</th>
                         <th>Datos Sanitarios</th>
                         <th>Precio (Bs)</th>
+                        <th>Stock</th>
                         <th>Imagen</th>
                         <th style="width:150px;">Acciones</th>
                     </tr>
@@ -75,34 +91,61 @@
                             <td><?php echo e($ganado->precio ? number_format($ganado->precio, 2) : '-'); ?></td>
 
                             <td>
+                                <span class="badge <?php echo e(($ganado->stock ?? 0) > 0 ? 'badge-success' : 'badge-danger'); ?>">
+                                    <?php echo e($ganado->stock ?? 0); ?>
+
+                                </span>
+                            </td>
+
+                            <td>
                                 <?php if($ganado->imagen): ?>
-                                    <img src="<?php echo e(asset('storage/'.$ganado->imagen)); ?>" width="60" alt="imagen">
+                                    <img src="<?php echo e(asset('storage/'.$ganado->imagen)); ?>" 
+                                         alt="<?php echo e($ganado->nombre); ?>" 
+                                         class="img-thumbnail" 
+                                         style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                                         onclick="window.open('<?php echo e(asset('storage/'.$ganado->imagen)); ?>', '_blank')"
+                                         title="Click para ver imagen completa">
                                 <?php else: ?>
-                                    <span class="text-muted">Sin imagen</span>
+                                    <span class="text-muted">
+                                        <i class="fas fa-image"></i> Sin imagen
+                                    </span>
                                 <?php endif; ?>
                             </td>
 
                             <td>
-                                <a href="<?php echo e(route('ganados.edit', $ganado->id)); ?>"
-                                   class="btn btn-warning btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+                                <?php if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin())): ?>
+                                    
+                                    <?php if(auth()->user()->isAdmin() || $ganado->user_id == auth()->id()): ?>
+                                        <a href="<?php echo e(route('ganados.edit', $ganado->id)); ?>"
+                                           class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
 
-                                <form action="<?php echo e(route('ganados.destroy', $ganado->id)); ?>"
-                                      method="POST" class="d-inline">
-                                    <?php echo csrf_field(); ?>
-                                    <?php echo method_field('DELETE'); ?>
+                                        <form action="<?php echo e(route('ganados.destroy', $ganado->id)); ?>"
+                                              method="POST" class="d-inline">
+                                            <?php echo csrf_field(); ?>
+                                            <?php echo method_field('DELETE'); ?>
 
-                                    <button type="submit" class="btn btn-danger btn-sm"
-                                            onclick="return confirm('¿Eliminar este registro?')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                    onclick="return confirm('¿Eliminar este registro?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    <?php else: ?>
+                                        <a href="<?php echo e(route('ganados.show', $ganado->id)); ?>" class="btn btn-info btn-sm">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </a>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <a href="<?php echo e(route('ganados.show', $ganado->id)); ?>" class="btn btn-info btn-sm">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </a>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
-                            <td colspan="15" class="text-center text-muted">
+                            <td colspan="16" class="text-center text-muted">
                                 No hay registros de ganado.
                             </td>
                         </tr>
