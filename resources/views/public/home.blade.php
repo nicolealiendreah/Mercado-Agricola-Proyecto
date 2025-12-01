@@ -10,8 +10,8 @@
     </h1>
 
     <div class="bg-white p-4 rounded mt-4 shadow-lg">
-      <form method="GET" action="{{ route('home') }}" class="form-row align-items-end">
-  <div class="col-md-4 mb-2">
+      <form method="GET" action="{{ route('home') }}" id="searchForm" class="form-row align-items-end">
+  <div class="col-md-3 mb-2">
     <label class="text-dark small font-weight-bold mb-1">Categoría</label>
     <select name="categoria_id"
             class="form-control"
@@ -25,7 +25,39 @@
     </select>
   </div>
 
-  <div class="col-md-6 mb-2">
+  <div class="col-md-3 mb-2">
+    <label class="text-dark small font-weight-bold mb-1">Tipo de Animal</label>
+    <select name="tipo_animal_id"
+            id="tipo_animal_id"
+            class="form-control"
+            onchange="filtrarRazas(); this.form.submit();">
+      <option value="">Todos los tipos</option>
+      @foreach($tiposAnimales as $tipoAnimal)
+        <option value="{{ $tipoAnimal->id }}" {{ request('tipo_animal_id') == $tipoAnimal->id ? 'selected' : '' }}>
+          {{ $tipoAnimal->nombre }}
+        </option>
+      @endforeach
+    </select>
+  </div>
+
+  <div class="col-md-3 mb-2">
+    <label class="text-dark small font-weight-bold mb-1">Raza</label>
+    <select name="raza_id"
+            id="raza_id"
+            class="form-control"
+            onchange="this.form.submit()">
+      <option value="">Todas las razas</option>
+      @foreach($razas as $raza)
+        <option value="{{ $raza->id }}" 
+                data-tipo-animal-id="{{ $raza->tipo_animal_id }}"
+                {{ request('raza_id') == $raza->id ? 'selected' : '' }}>
+          {{ $raza->nombre }}
+        </option>
+      @endforeach
+    </select>
+  </div>
+
+  <div class="col-md-3 mb-2">
     <label class="text-dark small font-weight-bold mb-1">Buscar</label>
     <div class="input-group">
       <div class="input-group-prepend">
@@ -37,14 +69,14 @@
     </div>
   </div>
 
-  <div class="col-md-2 mb-2">
+  <div class="col-md-12 mb-2">
     <button type="submit" class="btn btn-success btn-block">
       <i class="fas fa-search"></i> Buscar
     </button>
   </div>
 </form>
 
-      @if(request()->has('q') || request()->has('categoria_id'))
+      @if(request()->has('q') || request()->has('categoria_id') || request()->has('tipo_animal_id') || request()->has('raza_id'))
         <div class="mt-2">
           <a href="{{ route('home') }}" class="btn btn-sm btn-outline-secondary">
             <i class="fas fa-times"></i> Limpiar filtros
@@ -56,7 +88,7 @@
   <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.3); z-index:1;"></div>
 </section>
 
-@if(request()->has('q') || request()->has('categoria_id'))
+@if(request()->has('q') || request()->has('categoria_id') || request()->has('tipo_animal_id') || request()->has('raza_id'))
   {{-- RESULTADOS DE BÚSQUEDA --}}
   <section class="container my-5">
     <h2 class="text-success mb-4">
@@ -464,4 +496,42 @@
     @endif
   </section>
 @endif
+
+<script>
+// Función para filtrar razas según el tipo de animal seleccionado
+function filtrarRazas() {
+    const tipoAnimalId = document.getElementById('tipo_animal_id').value;
+    const razaSelect = document.getElementById('raza_id');
+    const todasLasOpciones = razaSelect.querySelectorAll('option');
+    
+    // Mostrar/ocultar opciones según el tipo de animal
+    todasLasOpciones.forEach(option => {
+        if (option.value === '') {
+            // Siempre mostrar la opción "Todas las razas"
+            option.style.display = '';
+        } else {
+            const tipoAnimalIdRaza = option.getAttribute('data-tipo-animal-id');
+            if (tipoAnimalId === '' || tipoAnimalIdRaza === tipoAnimalId) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        }
+    });
+    
+    // Si se cambió el tipo de animal y la raza seleccionada no corresponde, limpiar la selección
+    const razaSeleccionada = razaSelect.value;
+    if (razaSeleccionada) {
+        const opcionSeleccionada = razaSelect.querySelector(`option[value="${razaSeleccionada}"]`);
+        if (opcionSeleccionada && opcionSeleccionada.style.display === 'none') {
+            razaSelect.value = '';
+        }
+    }
+}
+
+// Ejecutar al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    filtrarRazas();
+});
+</script>
 @endsection

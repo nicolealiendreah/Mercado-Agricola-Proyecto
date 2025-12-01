@@ -6,6 +6,8 @@ use App\Models\Ganado;
 use App\Models\Maquinaria;
 use App\Models\Organico;
 use App\Models\Categoria;
+use App\Models\TipoAnimal;
+use App\Models\Raza;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -16,10 +18,14 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         $categorias = Categoria::orderBy('nombre')->get();
+        $tiposAnimales = TipoAnimal::orderBy('nombre')->get();
+        $razas = Raza::orderBy('nombre')->get();
         
         // Parámetros de búsqueda
         $q = $request->get('q', '');
         $categoria_id = $request->get('categoria_id', '');
+        $tipo_animal_id = $request->get('tipo_animal_id', '');
+        $raza_id = $request->get('raza_id', '');
         $tipo = $request->get('tipo', ''); // ganados, maquinarias, organicos
         
         // Inicializar resultados
@@ -28,7 +34,7 @@ class HomeController extends Controller
         $organicos = collect();
         
         // Si hay búsqueda o filtros, buscar (siempre mostrar todos los tipos)
-        if ($q || $categoria_id) {
+        if ($q || $categoria_id || $tipo_animal_id || $raza_id) {
             // Búsqueda en Ganados (siempre mostrar)
             $ganadosQuery = Ganado::with(['categoria', 'tipoAnimal', 'raza', 'datoSanitario'])
                 ->where(function($query) use ($q) {
@@ -41,6 +47,14 @@ class HomeController extends Controller
             
             if ($categoria_id) {
                 $ganadosQuery->where('categoria_id', $categoria_id);
+            }
+            
+            if ($tipo_animal_id) {
+                $ganadosQuery->where('tipo_animal_id', $tipo_animal_id);
+            }
+            
+            if ($raza_id) {
+                $ganadosQuery->where('raza_id', $raza_id);
             }
             
             $ganados = $ganadosQuery->orderBy('created_at', 'desc')->paginate(12);
@@ -100,11 +114,15 @@ class HomeController extends Controller
         
         return view('public.home', compact(
             'categorias',
+            'tiposAnimales',
+            'razas',
             'ganados',
             'maquinarias',
             'organicos',
             'q',
             'categoria_id',
+            'tipo_animal_id',
+            'raza_id',
             'tipo'
         ));
     }
