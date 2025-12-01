@@ -81,6 +81,15 @@
 .theme-agro .card{ border-radius:.75rem; }
 .theme-agro .card-header{ background:var(--agro-100); border-bottom:1px solid #dbe9dc; font-weight:600; }
 .theme-agro .table thead th{ background:#eef7ef; border-bottom:1px solid #dbe9dc; }
+/* Corregir color de encabezados de tabla en el tema Agro */
+.theme-agro .table thead th {
+    color: #000 !important;
+}
+/* Corregir color de contenido de tabla */
+.theme-agro .table tbody td {
+    color: #000 !important;
+}
+
 
 /* Paginación con acento verde */
 .theme-agro .page-item.active .page-link{
@@ -163,3 +172,28 @@
   box-shadow: 0 0 0 .2rem rgba(63,126,42,.15);
   border-color: #3f7e2a;
 }
+
+/* ==== Verde personalizado del sistema ==== */
+.bg-agro {
+    background-color: var(--agro) !important;
+    color: #fff !important;
+}
+
+.text-agro {
+    color: var(--agro) !important;
+}
+
+.badge-agro {
+    background-color: var(--agro) !important;
+    color: #fff !important;
+}
+
+.btn-outline-agro {
+    color: var(--agro) !important;
+    border-color: var(--agro) !important;
+}
+.btn-outline-agro:hover {
+    background-color: var(--agro) !important;
+    color: #fff !important;
+}
+

@@ -4,6 +4,31 @@
 
 @section('content')
 <div class="container-fluid">
+
+    {{-- ESTILOS PARA IGUALAR ALTURAS --}}
+    <style>
+        /* Card derecha (título, badges, precio, botón) */
+        .panel-info-card {
+            height: 400px; /* igual que la imagen principal */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Cards inferiores (Información Detallada y Ubicación) */
+        .panel-equal-card {
+            height: 280px; /* ajusta si quieres más o menos alto */
+        }
+
+        /* En pantallas pequeñas se vuelven automáticas */
+        @media (max-width: 992px) {
+            .panel-info-card,
+            .panel-equal-card {
+                height: auto !important;
+            }
+        }
+    </style>
+
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -23,15 +48,20 @@
             @if($maquinaria->imagenes && $maquinaria->imagenes->count() > 0)
                 <div class="card shadow-sm border-0 mb-3">
                     <div class="card-body p-0">
-                        <div class="position-relative" style="overflow: hidden; border-radius: 8px 8px 0 0;">
-                            <img id="mainImage" 
-                                 src="{{ asset('storage/'.$maquinaria->imagenes->first()->ruta) }}" 
-                                 alt="{{ $maquinaria->nombre }}" 
-                                 class="img-fluid w-100" 
-                                 style="height: 450px; object-fit: cover; cursor: pointer;"
-                                 onclick="window.open(this.src, '_blank')"
-                                 title="Click para ver imagen completa">
-                            <div class="position-absolute top-0 end-0 m-2">
+                        <div class="position-relative" style="overflow: hidden; border-radius: 8px 8px 0 0; background:#fff;">
+                            {{-- CONTENEDOR FIJO + IMAGEN SIN RECORTE --}}
+                            <div class="d-flex justify-content-center align-items-center" style="height: 400px;">
+                                <img id="mainImage" 
+                                     src="{{ asset('storage/'.$maquinaria->imagenes->first()->ruta) }}" 
+                                     alt="{{ $maquinaria->nombre }}" 
+                                     style="max-height: 100%; max-width: 100%; object-fit: contain; cursor: pointer;"
+                                     data-toggle="modal"
+                                     data-target="#imageModal"
+                                     onclick="document.getElementById('imageModalImg').src = this.src"
+                                     title="Click para ver imagen completa">
+                            </div>
+
+                            <div class="position-absolute" style="top:10px; right:10px;">
                                 <span class="badge badge-success badge-lg">
                                     <i class="fas fa-image"></i> Click para ampliar
                                 </span>
@@ -44,14 +74,19 @@
                     <div class="row">
                         @foreach($maquinaria->imagenes as $imagen)
                             <div class="col-4 mb-2">
-                                <img src="{{ asset('storage/'.$imagen->ruta) }}" 
-                                     alt="Imagen {{ $loop->iteration }}" 
-                                     class="img-thumbnail w-100" 
-                                     style="height: 100px; object-fit: cover; cursor: pointer;"
-                                     onclick="document.getElementById('mainImage').src = this.src"
-                                     onmouseover="this.style.opacity='0.7'" 
-                                     onmouseout="this.style.opacity='1'"
-                                     title="Click para ver">
+                                {{-- MINIATURA SIN RECORTE --}}
+                                <div class="bg-white border rounded d-flex align-items-center justify-content-center" style="height: 90px;">
+                                    <img src="{{ asset('storage/'.$imagen->ruta) }}" 
+                                         alt="Imagen {{ $loop->iteration }}" 
+                                         style="max-height: 100%; max-width: 100%; object-fit: contain; cursor: pointer; transition: opacity .2s;"
+                                         onclick="
+                                            document.getElementById('mainImage').src = this.src;
+                                            document.getElementById('imageModalImg').src = this.src;
+                                         "
+                                         onmouseover="this.style.opacity='0.7'" 
+                                         onmouseout="this.style.opacity='1'"
+                                         title="Click para ver">
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -73,7 +108,7 @@
         <!-- Información Principal -->
         <div class="col-lg-7">
             <!-- Título y Precio -->
-            <div class="card shadow-sm border-0 mb-4">
+            <div class="card shadow-sm border-0 mb-4 panel-info-card">
                 <div class="card-body">
                     <h2 class="h4 mb-3 text-dark">{{ $maquinaria->nombre }}</h2>
                     
@@ -147,7 +182,7 @@
     <!-- Información Detallada -->
     <div class="row">
         <div class="col-lg-8">
-            <div class="card shadow-sm border-0 mb-4">
+            <div class="card shadow-sm border-0 mb-4 panel-equal-card">
                 <div class="card-header bg-white border-bottom">
                     <h5 class="mb-0">
                         <i class="fas fa-info-circle text-primary"></i> Información Detallada
@@ -220,7 +255,7 @@
 
         <div class="col-lg-4">
             @if($maquinaria->ubicacion)
-                <div class="card shadow-sm border-0 mb-4">
+                <div class="card shadow-sm border-0 mb-4 panel-equal-card">
                     <div class="card-header bg-white border-bottom">
                         <h5 class="mb-0">
                             <i class="fas fa-map-marker-alt text-danger"></i> Ubicación
@@ -291,6 +326,24 @@
     });
 </script>
 @endif
+
+{{-- MODAL PARA VER IMAGEN EN GRANDE --}}
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+
+            <button type="button" class="close text-white ml-auto mr-2 mt-2" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+
+            <div class="modal-body p-0 text-center">
+                <img id="imageModalImg" src="" class="img-fluid rounded"
+                     style="max-height: 80vh; object-fit: contain;">
+            </div>
+
+        </div>
+    </div>
+</div>
 
 <style>
 .badge-lg {

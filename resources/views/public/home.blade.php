@@ -11,32 +11,39 @@
 
     <div class="bg-white p-4 rounded mt-4 shadow-lg">
       <form method="GET" action="{{ route('home') }}" class="form-row align-items-end">
-        <div class="col-md-4 mb-2">
-          <label class="text-dark small font-weight-bold mb-1">Categoría</label>
-          <select name="categoria_id" class="form-control">
-            <option value="">Todas las categorías</option>
-            @foreach($categorias as $categoria)
-              <option value="{{ $categoria->id }}" {{ request('categoria_id') == $categoria->id ? 'selected' : '' }}>
-                {{ $categoria->nombre }}
-              </option>
-            @endforeach
-          </select>
-        </div>
-        <div class="col-md-6 mb-2">
-          <label class="text-dark small font-weight-bold mb-1">Buscar</label>
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text bg-success text-white"><i class="fas fa-search"></i></span>
-            </div>
-            <input type="text" name="q" class="form-control" placeholder="Buscar productos, marcas, lugares..." value="{{ request('q') }}">
-          </div>
-        </div>
-        <div class="col-md-2 mb-2">
-          <button type="submit" class="btn btn-success btn-block">
-            <i class="fas fa-search"></i> Buscar
-          </button>
-        </div>
-      </form>
+  <div class="col-md-4 mb-2">
+    <label class="text-dark small font-weight-bold mb-1">Categoría</label>
+    <select name="categoria_id"
+            class="form-control"
+            onchange="this.form.submit()">
+      <option value="">Todas las categorías</option>
+      @foreach($categorias as $categoria)
+        <option value="{{ $categoria->id }}" {{ request('categoria_id') == $categoria->id ? 'selected' : '' }}>
+          {{ $categoria->nombre }}
+        </option>
+      @endforeach
+    </select>
+  </div>
+
+  <div class="col-md-6 mb-2">
+    <label class="text-dark small font-weight-bold mb-1">Buscar</label>
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text bg-success text-white"><i class="fas fa-search"></i></span>
+      </div>
+      <input type="text" name="q" class="form-control"
+             placeholder="Buscar productos, marcas, lugares..."
+             value="{{ request('q') }}">
+    </div>
+  </div>
+
+  <div class="col-md-2 mb-2">
+    <button type="submit" class="btn btn-success btn-block">
+      <i class="fas fa-search"></i> Buscar
+    </button>
+  </div>
+</form>
+
       @if(request()->has('q') || request()->has('categoria_id'))
         <div class="mt-2">
           <a href="{{ route('home') }}" class="btn btn-sm btn-outline-secondary">

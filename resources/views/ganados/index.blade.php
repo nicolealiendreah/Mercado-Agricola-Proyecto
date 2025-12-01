@@ -6,122 +6,136 @@
 @section('content')
 <style>
   .animals-header {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: var(--agro) !important;
     color: white;
     padding: 2rem;
     border-radius: 15px 15px 0 0;
     margin-bottom: 0;
   }
-  
+
   .animal-card {
     border: 1px solid #e9ecef;
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
     transition: all 0.3s ease;
     background: white;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
-  
+
   .animal-card:hover {
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    transform: translateY(-4px);
   }
-  
-  .animal-image {
-    width: 120px;
-    height: 120px;
-    object-fit: cover;
-    border-radius: 10px;
-    border: 2px solid #e9ecef;
+
+  .animal-image-wrapper {
+    width: 100%;
+    height: 220px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    overflow: hidden;
     cursor: pointer;
+  }
+
+  .animal-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* se ve completa */
     transition: transform 0.3s ease;
   }
-  
-  .animal-image:hover {
-    transform: scale(1.05);
+
+  .animal-image-wrapper:hover .animal-image {
+    transform: scale(1.03);
   }
-  
+
   .animal-info h5 {
-    font-size: 1.3rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: 700;
     color: #2c3e50;
     margin-bottom: 0.5rem;
   }
-  
+
   .info-badge {
-    padding: 0.4rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
     font-weight: 500;
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
     display: inline-block;
   }
-  
+
   .price-tag {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #28a745;
   }
-  
+
   .stock-badge {
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
+    font-size: 0.9rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
   }
-  
+
+  .info-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+  }
+
+  .info-row i {
+    width: 18px;
+    color: #6c757d;
+    margin-right: 0.35rem;
+  }
+
   .action-buttons {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.4rem;
     flex-wrap: wrap;
   }
-  
+
   .btn-action {
-    min-width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    display: flex;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
   }
-  
+
   .btn-action:hover {
-    transform: scale(1.1);
+    transform: translateY(-2px);
   }
-  
+
   .empty-state {
     text-align: center;
     padding: 4rem 2rem;
   }
-  
+
   .empty-state i {
     font-size: 5rem;
     color: #dee2e6;
     margin-bottom: 1.5rem;
   }
-  
-  .info-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
-  }
-  
-  .info-row i {
-    width: 20px;
-    color: #6c757d;
-    margin-right: 0.5rem;
-  }
-  
+
   @media (max-width: 768px) {
-    .animal-image {
-      width: 100px;
-      height: 100px;
-    }
-    
     .animal-card {
       padding: 1rem;
+    }
+
+    .animal-image-wrapper {
+      height: 180px;
     }
   }
 </style>
@@ -167,74 +181,77 @@
       @endif
 
       @if($ganados->count() > 0)
-        @foreach($ganados as $ganado)
-          <div class="animal-card">
-            <div class="row">
-              <div class="col-md-2 col-4 mb-3 mb-md-0">
-                @if($ganado->imagen)
-                  <img src="{{ asset('storage/'.$ganado->imagen) }}" 
-                       alt="{{ $ganado->nombre }}" 
-                       class="animal-image"
+        <div class="row">
+          @foreach($ganados as $ganado)
+            <div class="col-lg-4 col-md-6 mb-4">
+              <div class="animal-card">
+
+                {{-- Imagen --}}
+                <div class="animal-image-wrapper"
+                     @if($ganado->imagen)
                        onclick="window.open('{{ asset('storage/'.$ganado->imagen) }}', '_blank')"
-                       title="Click para ver imagen completa">
-                @else
-                  <div class="bg-light d-flex align-items-center justify-content-center animal-image">
+                       title="Click para ver imagen completa"
+                     @endif>
+                  @if($ganado->imagen)
+                    <img src="{{ asset('storage/'.$ganado->imagen) }}"
+                         alt="{{ $ganado->nombre }}"
+                         class="animal-image">
+                  @else
                     <i class="fas fa-image fa-3x text-muted"></i>
-                  </div>
-                @endif
-              </div>
-              
-              <div class="col-md-6 col-8">
-                <div class="animal-info">
-                  <h5>
-                    <i class="fas fa-tag text-primary mr-2"></i>{{ $ganado->nombre }}
+                  @endif
+                </div>
+
+                {{-- Info principal --}}
+                <div class="animal-info mb-3">
+                  <h5 class="d-flex align-items-center justify-content-between">
+                    <span>
+                      <i class="fas fa-tag text-primary mr-2"></i>{{ $ganado->nombre }}
+                    </span>
                     <span class="badge badge-secondary ml-2">#{{ $ganado->id }}</span>
                   </h5>
-                  
+
                   <div class="mb-2">
                     @if($ganado->tipoAnimal)
                       <span class="info-badge badge-info">
                         <i class="fas fa-paw mr-1"></i>{{ $ganado->tipoAnimal->nombre }}
                       </span>
                     @endif
-                    
                     @if($ganado->raza)
                       <span class="info-badge badge-secondary">
                         <i class="fas fa-dna mr-1"></i>{{ $ganado->raza->nombre }}
                       </span>
                     @endif
-                    
                     @if($ganado->categoria)
                       <span class="info-badge badge-success">
                         <i class="fas fa-tags mr-1"></i>{{ $ganado->categoria->nombre }}
                       </span>
                     @endif
                   </div>
-                  
+
                   <div class="info-row">
                     <i class="fas fa-birthday-cake"></i>
                     <span><strong>Edad:</strong> {{ $ganado->edad ?? 'N/A' }} meses</span>
                   </div>
-                  
+
                   <div class="info-row">
                     <i class="fas fa-venus-mars"></i>
                     <span><strong>Sexo:</strong> {{ $ganado->sexo ?? 'N/A' }}</span>
                   </div>
-                  
+
                   @if($ganado->tipoPeso)
                     <div class="info-row">
                       <i class="fas fa-weight-hanging"></i>
                       <span><strong>Peso:</strong> {{ $ganado->tipoPeso->nombre }}</span>
                     </div>
                   @endif
-                  
+
                   <div class="info-row">
                     <i class="fas fa-map-marker-alt"></i>
                     <span class="text-muted">
-                      {{ Str::limit($ganado->ubicacion ?? 'Sin ubicación', 50) }}
+                      {{ Str::limit($ganado->ubicacion ?? 'Sin ubicación', 45) }}
                     </span>
                   </div>
-                  
+
                   @if($ganado->fecha_publicacion)
                     <div class="info-row">
                       <i class="fas fa-calendar-check"></i>
@@ -245,17 +262,15 @@
                   @else
                     <div class="info-row">
                       <i class="fas fa-calendar-times"></i>
-                      <span class="text-warning">
-                        <strong>No publicado</strong>
-                      </span>
+                      <span class="text-warning"><strong>No publicado</strong></span>
                     </div>
                   @endif
-                  
+
                   @if($ganado->datoSanitario)
                     <div class="info-row">
                       <i class="fas fa-syringe"></i>
                       <span class="text-info">
-                        <strong>Datos sanitarios:</strong> {{ Str::limit($ganado->datoSanitario->vacuna ?? 'Registrado', 30) }}
+                        <strong>Datos sanitarios:</strong> {{ Str::limit($ganado->datoSanitario->vacuna ?? 'Registrado', 40) }}
                       </span>
                     </div>
                   @else
@@ -265,33 +280,30 @@
                     </div>
                   @endif
                 </div>
-              </div>
-              
-              <div class="col-md-4">
-                <div class="d-flex flex-column h-100 justify-content-between">
-                  <div>
-                    @if($ganado->precio)
-                      <div class="mb-3">
-                        <label class="text-muted small mb-1 d-block">Precio</label>
-                        <div class="price-tag">Bs {{ number_format($ganado->precio, 2) }}</div>
-                      </div>
-                    @endif
-                    
-                    <div class="mb-3">
-                      <label class="text-muted small mb-1 d-block">Stock Disponible</label>
-                      <span class="stock-badge badge {{ ($ganado->stock ?? 0) > 0 ? 'badge-success' : 'badge-danger' }}">
-                        <i class="fas fa-boxes mr-1"></i>{{ $ganado->stock ?? 0 }} unidades
-                      </span>
+
+                {{-- Footer: precio + acciones --}}
+                <div class="mt-auto">
+                  @if($ganado->precio)
+                    <div class="mb-2">
+                      <span class="text-muted small d-block">Precio</span>
+                      <div class="price-tag">Bs {{ number_format($ganado->precio, 2) }}</div>
                     </div>
+                  @endif
+
+                  <div class="mb-3">
+                    <span class="text-muted small d-block">Stock disponible</span>
+                    <span class="stock-badge badge {{ ($ganado->stock ?? 0) > 0 ? 'badge-success' : 'badge-danger' }}">
+                      <i class="fas fa-boxes mr-1"></i>{{ $ganado->stock ?? 0 }} unidades
+                    </span>
                   </div>
-                  
-                  <div class="action-buttons mt-auto">
+
+                  <div class="action-buttons">
                     <a href="{{ route('ganados.show', $ganado->id) }}" 
                        class="btn btn-info btn-action" 
                        title="Ver detalles">
                       <i class="fas fa-eye"></i>
                     </a>
-                    
+
                     @if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin()))
                       @if(auth()->user()->isAdmin() || $ganado->user_id == auth()->id())
                         <a href="{{ route('ganados.edit', $ganado->id) }}"
@@ -317,11 +329,12 @@
                     @endif
                   </div>
                 </div>
+
               </div>
             </div>
-          </div>
-        @endforeach
-        
+          @endforeach
+        </div>
+
         <div class="mt-4">
           {{ $ganados->links() }}
         </div>

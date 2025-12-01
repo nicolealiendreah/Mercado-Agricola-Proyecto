@@ -3,95 +3,189 @@
 @section('page_title','Maquinarias')
 
 @section('content')
-<div class="card">
-  <div class="card-header">
-    <div class="d-flex align-items-center">
-      <h3 class="card-title mb-0 mr-auto">Listado</h3>
 
-      <form method="get" class="form-inline">
-        <div class="input-group input-group-sm mr-2">
-          <input type="text" name="q" value="{{ $q ?? '' }}" class="form-control" placeholder="Buscar...">
-          <div class="input-group-append">
-            <button class="btn btn-primary">Buscar</button>
-          </div>
+{{-- Cabecera verde Agro (igual que Orgánicos) --}}
+<div class="mb-3">
+    <div class="bg-agro rounded-lg p-3 d-flex align-items-center text-white">
+        <div>
+            <h3 class="mb-0">Listado de Maquinarias</h3>
+            <small>{{ $maquinarias->total() }} maquinaria(s) registrada(s)</small>
         </div>
-      </form>
 
-      @if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin()))
-          <a href="{{ route('maquinarias.create') }}" class="btn btn-success btn-sm mr-2">Nueva</a>
-      @endif
-      <a href="{{ route('organicos.index') }}" class="btn btn-info btn-sm">Ir a Orgánicos</a>
+        <div class="ml-auto d-flex">
+            <form method="get" class="form-inline mr-2">
+                <div class="input-group input-group-sm">
+                    <input type="text" name="q" value="{{ $q ?? '' }}" class="form-control" placeholder="Buscar...">
+                    <div class="input-group-append">
+                        <button class="btn btn-light">Buscar</button>
+                    </div>
+                </div>
+            </form>
+
+            @if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin()))
+                <a href="{{ route('maquinarias.create') }}" class="btn btn-outline-light btn-sm mr-2">
+                    <i class="fas fa-plus-circle"></i> Nuevo Registro
+                </a>
+            @endif
+
+        </div>
     </div>
-  </div>
+</div>
 
-  <div class="card-body p-0">
-    @if(session('ok'))
-      <div class="alert alert-success alert-dismissible fade show m-3">
+
+@if(session('ok'))
+    <div class="alert alert-success alert-dismissible fade show">
         <i class="fas fa-check-circle"></i> {{ session('ok') }}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+            <span aria-hidden="true">&times;</span>
         </button>
-      </div>
-    @endif
+    </div>
+@endif
 
-    @if(session('error'))
-      <div class="alert alert-danger alert-dismissible fade show m-3">
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show">
         <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+            <span aria-hidden="true">&times;</span>
         </button>
-      </div>
-    @endif
-
-    <div class="table-responsive">
-      <table class="table table-hover mb-0">
-        <thead class="thead-light">
-          <tr>
-            <th>#</th><th>Nombre</th><th>Tipo</th><th>Marca</th><th>Precio/día</th><th>Estado</th><th class="text-right pr-3">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-        @forelse($maquinarias as $m)
-          <tr>
-            <td>{{ $m->id }}</td>
-            <td><a href="{{ route('maquinarias.show',$m) }}">{{ $m->nombre }}</a></td>
-            <td>{{ $m->tipoMaquinaria->nombre ?? '—' }}</td>
-            <td>{{ $m->marcaMaquinaria->nombre ?? '—' }}</td>
-            <td>{{ number_format($m->precio_dia,2) }}</td>
-            <td>
-              @if($m->estadoMaquinaria)
-                <span class="badge badge-info">{{ $m->estadoMaquinaria->nombre }}</span>
-              @else
-                <span class="badge badge-secondary">—</span>
-              @endif
-            </td>
-            <td class="text-right pr-3">
-              @if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin()))
-                {{-- Solo mostrar botones si es el dueño o admin --}}
-                @if(auth()->user()->isAdmin() || $m->user_id == auth()->id())
-                  <a href="{{ route('maquinarias.edit',$m) }}" class="btn btn-sm btn-primary">Editar</a>
-                  <form action="{{ route('maquinarias.destroy',$m) }}" method="post" class="d-inline">
-                    @csrf @method('DELETE')
-                    <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?')">Eliminar</button>
-                  </form>
-                @else
-                  <a href="{{ route('maquinarias.show',$m) }}" class="btn btn-sm btn-info">Ver</a>
-                @endif
-              @else
-                <a href="{{ route('maquinarias.show',$m) }}" class="btn btn-sm btn-info">Ver</a>
-              @endif
-            </td>
-          </tr>
-        @empty
-          <tr><td colspan="7" class="text-center text-muted">Sin registros</td></tr>
-        @endforelse
-        </tbody>
-      </table>
     </div>
-  </div>
+@endif
 
-  <div class="card-footer">
-    {{ $maquinarias->appends(['q'=>$q ?? null])->links() }}
-  </div>
+{{-- Tarjetas de maquinarias --}}
+<div class="row">
+    @forelse($maquinarias as $m)
+        <div class="col-md-6 col-xl-4 mb-4">
+            <div class="card h-100 shadow-sm project-card">
+
+                <div class="bg-light d-flex align-items-center justify-content-center"
+                     style="height: 230px;">
+                    @if($m->imagenes && $m->imagenes->count() > 0)
+                        <div class="bg-light d-flex align-items-center justify-content-center"
+     style="height: 230px;">
+    <img
+        src="{{ $m->imagenes->count() ? asset('storage/'.$m->imagenes->first()->ruta) : asset('img/maquinaria-placeholder.jpg') }}"
+        style="max-height: 100%; max-width: 100%; object-fit: contain;"
+        alt="{{ $m->nombre }}"
+    >
 </div>
+
+                    @else
+                        <div class="text-center text-muted">
+                            <i class="fas fa-tractor fa-3x mb-2"></i>
+                            <div>Sin imagen</div>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="card-body d-flex flex-column">
+                    <h5 class="mb-1">
+                        <a href="{{ route('maquinarias.show', $m) }}" class="text-dark">
+                            {{ $m->nombre }}
+                        </a>
+                    </h5>
+
+                    <div class="mb-2">
+                        @if($m->tipoMaquinaria)
+                            <span class="badge badge-warning mr-1">
+                                <i class="fas fa-cog"></i>
+                                {{ $m->tipoMaquinaria->nombre }}
+                            </span>
+                        @endif
+                        @if($m->marcaMaquinaria)
+                            <span class="badge badge-info">
+                                <i class="fas fa-tag"></i>
+                                {{ $m->marcaMaquinaria->nombre }}
+                            </span>
+                        @endif
+                    </div>
+
+                    <div class="mb-2">
+                        @if($m->estadoMaquinaria)
+                            @php $estado = strtolower($m->estadoMaquinaria->nombre); @endphp
+                            <span class="badge {{ $estado === 'disponible' ? 'badge-success' : 'badge-secondary' }}">
+                                {{ $m->estadoMaquinaria->nombre }}
+                            </span>
+                        @else
+                            <span class="badge badge-secondary">Sin estado</span>
+                        @endif
+                    </div>
+
+                    <div class="small text-muted mb-2">
+                        <i class="far fa-calendar-alt"></i>
+                        {{ optional($m->created_at)->format('d/m/Y') }}
+                        @if($m->ubicacion)
+                            &nbsp; • &nbsp;
+                            <i class="fas fa-map-marker-alt text-danger"></i>
+                            {{ \Illuminate\Support\Str::limit($m->ubicacion, 40) }}
+                        @endif
+                    </div>
+
+                    @if($m->descripcion)
+                        <p class="text-muted small mb-2">
+                            {{ \Illuminate\Support\Str::limit($m->descripcion, 100) }}
+                        </p>
+                    @endif
+
+                    @if($m->precio_dia)
+                        <div class="mt-auto">
+                            <div class="font-weight-bold mb-1">
+                                Bs {{ number_format($m->precio_dia, 2) }}
+                                <span class="text-muted">/ día</span>
+                            </div>
+
+                            <div class="progress" style="height: 18px;">
+                                <div class="progress-bar bg-success"
+                                     role="progressbar"
+                                     style="width: 100%;">
+                                    Precio por día
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="card-footer bg-white">
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('maquinarias.show', $m) }}"
+                           class="btn btn-outline-success btn-block mb-1">
+                            <i class="fas fa-eye"></i> Ver
+                        </a>
+
+                        @if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin()))
+                            @if(auth()->user()->isAdmin() || $m->user_id == auth()->id())
+                                <a href="{{ route('maquinarias.edit', $m) }}"
+                                   class="btn btn-outline-primary btn-block mb-1">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+
+                                <form action="{{ route('maquinarias.destroy', $m) }}"
+                                      method="post"
+                                      onsubmit="return confirm('¿Eliminar esta maquinaria?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-outline-danger btn-block">
+                                        <i class="fas fa-trash-alt"></i> Eliminar
+                                    </button>
+                                </form>
+                            @endif
+                        @endif
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    @empty
+        <div class="col-12">
+            <div class="text-center text-muted py-5">
+                No hay maquinarias registradas.
+            </div>
+        </div>
+    @endforelse
+</div>
+
+{{-- Paginación --}}
+<div class="mt-3">
+    {{ $maquinarias->appends(['q' => $q ?? null])->links() }}
+</div>
+
 @endsection

@@ -4,6 +4,33 @@
 
 @section('content')
 <div class="container-fluid">
+
+    {{-- ESTILOS PARA IGUALAR ALTURAS Y BADGES --}}
+    <style>
+        /* Card derecha (título, badges, precio, botón) */
+        .panel-info-card {
+            height: 450px; /* igual que la imagen principal */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* En pantallas pequeñas que se adapte normal */
+        @media (max-width: 992px) {
+            .panel-info-card {
+                height: auto !important;
+            }
+        }
+
+        .badge-lg {
+            font-size: 0.9rem;
+            padding: 0.5rem 0.75rem;
+        }
+        .bg-success-light {
+            background-color: #d4edda !important;
+        }
+    </style>
+
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -51,7 +78,7 @@
         <!-- Información Principal -->
         <div class="col-lg-7">
             <!-- Título y Precio -->
-            <div class="card shadow-sm border-0 mb-4">
+            <div class="card shadow-sm border-0 mb-4 panel-info-card">
                 <div class="card-body">
                     <h2 class="h4 mb-3 text-dark">{{ $ganado->nombre }}</h2>
                     
@@ -72,7 +99,7 @@
                     </div>
 
                     @if($ganado->precio)
-                        <div class="bg-success-light p-4 rounded mb-3" style="background-color: #d4edda;">
+                        <div class="bg-success-light p-4 rounded mb-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <small class="text-muted d-block mb-1">Precio</small>
@@ -460,13 +487,4 @@
 </script>
 @endif
 
-<style>
-.badge-lg {
-    font-size: 0.9rem;
-    padding: 0.5rem 0.75rem;
-}
-.bg-success-light {
-    background-color: #d4edda !important;
-}
-</style>
 @endsection

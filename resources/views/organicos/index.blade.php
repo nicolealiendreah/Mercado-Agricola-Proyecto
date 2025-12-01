@@ -3,106 +3,161 @@
 @section('page_title','Orgánicos')
 
 @section('content')
-<div class="card">
-  <div class="card-header d-flex align-items-center">
-    <h3 class="card-title mb-0 mr-auto">Listado</h3>
 
-    <form method="get" class="form-inline">
-      <div class="input-group input-group-sm mr-2">
-        <input type="text" name="q" value="{{ $q ?? '' }}" class="form-control" placeholder="Buscar...">
-        <div class="input-group-append">
-          <button class="btn btn-primary">Buscar</button>
+{{-- Cabecera verde Agro --}}
+<div class="mb-3">
+    <div class="bg-agro rounded-lg p-3 d-flex align-items-center text-white">
+        <div>
+            <h3 class="mb-0">Listado de Orgánicos</h3>
+            <small>{{ $organicos->total() }} producto(s) registrado(s)</small>
         </div>
-      </div>
-    </form>
 
-    @if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin()))
-        <a href="{{ route('organicos.create') }}" class="btn btn-success btn-sm mr-2">Nuevo</a>
-    @endif
-    <a href="{{ route('maquinarias.index') }}" class="btn btn-info btn-sm">Ir a Maquinarias</a>
-  </div>
+        <div class="ml-auto d-flex">
+            <form method="get" class="form-inline mr-2">
+                <div class="input-group input-group-sm">
+                    <input type="text" name="q" value="{{ $q ?? '' }}" class="form-control" placeholder="Buscar...">
+                    <div class="input-group-append">
+                        <button class="btn btn-light">Buscar</button>
+                    </div>
+                </div>
+            </form>
 
-  <div class="card-body p-0">
-    @if(session('ok'))
-      <div class="alert alert-success alert-dismissible fade show m-3">
-        <i class="fas fa-check-circle"></i> {{ session('ok') }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-    @endif
-
-    @if(session('error'))
-      <div class="alert alert-danger alert-dismissible fade show m-3">
-        <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-    @endif
-
-    <div class="table-responsive">
-      <table class="table table-hover mb-0">
-        <thead class="thead-light">
-          <tr>
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Categoría</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th class="text-right pr-3">Acciones</th>
-          </tr>
-        </thead>
-
-        <tbody>
-        @forelse($organicos as $o)
-          <tr>
-            <td>{{ $o->id }}</td>
-
-            <td>
-                <a href="{{ route('organicos.show', $o) }}">
-                    {{ $o->nombre }}
+            @if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin()))
+                <a href="{{ route('organicos.create') }}" class="btn btn-outline-light btn-sm mr-2">
+                    <i class="fas fa-plus-circle"></i> Nuevo Registro
                 </a>
-            </td>
+            @endif
 
-            {{-- Corrección importante --}}
-            <td>{{ $o->categoria->nombre ?? 'Sin categoría' }}</td>
-
-            <td>{{ number_format($o->precio, 2) }}</td>
-            <td>{{ $o->stock }}</td>
-
-            <td class="text-right pr-3">
-              @if(auth()->check() && (auth()->user()->isVendedor() || auth()->user()->isAdmin()))
-                {{-- Solo mostrar botones si es el dueño o admin --}}
-                @if(auth()->user()->isAdmin() || $o->user_id == auth()->id())
-                  <a href="{{ route('organicos.edit', $o) }}" class="btn btn-sm btn-primary">Editar</a>
-
-                  <form action="{{ route('organicos.destroy', $o) }}" method="post" class="d-inline">
-                    @csrf @method('DELETE')
-                    <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar?')">Eliminar</button>
-                  </form>
-                @else
-                  <a href="{{ route('organicos.show', $o) }}" class="btn btn-sm btn-info">Ver</a>
-                @endif
-              @else
-                <a href="{{ route('organicos.show', $o) }}" class="btn btn-sm btn-info">Ver</a>
-              @endif
-            </td>
-          </tr>
-        @empty
-          <tr>
-            <td colspan="6" class="text-center text-muted">Sin registros</td>
-          </tr>
-        @endforelse
-        </tbody>
-
-      </table>
+        </div>
     </div>
-  </div>
-
-  <div class="card-footer">
-    {{ $organicos->appends(['q' => $q ?? null])->links() }}
-  </div>
-
 </div>
+
+{{-- Mensajes --}}
+@if(session('ok'))
+  <div class="alert alert-success alert-dismissible fade show">
+    <i class="fas fa-check-circle"></i> {{ session('ok') }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+@endif
+
+@if(session('error'))
+  <div class="alert alert-danger alert-dismissible fade show">
+    <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+@endif
+
+
+{{-- GRID de tarjetas --}}
+@if($organicos->count())
+    <div class="row">
+        @foreach($organicos as $o)
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+
+                <div class="card shadow-sm border-0 h-100">
+
+                    {{-- Imagen --}}
+                    @php
+                        $img = optional($o->imagenes->first())->ruta ?? null;
+                    @endphp
+                    <div class="w-100 d-flex justify-content-center align-items-center" style="height: 200px; background:#fff;">
+    <img
+        src="{{ $img ? asset('storage/'.$img) : asset('img/organico-placeholder.jpg') }}"
+        style="max-height: 100%; max-width: 100%; object-fit: contain;"
+        alt="{{ $o->nombre }}"
+    >
+</div>
+
+
+                    <div class="card-body d-flex flex-column">
+
+                        {{-- Nombre --}}
+                        <h5 class="card-title mb-1">
+                            <a href="{{ route('organicos.show', $o) }}" class="text-dark">
+                                {{ $o->nombre }}
+                            </a>
+                        </h5>
+
+                        {{-- Badges --}}
+                        <div class="mb-2">
+                            @if($o->categoria)
+                                <span class="badge badge-agro">
+                                    {{ $o->categoria->nombre }}
+                                </span>
+                            @endif
+
+                            @if($o->unidad_medida)
+                                <span class="badge badge-secondary">
+                                    {{ $o->unidad_medida }}
+                                </span>
+                            @endif
+                        </div>
+
+                        {{-- Fecha --}}
+                        @if($o->fecha_cosecha)
+                            <small class="text-muted d-block mb-2">
+                                <i class="fas fa-calendar-alt"></i>
+                                {{ \Carbon\Carbon::parse($o->fecha_cosecha)->format('d/m/Y') }}
+                            </small>
+                        @endif
+
+                        {{-- Descripción --}}
+                        @if($o->descripcion)
+                            <p class="text-muted mb-2" style="font-size: 0.85rem;">
+                                {{ Str::limit($o->descripcion, 70) }}
+                            </p>
+                        @endif
+
+                        {{-- Precio --}}
+                        <div class="text-agro font-weight-bold mb-2" style="font-size: 1.2rem;">
+                            Bs {{ number_format($o->precio, 2) }}
+                        </div>
+
+                        {{-- Stock --}}
+                        <span class="badge badge-agro mb-3">
+                            {{ $o->stock }} unidades
+                        </span>
+
+                        {{-- Acciones --}}
+                        <div class="mt-auto">
+                            <a href="{{ route('organicos.show', $o) }}" class="btn btn-sm btn-outline-agro w-100 mb-1">
+                                <i class="fas fa-eye"></i> Ver
+                            </a>
+
+                            @if(auth()->check() && (auth()->user()->isAdmin() || $o->user_id == auth()->id()))
+                                <a href="{{ route('organicos.edit', $o) }}" class="btn btn-sm btn-outline-primary w-100 mb-1">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+
+                                <form action="{{ route('organicos.destroy', $o) }}" method="post">
+                                    @csrf @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger w-100"
+                                            onclick="return confirm('¿Eliminar este orgánico?')">
+                                        <i class="fas fa-trash-alt"></i> Eliminar
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        @endforeach
+    </div>
+
+    <div class="mt-3">
+        {{ $organicos->appends(['q' => $q ?? null])->links() }}
+    </div>
+
+@else
+    <div class="card">
+        <div class="card-body text-center text-muted">No hay productos orgánicos registrados.</div>
+    </div>
+@endif
+
 @endsection

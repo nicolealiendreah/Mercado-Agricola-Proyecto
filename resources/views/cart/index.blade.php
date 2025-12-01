@@ -11,7 +11,7 @@
   }
   
   .cart-header {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: var(--agro) !important;
     color: white;
     padding: 2rem;
     border-radius: 15px 15px 0 0;

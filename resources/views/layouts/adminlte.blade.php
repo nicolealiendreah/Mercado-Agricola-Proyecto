@@ -75,6 +75,9 @@
             <i class="fas fa-user-plus"></i> Registrarse
           </a>
         </li>
+
+
+        
       @endauth
     </ul>
   </nav>
@@ -99,7 +102,7 @@
               <li class="nav-item">
                 <a href="{{ route('ganados.index') }}"
                    class="nav-link {{ request()->routeIs('ganados.*') ? 'active' : '' }}">
-                  <i class="nav-icon fas fa-cow"></i>
+                  <i class="nav-icon fas fa-horse"></i>
                   <p>Animales</p>
                 </a>
               </li>
@@ -249,6 +252,20 @@
                 </a>
               </li>
             @endif
+
+                    {{-- ===== CERRAR SESIÓN EN SIDEBAR ===== --}}
+        <li class="nav-item mt-3">
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit"
+                        class="nav-link text-left"
+                        style="background: none; border: none; color: #cfe6d0;">
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                    <p>Cerrar Sesión</p>
+                </button>
+            </form>
+        </li>
+
           @endauth
 
         </ul>
