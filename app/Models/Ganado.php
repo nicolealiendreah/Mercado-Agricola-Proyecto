@@ -25,6 +25,10 @@ class Ganado extends Model
         'dato_sanitario_id',
         'fecha_publicacion',
         'ubicacion',
+        'departamento',
+        'municipio',
+        'provincia',
+        'ciudad',
         'latitud',
         'longitud'
     ];
@@ -61,5 +65,13 @@ class Ganado extends Model
     public function user()
     {
         return $this->belongsTo(\App\Models\User::class);
+    }
+
+    /**
+     * Relación: un ganado tiene muchas imágenes
+     */
+    public function imagenes()
+    {
+        return $this->hasMany(GanadoImagen::class)->orderBy('orden');
     }
 }

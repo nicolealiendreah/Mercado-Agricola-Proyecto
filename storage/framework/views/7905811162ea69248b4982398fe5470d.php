@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title','Datos Sanitarios'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -131,27 +129,31 @@
                                     <span class="badge badge-secondary badge-lg">#<?php echo e($item->id); ?></span>
                                 </td>
                                 <td>
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-cow text-primary mr-2"></i>
-                                        <div>
-                                            <strong class="d-block"><?php echo e($item->ganado->nombre); ?></strong>
-                                            <?php if($item->ganado->tipoAnimal): ?>
-                                                <small class="text-muted">
-                                                    <i class="fas fa-paw"></i> <?php echo e($item->ganado->tipoAnimal->nombre); ?>
+                                    <?php if($item->ganado): ?>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-cow text-primary mr-2"></i>
+                                            <div>
+                                                <strong class="d-block"><?php echo e($item->ganado->nombre); ?></strong>
+                                                <?php if($item->ganado->tipoAnimal): ?>
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-paw"></i> <?php echo e($item->ganado->tipoAnimal->nombre); ?>
 
-                                                </small>
-                                            <?php endif; ?>
-                                            <?php if(!$item->ganado->fecha_publicacion): ?>
-                                                <br><span class="badge badge-warning badge-sm mt-1">
-                                                    <i class="fas fa-eye-slash"></i> Sin publicar
-                                                </span>
-                                            <?php else: ?>
-                                                <br><span class="badge badge-success badge-sm mt-1">
-                                                    <i class="fas fa-eye"></i> Publicado
-                                                </span>
-                                            <?php endif; ?>
+                                                    </small>
+                                                <?php endif; ?>
+                                                <?php if(!$item->ganado->fecha_publicacion): ?>
+                                                    <br><span class="badge badge-warning badge-sm mt-1">
+                                                        <i class="fas fa-eye-slash"></i> Sin publicar
+                                                    </span>
+                                                <?php else: ?>
+                                                    <br><span class="badge badge-success badge-sm mt-1">
+                                                        <i class="fas fa-eye"></i> Publicado
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
                                         </div>
-                                    </div>
+                                    <?php else: ?>
+                                        <span class="text-muted"><i class="fas fa-info-circle"></i> Sin datos</span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <?php if($item->nombre_dueño): ?>
@@ -171,7 +173,7 @@
                                             </div>
                                         </div>
                                     <?php else: ?>
-                                        <span class="text-muted">—</span>
+                                        <span class="text-muted"><i class="fas fa-info-circle"></i> Sin datos</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
@@ -193,7 +195,7 @@
                                             </small>
                                         <?php endif; ?>
                                         <?php if(!$item->vacunado_fiebre_aftosa && !$item->vacunado_antirabica && !$item->vacuna): ?>
-                                            <span class="text-muted">—</span>
+                                            <span class="text-muted"><i class="fas fa-info-circle"></i> Sin datos</span>
                                         <?php endif; ?>
                                     </div>
                                 </td>
@@ -206,20 +208,13 @@
                                                 <i class="fas fa-certificate"></i> Certificado
                                             </a>
                                         <?php else: ?>
-                                            <span class="badge badge-secondary badge-sm">Sin certificado</span>
+                                            <span class="text-muted"><i class="fas fa-info-circle"></i> Sin datos</span>
                                         <?php endif; ?>
                                     </div>
                                 </td>
                                 <td>
-                                    <?php if($item->destino_matadero_campo || $item->hoja_ruta_foto || $item->marca_ganado || $item->senal_numero): ?>
+                                    <?php if($item->marca_ganado || $item->senal_numero || $item->marca_ganado_foto): ?>
                                         <div class="small">
-                                            <?php if($item->destino_matadero_campo): ?>
-                                                <div class="mb-1">
-                                                    <i class="fas fa-map-marker-alt text-primary"></i> 
-                                                    <strong>Destino:</strong><br>
-                                                    <span class="text-muted"><?php echo e(Str::limit($item->destino_matadero_campo, 25)); ?></span>
-                                                </div>
-                                            <?php endif; ?>
                                             <?php if($item->marca_ganado): ?>
                                                 <div class="mb-1">
                                                     <i class="fas fa-tag text-primary"></i> 
@@ -234,16 +229,18 @@
 
                                                 </div>
                                             <?php endif; ?>
-                                            <?php if($item->hoja_ruta_foto): ?>
-                                                <a href="<?php echo e(asset('storage/'.$item->hoja_ruta_foto)); ?>" 
-                                                   target="_blank" 
-                                                   class="btn btn-sm btn-warning">
-                                                    <i class="fas fa-route"></i> Hoja Ruta
-                                                </a>
+                                            <?php if($item->marca_ganado_foto): ?>
+                                                <div class="mb-1">
+                                                    <a href="<?php echo e(asset('storage/'.$item->marca_ganado_foto)); ?>" 
+                                                       target="_blank" 
+                                                       class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-image"></i> Ver Foto Marca
+                                                    </a>
+                                                </div>
                                             <?php endif; ?>
                                         </div>
                                     <?php else: ?>
-                                        <span class="text-muted">—</span>
+                                        <span class="text-muted"><i class="fas fa-info-circle"></i> Sin datos</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
@@ -253,7 +250,7 @@
                                             <strong><?php echo e(\Carbon\Carbon::parse($item->fecha_aplicacion)->format('d/m/Y')); ?></strong>
                                         </div>
                                     <?php else: ?>
-                                        <span class="text-muted">—</span>
+                                        <span class="text-muted"><i class="fas fa-info-circle"></i> Sin datos</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>

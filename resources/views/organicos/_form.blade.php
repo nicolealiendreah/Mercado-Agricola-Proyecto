@@ -58,7 +58,7 @@
 </div>
 
 <div class="form-group">
-    <label>Imágenes (máximo 4)</label>
+    <label>Imágenes (máximo 3)</label>
     
     @if(isset($organico) && $organico->imagenes && $organico->imagenes->count() > 0)
         <div class="mb-3">
@@ -86,7 +86,7 @@
     <div id="preview-container" class="row mb-3"></div>
     
     <input type="file" name="imagenes[]" class="form-control" accept="image/*" multiple id="imagenes-input">
-    <small class="form-text text-muted">Puedes seleccionar hasta 4 imágenes. Formatos permitidos: JPG, PNG, GIF. Tamaño máximo por imagen: 2MB</small>
+    <small class="form-text text-muted">Puedes seleccionar hasta 3 imágenes. Formatos permitidos: JPG, PNG, GIF. Tamaño máximo por imagen: 2MB</small>
     <div id="imagenes-count" class="text-muted mt-2"></div>
 </div>
 
@@ -169,11 +169,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateCount() {
         const total = imagenesActuales - imagenesAEliminar.length + imagenesNuevas;
-        countDisplay.textContent = `Total de imágenes: ${total} / 4`;
+        countDisplay.textContent = `Total de imágenes: ${total} / 3`;
         
-        if (total > 4) {
+        if (total > 3) {
             countDisplay.className = 'text-danger mt-2';
-            countDisplay.textContent += ' (Excede el límite de 4 imágenes)';
+            countDisplay.textContent += ' (Excede el límite de 3 imágenes)';
         } else {
             countDisplay.className = 'text-muted mt-2';
         }
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fileMap.clear();
         
         const files = Array.from(e.target.files);
-        const maxFiles = 4 - (imagenesActuales - imagenesAEliminar.length);
+        const maxFiles = 3 - (imagenesActuales - imagenesAEliminar.length);
         
         files.slice(0, maxFiles).forEach((file, index) => {
             if (file.type.startsWith('image/')) {

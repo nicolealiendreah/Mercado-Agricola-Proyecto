@@ -45,7 +45,7 @@ public function create()
         // Guardar las imágenes si existen (máximo 4)
         if ($request->hasFile('imagenes')) {
             $orden = 0;
-            $imagenes = array_slice($request->file('imagenes'), 0, 4); // Limitar a 4 imágenes
+            $imagenes = array_slice($request->file('imagenes'), 0, 3); // Limitar a 3 imágenes
             foreach ($imagenes as $imagen) {
                 if ($imagen && $imagen->isValid()) {
                     $ruta = $imagen->store('organicos', 'public');
@@ -111,7 +111,7 @@ public function create()
             $totalImagenesActuales = $organico->imagenes()->count();
             $maxOrden = $organico->imagenes()->max('orden') ?? -1;
             $orden = $maxOrden + 1;
-            $espaciosDisponibles = 4 - $totalImagenesActuales;
+            $espaciosDisponibles = 3 - $totalImagenesActuales;
             
             if ($espaciosDisponibles > 0) {
                 $imagenes = array_slice($request->file('imagenes'), 0, $espaciosDisponibles);

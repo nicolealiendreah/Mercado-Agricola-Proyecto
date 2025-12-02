@@ -65,17 +65,57 @@
 </div>
 
 <div class="form-group">
-    <label>Ubicación</label>
-    <input type="text" id="ubicacion" name="ubicacion" class="form-control" 
-           value="{{ old('ubicacion', $maquinaria->ubicacion ?? '') }}" readonly>
-    <small class="form-text text-muted">Haz clic en el mapa para seleccionar la ubicación de la maquinaria</small>
+    <label>Ubicación (seleccione en el mapa)</label>
     <div id="map" style="height: 400px; margin-top: 10px; border: 1px solid #ddd; border-radius: 4px;"></div>
     <input type="hidden" name="latitud" id="latitud" value="{{ old('latitud', $maquinaria->latitud ?? '') }}">
     <input type="hidden" name="longitud" id="longitud" value="{{ old('longitud', $maquinaria->longitud ?? '') }}">
+    <input type="hidden" name="departamento" id="departamento" value="{{ old('departamento', $maquinaria->departamento ?? '') }}">
+    <input type="hidden" name="municipio" id="municipio" value="{{ old('municipio', $maquinaria->municipio ?? '') }}">
+    <input type="hidden" name="provincia" id="provincia" value="{{ old('provincia', $maquinaria->provincia ?? '') }}">
+    <input type="hidden" name="ciudad" id="ciudad" value="{{ old('ciudad', $maquinaria->ciudad ?? '') }}">
+    
+    <input type="text" id="ubicacion" name="ubicacion" class="form-control mt-2" 
+           value="{{ old('ubicacion', $maquinaria->ubicacion ?? '') }}" readonly>
+    
+    <div id="info-ubicacion" class="mt-3" style="display: {{ (isset($maquinaria) && ($maquinaria->ciudad || $maquinaria->municipio)) ? 'block' : 'none' }};">
+        <div class="card border">
+            <div class="card-body">
+                <h6 class="mb-3"><strong>Ubicación</strong></h6>
+                <div class="row mb-2">
+                    <div class="col-md-3">
+                        <strong>Ciudad:</strong>
+                    </div>
+                    <div class="col-md-9" id="ciudad-texto">
+                        {{ isset($maquinaria) ? ($maquinaria->ciudad ?? $maquinaria->municipio ?? '-') : '-' }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong>Dirección:</strong>
+                    </div>
+                    <div class="col-md-9" id="direccion-texto">
+                        @if(isset($maquinaria) && ($maquinaria->municipio || $maquinaria->provincia || $maquinaria->departamento))
+                            @php
+                                $direccion = [];
+                                if($maquinaria->municipio) $direccion[] = $maquinaria->municipio;
+                                if($maquinaria->provincia) $direccion[] = 'Provincia ' . $maquinaria->provincia;
+                                if($maquinaria->departamento) $direccion[] = $maquinaria->departamento;
+                                $direccion[] = 'Bolivia';
+                                $direccionCompleta = implode(', ', $direccion);
+                            @endphp
+                            {{ $direccionCompleta }}
+                        @else
+                            -
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="form-group">
-    <label>Imágenes (máximo 4)</label>
+    <label>Imágenes (máximo 3)</label>
     
     @if(isset($maquinaria) && $maquinaria->imagenes->count() > 0)
         <div class="mb-3">
@@ -103,7 +143,7 @@
     <div id="preview-container" class="row mb-3"></div>
     
     <input type="file" name="imagenes[]" class="form-control" accept="image/*" multiple id="imagenes-input">
-    <small class="form-text text-muted">Puedes seleccionar hasta 4 imágenes. Formatos permitidos: JPG, PNG, GIF. Tamaño máximo por imagen: 2MB</small>
+    <small class="form-text text-muted">Puedes seleccionar hasta 3 imágenes. Formatos permitidos: JPG, PNG, GIF. Tamaño máximo por imagen: 2MB</small>
     <div id="imagenes-count" class="text-muted mt-2"></div>
 </div>
 
@@ -142,11 +182,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateCount() {
         const total = imagenesActuales - imagenesAEliminar.length + imagenesNuevas;
-        countDisplay.textContent = `Total de imágenes: ${total} / 4`;
+        countDisplay.textContent = `Total de imágenes: ${total} / 3`;
         
-        if (total > 4) {
+        if (total > 3) {
             countDisplay.className = 'text-danger mt-2';
-            countDisplay.textContent += ' (Excede el límite de 4 imágenes)';
+            countDisplay.textContent += ' (Excede el límite de 3 imágenes)';
         } else {
             countDisplay.className = 'text-muted mt-2';
         }
@@ -160,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fileMap.clear();
         
         const files = Array.from(e.target.files);
-        const maxFiles = 4 - (imagenesActuales - imagenesAEliminar.length);
+        const maxFiles = 3 - (imagenesActuales - imagenesAEliminar.length);
         
         files.slice(0, maxFiles).forEach((file, index) => {
             if (file.type.startsWith('image/')) {
@@ -254,5 +294,56 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('latitud').value = lat;
         document.getElementById('longitud').value = lng;
         document.getElementById('ubicacion').value = "Lat: " + lat + " - Lng: " + lng;
+        
+        // Obtener información geográfica
+        obtenerInformacionGeografica(lat, lng);
     });
+
+    // Función para obtener información geográfica
+    function obtenerInformacionGeografica(lat, lng) {
+        // Mostrar contenedor de información
+        document.getElementById('info-ubicacion').style.display = 'block';
+        document.getElementById('ciudad-texto').textContent = 'Cargando...';
+        document.getElementById('direccion-texto').textContent = 'Cargando...';
+
+        fetch('/api/geocodificacion?latitud=' + lat + '&longitud=' + lng)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    var info = data.data;
+                    
+                    // Guardar en campos ocultos
+                    document.getElementById('departamento').value = info.departamento || '';
+                    document.getElementById('municipio').value = info.municipio || '';
+                    document.getElementById('provincia').value = info.provincia || '';
+                    document.getElementById('ciudad').value = info.ciudad || '';
+                    
+                    // Mostrar en la interfaz
+                    document.getElementById('ciudad-texto').textContent = info.ciudad || info.municipio || 'No disponible';
+                    
+                    // Construir dirección completa: Municipio, Provincia, Departamento, Bolivia
+                    var direccion = [];
+                    if (info.municipio) direccion.push(info.municipio);
+                    if (info.provincia) direccion.push('Provincia ' + info.provincia);
+                    if (info.departamento) direccion.push(info.departamento);
+                    direccion.push('Bolivia');
+                    
+                    var direccionCompleta = direccion.join(', ');
+                    document.getElementById('direccion-texto').textContent = direccionCompleta || 'No disponible';
+                    
+                    // Actualizar campo ubicación
+                    if (direccionCompleta) {
+                        document.getElementById('ubicacion').value = direccionCompleta;
+                    }
+                } else {
+                    document.getElementById('ciudad-texto').textContent = 'No disponible';
+                    document.getElementById('direccion-texto').textContent = 'No disponible';
+                }
+            })
+            .catch(error => {
+                console.error('Error al obtener información geográfica:', error);
+                document.getElementById('ciudad-texto').textContent = 'Error';
+                document.getElementById('direccion-texto').textContent = 'Error';
+            });
+    }
 </script>

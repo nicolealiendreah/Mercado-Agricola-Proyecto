@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title','Editar Registro Sanitario'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -51,9 +49,10 @@
             <div class="card-body">
                 <div class="form-group">
                     <label class="font-weight-bold">
-                        <i class="fas fa-paw text-primary"></i> Animal <span class="text-danger">*</span>
+                        <i class="fas fa-paw text-primary"></i> Animal
                     </label>
-                    <select name="ganado_id" class="form-control form-control-lg" required>
+                    <select name="ganado_id" class="form-control form-control-lg">
+                        <option value="">Sin animal asignado (opcional)...</option>
                         <?php $__currentLoopData = $ganados; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $g): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <option value="<?php echo e($g->id); ?>" <?php echo e($datoSanitario->ganado_id == $g->id ? 'selected' : ''); ?>>
                                 <?php echo e($g->nombre); ?>
@@ -90,7 +89,7 @@
                     <label class="font-weight-bold">
                         <i class="fas fa-vial text-success"></i> Otras Vacunas
                     </label>
-                    <input type="text" name="vacuna" class="form-control" value="<?php echo e($datoSanitario->vacuna); ?>" placeholder="Ej: Triple, Brucelosis, etc. (opcional)">
+                            <input type="text" name="vacuna" class="form-control" value="<?php echo e($datoSanitario->vacuna ?? ''); ?>" placeholder="Ej: Triple, Brucelosis, etc. (opcional)">
                 </div>
 
                 <div class="form-group">
@@ -137,7 +136,7 @@
                             <label class="font-weight-bold">
                                 <i class="fas fa-stethoscope text-info"></i> Tratamiento
                             </label>
-                            <input type="text" name="tratamiento" class="form-control" value="<?php echo e($datoSanitario->tratamiento); ?>">
+                            <input type="text" name="tratamiento" class="form-control" value="<?php echo e($datoSanitario->tratamiento ?? ''); ?>" placeholder="Sin datos">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -145,7 +144,7 @@
                             <label class="font-weight-bold">
                                 <i class="fas fa-capsules text-info"></i> Medicamento
                             </label>
-                            <input type="text" name="medicamento" class="form-control" value="<?php echo e($datoSanitario->medicamento); ?>">
+                            <input type="text" name="medicamento" class="form-control" value="<?php echo e($datoSanitario->medicamento ?? ''); ?>" placeholder="Sin datos">
                         </div>
                     </div>
                 </div>
@@ -156,7 +155,7 @@
                             <label class="font-weight-bold">
                                 <i class="fas fa-calendar-check text-info"></i> Fecha de Aplicación
                             </label>
-                            <input type="date" name="fecha_aplicacion" class="form-control" value="<?php echo e($datoSanitario->fecha_aplicacion); ?>">
+                            <input type="date" name="fecha_aplicacion" class="form-control" value="<?php echo e($datoSanitario->fecha_aplicacion ?? ''); ?>">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -164,7 +163,7 @@
                             <label class="font-weight-bold">
                                 <i class="fas fa-calendar-alt text-info"></i> Próxima Fecha
                             </label>
-                            <input type="date" name="proxima_fecha" class="form-control" value="<?php echo e($datoSanitario->proxima_fecha); ?>">
+                            <input type="date" name="proxima_fecha" class="form-control" value="<?php echo e($datoSanitario->proxima_fecha ?? ''); ?>">
                         </div>
                     </div>
                 </div>
@@ -173,14 +172,14 @@
                     <label class="font-weight-bold">
                         <i class="fas fa-user-md text-info"></i> Veterinario
                     </label>
-                    <input type="text" name="veterinario" class="form-control" value="<?php echo e($datoSanitario->veterinario); ?>">
+                    <input type="text" name="veterinario" class="form-control" value="<?php echo e($datoSanitario->veterinario ?? ''); ?>" placeholder="Sin datos">
                 </div>
 
                 <div class="form-group">
                     <label class="font-weight-bold">
                         <i class="fas fa-comment-alt text-info"></i> Observaciones
                     </label>
-                    <textarea name="observaciones" class="form-control" rows="4"><?php echo e($datoSanitario->observaciones); ?></textarea>
+                    <textarea name="observaciones" class="form-control" rows="4" placeholder="Sin datos"><?php echo e($datoSanitario->observaciones ?? ''); ?></textarea>
                 </div>
             </div>
         </div>
@@ -237,11 +236,11 @@
             </div>
         </div>
 
-        <!-- Sección: Guía de Movimiento -->
+        <!-- Sección: Marca del Animal -->
         <div class="card shadow-sm mb-4 border-left-primary">
             <div class="card-header bg-white">
                 <h5 class="mb-0">
-                    <i class="fas fa-road text-primary"></i> Guía de Movimiento del Animal
+                    <i class="fas fa-tag text-primary"></i> Marca del Animal
                 </h5>
             </div>
             <div class="card-body">
@@ -249,56 +248,46 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="font-weight-bold">
-                                <i class="fas fa-map-marker-alt text-primary"></i> Destino (Matadero o Campo)
-                            </label>
-                            <input type="text" name="destino_matadero_campo" class="form-control" 
-                                   value="<?php echo e($datoSanitario->destino_matadero_campo); ?>">
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="font-weight-bold">
                                 <i class="fas fa-tag text-primary"></i> Marca del Ganado
                             </label>
                             <input type="text" name="marca_ganado" class="form-control" 
-                                   value="<?php echo e($datoSanitario->marca_ganado); ?>">
+                                   value="<?php echo e($datoSanitario->marca_ganado ?? ''); ?>" placeholder="Sin datos">
                         </div>
                     </div>
-                </div>
-
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="font-weight-bold">
                                 <i class="fas fa-hashtag text-primary"></i> Señal o #
                             </label>
                             <input type="text" name="senal_numero" class="form-control" 
-                                   value="<?php echo e($datoSanitario->senal_numero); ?>">
+                                   value="<?php echo e($datoSanitario->senal_numero ?? ''); ?>" placeholder="Sin datos">
                         </div>
                     </div>
-                    <div class="col-md-6">
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
                         <div class="form-group">
                             <label class="font-weight-bold">
-                                <i class="fas fa-route text-primary"></i> Hoja de Ruta (Foto)
+                                <i class="fas fa-image text-primary"></i> Foto de la Marca
                             </label>
-                            <?php if($datoSanitario->hoja_ruta_foto): ?>
+                            <?php if($datoSanitario->marca_ganado_foto): ?>
                                 <div class="mb-2 p-2 bg-light rounded">
-                                    <img src="<?php echo e(asset('storage/'.$datoSanitario->hoja_ruta_foto)); ?>" 
-                                         alt="Hoja de Ruta" 
+                                    <img src="<?php echo e(asset('storage/'.$datoSanitario->marca_ganado_foto)); ?>" 
+                                         alt="Foto de la Marca" 
                                          class="img-thumbnail" 
                                          style="max-width: 200px; max-height: 200px; cursor: pointer;"
-                                         onclick="window.open('<?php echo e(asset('storage/'.$datoSanitario->hoja_ruta_foto)); ?>', '_blank')"
+                                         onclick="window.open('<?php echo e(asset('storage/'.$datoSanitario->marca_ganado_foto)); ?>', '_blank')"
                                          title="Click para ver imagen completa">
                                 </div>
                             <?php endif; ?>
                             <div class="custom-file">
-                                <input type="file" name="hoja_ruta_foto" class="custom-file-input" id="hoja_ruta_foto" accept="image/*">
-                                <label class="custom-file-label" for="hoja_ruta_foto">
+                                <input type="file" name="marca_ganado_foto" class="custom-file-input" id="marca_ganado_foto" accept="image/*">
+                                <label class="custom-file-label" for="marca_ganado_foto">
                                     <i class="fas fa-upload"></i> 
-                                    <?php if($datoSanitario->hoja_ruta_foto): ?>
+                                    <?php if($datoSanitario->marca_ganado_foto): ?>
                                         Deje vacío para mantener la imagen actual o seleccione una nueva...
                                     <?php else: ?>
-                                        Seleccione una imagen...
+                                        Seleccione una imagen de la marca...
                                     <?php endif; ?>
                                 </label>
                             </div>
@@ -326,7 +315,7 @@
                                 <i class="fas fa-user-circle text-info"></i> Nombre del Dueño
                             </label>
                             <input type="text" name="nombre_dueño" class="form-control" 
-                                   value="<?php echo e($datoSanitario->nombre_dueño); ?>">
+                                   value="<?php echo e($datoSanitario->nombre_dueño ?? ''); ?>" placeholder="Sin datos">
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -388,6 +377,11 @@ document.getElementById('certificado_imagen').addEventListener('change', functio
 });
 
 document.getElementById('hoja_ruta_foto').addEventListener('change', function(e) {
+    const fileName = e.target.files[0]?.name || 'Seleccione una imagen...';
+    e.target.nextElementSibling.innerHTML = '<i class="fas fa-file-image"></i> ' + fileName;
+});
+
+document.getElementById('marca_ganado_foto').addEventListener('change', function(e) {
     const fileName = e.target.files[0]?.name || 'Seleccione una imagen...';
     e.target.nextElementSibling.innerHTML = '<i class="fas fa-file-image"></i> ' + fileName;
 });

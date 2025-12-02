@@ -76,6 +76,9 @@
             <i class="fas fa-user-plus"></i> Registrarse
           </a>
         </li>
+
+
+        
       <?php endif; ?>
     </ul>
   </nav>
@@ -100,7 +103,7 @@
               <li class="nav-item">
                 <a href="<?php echo e(route('ganados.index')); ?>"
                    class="nav-link <?php echo e(request()->routeIs('ganados.*') ? 'active' : ''); ?>">
-                  <i class="nav-icon fas fa-cow"></i>
+                  <i class="nav-icon fas fa-horse"></i>
                   <p>Animales</p>
                 </a>
               </li>
@@ -250,6 +253,20 @@
                 </a>
               </li>
             <?php endif; ?>
+
+                    
+        <li class="nav-item mt-3">
+            <form action="<?php echo e(route('logout')); ?>" method="POST">
+                <?php echo csrf_field(); ?>
+                <button type="submit"
+                        class="nav-link text-left"
+                        style="background: none; border: none; color: #cfe6d0;">
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                    <p>Cerrar Sesión</p>
+                </button>
+            </form>
+        </li>
+
           <?php endif; ?>
 
         </ul>

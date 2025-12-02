@@ -7,6 +7,8 @@ use App\Models\Categoria;
 use App\Models\TipoAnimal;
 use App\Models\TipoPeso;
 use App\Models\Raza;
+use App\Models\GanadoImagen;
+use App\Services\GeocodificacionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -29,7 +31,7 @@ class GanadoController extends Controller
      */
     public function show(Ganado $ganado)
     {
-        $ganado->load(['categoria', 'tipoAnimal', 'tipoPeso', 'raza', 'datoSanitario']);
+        $ganado->load(['categoria', 'tipoAnimal', 'tipoPeso', 'raza', 'datoSanitario', 'imagenes']);
         return view('ganados.show', compact('ganado'));
     }
 
@@ -70,7 +72,7 @@ class GanadoController extends Controller
         'descripcion'     => 'nullable|string',
         'precio'          => 'nullable|numeric|min:0',
         'stock'            => 'required|integer|min:0',
-        'imagen'          => 'nullable|image|max:2048',
+        'imagenes.*'      => 'nullable|image|max:2048',
         'categoria_id'    => 'required|exists:categorias,id',
         'fecha_publicacion' => 'nullable|date',
         'ubicacion' => 'nullable|string|max:255',
@@ -94,17 +96,34 @@ class GanadoController extends Controller
         'ubicacion' => $request->ubicacion,
         'latitud' => $request->latitud,
         'longitud' => $request->longitud,
+        'departamento' => $request->departamento,
+        'municipio' => $request->municipio,
+        'provincia' => $request->provincia,
+        'ciudad' => $request->ciudad,
         'dato_sanitario_id' => $request->dato_sanitario_id ?? null,
     ];
-
-    if ($request->hasFile('imagen')) {
-        $data['imagen'] = $request->file('imagen')->store('ganados', 'public');
-    }
 
     // Asignar el usuario autenticado
     $data['user_id'] = auth()->id();
 
-    Ganado::create($data);
+    // Crear el ganado
+    $ganado = Ganado::create($data);
+    
+    // Guardar las imágenes si existen (máximo 3)
+    if ($request->hasFile('imagenes')) {
+        $orden = 0;
+        $imagenes = array_slice($request->file('imagenes'), 0, 3); // Limitar a 3 imágenes
+        foreach ($imagenes as $imagen) {
+            if ($imagen && $imagen->isValid()) {
+                $ruta = $imagen->store('ganados', 'public');
+                GanadoImagen::create([
+                    'ganado_id' => $ganado->id,
+                    'ruta' => $ruta,
+                    'orden' => $orden++,
+                ]);
+            }
+        }
+    }
 
     return redirect()->route('ganados.index')
         ->with('success', 'Ganado registrado correctamente.');
@@ -161,7 +180,7 @@ class GanadoController extends Controller
         'precio' => 'nullable|numeric|min:0',
         'stock' => 'required|integer|min:0',
         'tipo_peso_id' => 'required|exists:tipo_pesos,id',
-        'imagen' => 'nullable|image|max:2048',
+        'imagenes.*' => 'nullable|image|max:2048',
         'categoria_id' => 'required|exists:categorias,id',
         'ubicacion' => 'nullable|string|max:255',
         'latitud' => 'nullable|numeric',
@@ -184,18 +203,47 @@ class GanadoController extends Controller
         'ubicacion' => $request->ubicacion,
         'latitud' => $request->latitud,
         'longitud' => $request->longitud,
+        'departamento' => $request->departamento,
+        'municipio' => $request->municipio,
+        'provincia' => $request->provincia,
+        'ciudad' => $request->ciudad,
         'fecha_publicacion' => $request->fecha_publicacion,
         'dato_sanitario_id' => $request->dato_sanitario_id ?? null,
     ];
 
-    // Imagen
-    if ($request->hasFile('imagen')) {
-
-        if ($ganado->imagen && Storage::disk('public')->exists($ganado->imagen)) {
-            Storage::disk('public')->delete($ganado->imagen);
+    // Eliminar imágenes marcadas para eliminar
+    if ($request->has('imagenes_eliminar')) {
+        foreach ($request->imagenes_eliminar as $imagenId) {
+            $imagen = GanadoImagen::find($imagenId);
+            if ($imagen && $imagen->ganado_id === $ganado->id) {
+                if (Storage::disk('public')->exists($imagen->ruta)) {
+                    Storage::disk('public')->delete($imagen->ruta);
+                }
+                $imagen->delete();
+            }
         }
+    }
 
-        $data['imagen'] = $request->file('imagen')->store('ganados', 'public');
+    // Agregar nuevas imágenes (máximo 3 en total)
+    if ($request->hasFile('imagenes')) {
+        $totalImagenesActuales = $ganado->imagenes()->count();
+        $maxOrden = $ganado->imagenes()->max('orden') ?? -1;
+        
+        if ($totalImagenesActuales < 3) {
+            $espaciosDisponibles = 3 - $totalImagenesActuales;
+            $orden = $maxOrden + 1;
+            $imagenes = array_slice($request->file('imagenes'), 0, $espaciosDisponibles);
+            foreach ($imagenes as $imagen) {
+                if ($imagen && $imagen->isValid()) {
+                    $ruta = $imagen->store('ganados', 'public');
+                    GanadoImagen::create([
+                        'ganado_id' => $ganado->id,
+                        'ruta' => $ruta,
+                        'orden' => $orden++,
+                    ]);
+                }
+            }
+        }
     }
 
     $ganado->update($data);
@@ -204,6 +252,35 @@ class GanadoController extends Controller
         ->with('success', 'Registro actualizado correctamente.');
 }
 
+
+    /**
+     * Obtiene información geográfica desde coordenadas (API)
+     */
+    public function obtenerGeocodificacion(Request $request)
+    {
+        $request->validate([
+            'latitud' => 'required|numeric',
+            'longitud' => 'required|numeric',
+        ]);
+
+        $geocodificacionService = new GeocodificacionService();
+        $infoGeografica = $geocodificacionService->obtenerInformacionGeografica(
+            (float) $request->latitud,
+            (float) $request->longitud
+        );
+
+        if ($infoGeografica) {
+            return response()->json([
+                'success' => true,
+                'data' => $infoGeografica
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No se pudo obtener la información geográfica'
+        ], 404);
+    }
 
     /**
      * Elimina un registro.
@@ -216,6 +293,14 @@ class GanadoController extends Controller
                 ->with('error', 'No tienes permisos para eliminar este anuncio.');
         }
 
+        // Eliminar todas las imágenes asociadas
+        foreach ($ganado->imagenes as $imagen) {
+            if (Storage::disk('public')->exists($imagen->ruta)) {
+                Storage::disk('public')->delete($imagen->ruta);
+            }
+        }
+
+        // Eliminar imagen antigua si existe
         if ($ganado->imagen && Storage::disk('public')->exists($ganado->imagen)) {
             Storage::disk('public')->delete($ganado->imagen);
         }

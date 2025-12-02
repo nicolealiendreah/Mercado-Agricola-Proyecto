@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title','Nuevo Registro Sanitario'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -61,10 +59,10 @@
             <div class="card-body">
                 <div class="form-group">
                     <label class="font-weight-bold">
-                        <i class="fas fa-paw text-primary"></i> Animal <span class="text-danger">*</span>
+                        <i class="fas fa-paw text-primary"></i> Animal
                     </label>
-                    <select name="ganado_id" class="form-control form-control-lg" required>
-                        <option value="">Seleccione un animal...</option>
+                    <select name="ganado_id" class="form-control form-control-lg">
+                        <option value="">Seleccione un animal (opcional)...</option>
                         <?php $__currentLoopData = $ganados; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $g): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <option value="<?php echo e($g->id); ?>">
                             <?php echo e($g->nombre); ?>
@@ -223,25 +221,15 @@
             </div>
         </div>
 
-        <!-- Sección: Guía de Movimiento -->
+        <!-- Sección: Marca del Animal -->
         <div class="card shadow-sm mb-4 border-left-primary">
             <div class="card-header bg-white">
                 <h5 class="mb-0">
-                    <i class="fas fa-road text-primary"></i> Guía de Movimiento del Animal
+                    <i class="fas fa-tag text-primary"></i> Marca del Animal
                 </h5>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label class="font-weight-bold">
-                                <i class="fas fa-map-marker-alt text-primary"></i> Destino (Matadero o Campo)
-                            </label>
-                            <input type="text" name="destino_matadero_campo" class="form-control" 
-                                   placeholder="Ej: Matadero Municipal, Campo de Pastoreo">
-                            <small class="form-text text-muted">Especifique el destino del animal</small>
-                        </div>
-                    </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="font-weight-bold">
@@ -252,9 +240,6 @@
                             <small class="form-text text-muted">Marca identificadora del ganado</small>
                         </div>
                     </div>
-                </div>
-
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="font-weight-bold">
@@ -265,15 +250,17 @@
                             <small class="form-text text-muted">Número de señal o identificación</small>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
                         <div class="form-group">
                             <label class="font-weight-bold">
-                                <i class="fas fa-route text-primary"></i> Hoja de Ruta (Foto)
+                                <i class="fas fa-image text-primary"></i> Foto de la Marca
                             </label>
                             <div class="custom-file">
-                                <input type="file" name="hoja_ruta_foto" class="custom-file-input" id="hoja_ruta_foto" accept="image/*">
-                                <label class="custom-file-label" for="hoja_ruta_foto">
-                                    <i class="fas fa-upload"></i> Seleccione una imagen...
+                                <input type="file" name="marca_ganado_foto" class="custom-file-input" id="marca_ganado_foto" accept="image/*">
+                                <label class="custom-file-label" for="marca_ganado_foto">
+                                    <i class="fas fa-upload"></i> Seleccione una imagen de la marca...
                                 </label>
                             </div>
                             <small class="form-text text-muted mt-2">
@@ -347,7 +334,7 @@ document.getElementById('certificado_imagen').addEventListener('change', functio
     e.target.nextElementSibling.innerHTML = '<i class="fas fa-file-image"></i> ' + fileName;
 });
 
-document.getElementById('hoja_ruta_foto').addEventListener('change', function(e) {
+document.getElementById('marca_ganado_foto').addEventListener('change', function(e) {
     const fileName = e.target.files[0]?.name || 'Seleccione una imagen...';
     e.target.nextElementSibling.innerHTML = '<i class="fas fa-file-image"></i> ' + fileName;
 });

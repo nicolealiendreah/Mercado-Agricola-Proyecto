@@ -9,6 +9,7 @@ class DatoSanitario extends Model
     protected $table = 'datos_sanitarios';
 
     protected $fillable = [
+        'user_id',
         'ganado_id',
         'vacuna',
         'vacunado_fiebre_aftosa',
@@ -23,6 +24,7 @@ class DatoSanitario extends Model
         'destino_matadero_campo',
         'hoja_ruta_foto',
         'marca_ganado',
+        'marca_ganado_foto',
         'senal_numero',
         'nombre_dueño',
         'carnet_dueño_foto'

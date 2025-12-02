@@ -233,42 +233,56 @@
                 </div>
             </div>
 
-            @if($maquinaria->latitud && $maquinaria->longitud)
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-white border-bottom">
-                        <h5 class="mb-0">
-                            <i class="fas fa-map-marker-alt text-danger"></i> Ubicación
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-3">
-                            <i class="fas fa-location-dot text-danger"></i> 
-                            <strong>{{ $maquinaria->ubicacion ?? 'Ubicación de la maquinaria' }}</strong>
-                        </p>
-                        <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#mapModal">
-                            <i class="fas fa-map"></i> Ver Mapa
-                        </button>
-                    </div>
+            <!-- Ubicación -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-map-marker-alt text-danger"></i> Ubicación
+                    </h5>
                 </div>
-            @endif
-        </div>
-
-        <div class="col-lg-4">
-            @if($maquinaria->ubicacion)
-                <div class="card shadow-sm border-0 mb-4 panel-equal-card">
-                    <div class="card-header bg-white border-bottom">
-                        <h5 class="mb-0">
-                            <i class="fas fa-map-marker-alt text-danger"></i> Ubicación
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-0">
+                <div class="card-body">
+                    @if($maquinaria->ciudad || $maquinaria->municipio || $maquinaria->departamento)
+                        <div class="mb-3">
+                            <div class="row mb-2">
+                                <div class="col-md-3">
+                                    <strong>Ciudad:</strong>
+                                </div>
+                                <div class="col-md-9">
+                                    {{ $maquinaria->ciudad ?? $maquinaria->municipio ?? 'No disponible' }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong>Dirección:</strong>
+                                </div>
+                                <div class="col-md-9">
+                                    @php
+                                        $direccion = [];
+                                        if($maquinaria->municipio) $direccion[] = $maquinaria->municipio;
+                                        if($maquinaria->provincia) $direccion[] = 'Provincia ' . $maquinaria->provincia;
+                                        if($maquinaria->departamento) $direccion[] = $maquinaria->departamento;
+                                        $direccion[] = 'Bolivia';
+                                        $direccionCompleta = implode(', ', $direccion);
+                                    @endphp
+                                    {{ $direccionCompleta }}
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($maquinaria->ubicacion)
+                        <p class="mb-2">
                             <i class="fas fa-location-dot text-danger"></i> 
                             <strong>{{ $maquinaria->ubicacion }}</strong>
                         </p>
-                    </div>
+                    @else
+                        <p class="text-muted mb-2">Sin ubicación especificada</p>
+                    @endif
+                    @if($maquinaria->latitud && $maquinaria->longitud)
+                        <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#mapModal">
+                            <i class="fas fa-map"></i> Ver Mapa
+                        </button>
+                    @endif
                 </div>
-            @endif
+            </div>
         </div>
     </div>
 </div>
@@ -287,7 +301,7 @@
                 </button>
             </div>
             <div class="modal-body p-0">
-                <div id="map" style="height: 500px; width: 100%;"></div>
+                <div id="map-maquinaria-modal" style="height: 500px; width: 100%;"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -296,34 +310,80 @@
     </div>
 </div>
 
-<!-- Leaflet CSS -->
+{{-- Leaflet CSS --}}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-<!-- Leaflet JS -->
+{{-- Leaflet JS --}}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    var mapMaquinaria = null;
-    
-    // Inicializar el mapa cuando se abra el modal
-    $('#mapModal').on('shown.bs.modal', function () {
-        if (!mapMaquinaria) {
-            mapMaquinaria = L.map('map').setView([{{ $maquinaria->latitud }}, {{ $maquinaria->longitud }}], 12);
+window.addEventListener('load', function() {
+    $(document).ready(function() {
+        let mapMaquinaria = null;
+        
+        @php
+            $popupText = $maquinaria->nombre;
+            if($maquinaria->ciudad || $maquinaria->municipio) {
+                $popupText .= ' - ' . ($maquinaria->ciudad ?? $maquinaria->municipio);
+            }
+            if($maquinaria->municipio || $maquinaria->provincia || $maquinaria->departamento) {
+                $direccion = [];
+                if($maquinaria->municipio) $direccion[] = $maquinaria->municipio;
+                if($maquinaria->provincia) $direccion[] = 'Provincia ' . $maquinaria->provincia;
+                if($maquinaria->departamento) $direccion[] = $maquinaria->departamento;
+                $direccion[] = 'Bolivia';
+                $popupText .= ' - ' . implode(', ', $direccion);
+            } elseif($maquinaria->ubicacion) {
+                $popupText .= ' - ' . $maquinaria->ubicacion;
+            }
+        @endphp
 
-            // Capa gratuita de OpenStreetMap
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: 'OpenStreetMap'
-            }).addTo(mapMaquinaria);
-
-            // Agregar marcador en la ubicación
-            var marker = L.marker([{{ $maquinaria->latitud }}, {{ $maquinaria->longitud }}]).addTo(mapMaquinaria);
+        function initMap() {
+            if (typeof L === 'undefined') {
+                console.error('Leaflet no está disponible');
+                return false;
+            }
             
-            // Agregar popup con información
-            marker.bindPopup('<b>{{ $maquinaria->nombre }}</b><br>{{ $maquinaria->ubicacion ?? "Ubicación de la maquinaria" }}').openPopup();
-        } else {
-            mapMaquinaria.invalidateSize();
+            try {
+                mapMaquinaria = L.map('map-maquinaria-modal').setView(
+                    [{{ $maquinaria->latitud }}, {{ $maquinaria->longitud }}],
+                    12
+                );
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(mapMaquinaria);
+
+                L.marker([{{ $maquinaria->latitud }}, {{ $maquinaria->longitud }}])
+                    .addTo(mapMaquinaria)
+                    .bindPopup("{{ addslashes($popupText) }}");
+                
+                return true;
+            } catch (error) {
+                console.error('Error al inicializar el mapa:', error);
+                return false;
+            }
         }
+
+        $('#mapModal').on('shown.bs.modal', function () {
+            if (!mapMaquinaria) {
+                // Esperar a que el modal esté completamente visible
+                setTimeout(function() {
+                    if (!initMap()) {
+                        // Si falla, reintentar después de un momento
+                        setTimeout(initMap, 500);
+                    }
+                }, 200);
+            } else {
+                // Si el mapa ya existe, solo invalidar el tamaño
+                setTimeout(function() {
+                    mapMaquinaria.invalidateSize();
+                }, 100);
+            }
+        });
     });
+});
 </script>
 @endif
 

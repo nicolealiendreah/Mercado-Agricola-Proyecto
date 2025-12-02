@@ -9,35 +9,76 @@
     </h1>
 
     <div class="bg-white p-4 rounded mt-4 shadow-lg">
-      <form method="GET" action="<?php echo e(route('home')); ?>" class="form-row align-items-end">
-        <div class="col-md-4 mb-2">
-          <label class="text-dark small font-weight-bold mb-1">Categoría</label>
-          <select name="categoria_id" class="form-control">
-            <option value="">Todas las categorías</option>
-            <?php $__currentLoopData = $categorias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $categoria): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-              <option value="<?php echo e($categoria->id); ?>" <?php echo e(request('categoria_id') == $categoria->id ? 'selected' : ''); ?>>
-                <?php echo e($categoria->nombre); ?>
+      <form method="GET" action="<?php echo e(route('home')); ?>" id="searchForm" class="form-row align-items-end">
+  <div class="col-md-3 mb-2">
+    <label class="text-dark small font-weight-bold mb-1">Categoría</label>
+    <select name="categoria_id"
+            class="form-control"
+            onchange="this.form.submit()">
+      <option value="">Todas las categorías</option>
+      <?php $__currentLoopData = $categorias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $categoria): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <option value="<?php echo e($categoria->id); ?>" <?php echo e(request('categoria_id') == $categoria->id ? 'selected' : ''); ?>>
+          <?php echo e($categoria->nombre); ?>
 
-              </option>
-            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-          </select>
-        </div>
-        <div class="col-md-6 mb-2">
-          <label class="text-dark small font-weight-bold mb-1">Buscar</label>
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text bg-success text-white"><i class="fas fa-search"></i></span>
-            </div>
-            <input type="text" name="q" class="form-control" placeholder="Buscar productos, marcas, lugares..." value="<?php echo e(request('q')); ?>">
-          </div>
-        </div>
-        <div class="col-md-2 mb-2">
-          <button type="submit" class="btn btn-success btn-block">
-            <i class="fas fa-search"></i> Buscar
-          </button>
-        </div>
-      </form>
-      <?php if(request()->has('q') || request()->has('categoria_id')): ?>
+        </option>
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </select>
+  </div>
+
+  <div class="col-md-3 mb-2">
+    <label class="text-dark small font-weight-bold mb-1">Tipo de Animal</label>
+    <select name="tipo_animal_id"
+            id="tipo_animal_id"
+            class="form-control"
+            onchange="filtrarRazas(); this.form.submit();">
+      <option value="">Todos los tipos</option>
+      <?php $__currentLoopData = $tiposAnimales; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $tipoAnimal): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <option value="<?php echo e($tipoAnimal->id); ?>" <?php echo e(request('tipo_animal_id') == $tipoAnimal->id ? 'selected' : ''); ?>>
+          <?php echo e($tipoAnimal->nombre); ?>
+
+        </option>
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </select>
+  </div>
+
+  <div class="col-md-3 mb-2">
+    <label class="text-dark small font-weight-bold mb-1">Raza</label>
+    <select name="raza_id"
+            id="raza_id"
+            class="form-control"
+            onchange="this.form.submit()">
+      <option value="">Todas las razas</option>
+      <?php $__currentLoopData = $razas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $raza): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <option value="<?php echo e($raza->id); ?>" 
+                data-tipo-animal-id="<?php echo e($raza->tipo_animal_id); ?>"
+                <?php echo e(request('raza_id') == $raza->id ? 'selected' : ''); ?>>
+          <?php echo e($raza->nombre); ?>
+
+        </option>
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    </select>
+  </div>
+
+  <div class="col-md-3 mb-2">
+    <label class="text-dark small font-weight-bold mb-1">Buscar</label>
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text bg-success text-white"><i class="fas fa-search"></i></span>
+      </div>
+      <input type="text" name="q" class="form-control"
+             placeholder="Buscar productos, marcas, lugares..."
+             value="<?php echo e(request('q')); ?>">
+    </div>
+  </div>
+
+  <div class="col-md-12 mb-2">
+    <button type="submit" class="btn btn-success btn-block">
+      <i class="fas fa-search"></i> Buscar
+    </button>
+  </div>
+</form>
+
+      <?php if(request()->has('q') || request()->has('categoria_id') || request()->has('tipo_animal_id') || request()->has('raza_id')): ?>
         <div class="mt-2">
           <a href="<?php echo e(route('home')); ?>" class="btn btn-sm btn-outline-secondary">
             <i class="fas fa-times"></i> Limpiar filtros
@@ -49,7 +90,7 @@
   <div style="position:absolute; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.3); z-index:1;"></div>
 </section>
 
-<?php if(request()->has('q') || request()->has('categoria_id')): ?>
+<?php if(request()->has('q') || request()->has('categoria_id') || request()->has('tipo_animal_id') || request()->has('raza_id')): ?>
   
   <section class="container my-5">
     <h2 class="text-success mb-4">
@@ -468,6 +509,44 @@
     <?php endif; ?>
   </section>
 <?php endif; ?>
+
+<script>
+// Función para filtrar razas según el tipo de animal seleccionado
+function filtrarRazas() {
+    const tipoAnimalId = document.getElementById('tipo_animal_id').value;
+    const razaSelect = document.getElementById('raza_id');
+    const todasLasOpciones = razaSelect.querySelectorAll('option');
+    
+    // Mostrar/ocultar opciones según el tipo de animal
+    todasLasOpciones.forEach(option => {
+        if (option.value === '') {
+            // Siempre mostrar la opción "Todas las razas"
+            option.style.display = '';
+        } else {
+            const tipoAnimalIdRaza = option.getAttribute('data-tipo-animal-id');
+            if (tipoAnimalId === '' || tipoAnimalIdRaza === tipoAnimalId) {
+                option.style.display = '';
+            } else {
+                option.style.display = 'none';
+            }
+        }
+    });
+    
+    // Si se cambió el tipo de animal y la raza seleccionada no corresponde, limpiar la selección
+    const razaSeleccionada = razaSelect.value;
+    if (razaSeleccionada) {
+        const opcionSeleccionada = razaSelect.querySelector(`option[value="${razaSeleccionada}"]`);
+        if (opcionSeleccionada && opcionSeleccionada.style.display === 'none') {
+            razaSelect.value = '';
+        }
+    }
+}
+
+// Ejecutar al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    filtrarRazas();
+});
+</script>
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.public', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\dev\Proyecto-Mercado-Agricola-main\Proyecto-Mercado-Agricola-main\resources\views/public/home.blade.php ENDPATH**/ ?>

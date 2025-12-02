@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Maquinaria;
 use App\Models\MaquinariaImagen;
+use App\Services\GeocodificacionService;
 use App\Http\Requests\StoreMaquinariaRequest;
 use App\Http\Requests\UpdateMaquinariaRequest;
 use Illuminate\Support\Facades\Storage;
@@ -43,13 +44,34 @@ class MaquinariaController extends Controller
         $data = $request->validated();
         $data['user_id'] = auth()->id();
         
+        // Obtener información geográfica si hay coordenadas
+        if ($request->latitud && $request->longitud) {
+            $geocodificacionService = new GeocodificacionService();
+            $infoGeografica = $geocodificacionService->obtenerInformacionGeografica(
+                (float) $request->latitud,
+                (float) $request->longitud
+            );
+            
+            if ($infoGeografica) {
+                $data['departamento'] = $infoGeografica['departamento'];
+                $data['municipio'] = $infoGeografica['municipio'];
+                $data['provincia'] = $infoGeografica['provincia'];
+                $data['ciudad'] = $infoGeografica['ciudad'];
+                
+                // Si no hay ubicación escrita, usar la dirección completa
+                if (empty($data['ubicacion']) && isset($infoGeografica['direccion_completa'])) {
+                    $data['ubicacion'] = $infoGeografica['direccion_completa'];
+                }
+            }
+        }
+        
         // Crear la maquinaria
         $maquinaria = Maquinaria::create($data);
         
-        // Guardar las imágenes si existen (máximo 4)
+        // Guardar las imágenes si existen (máximo 3)
         if ($request->hasFile('imagenes')) {
             $orden = 0;
-            $imagenes = array_slice($request->file('imagenes'), 0, 4); // Limitar a 4 imágenes
+            $imagenes = array_slice($request->file('imagenes'), 0, 3); // Limitar a 3 imágenes
             foreach ($imagenes as $imagen) {
                 if ($imagen && $imagen->isValid()) {
                     $ruta = $imagen->store('maquinarias', 'public');
@@ -97,6 +119,29 @@ class MaquinariaController extends Controller
         }
 
         $data = $request->validated();
+        
+        // Obtener información geográfica si hay coordenadas (y si cambiaron)
+        if ($request->latitud && $request->longitud && 
+            ($maquinaria->latitud != $request->latitud || $maquinaria->longitud != $request->longitud)) {
+            $geocodificacionService = new GeocodificacionService();
+            $infoGeografica = $geocodificacionService->obtenerInformacionGeografica(
+                (float) $request->latitud,
+                (float) $request->longitud
+            );
+            
+            if ($infoGeografica) {
+                $data['departamento'] = $infoGeografica['departamento'];
+                $data['municipio'] = $infoGeografica['municipio'];
+                $data['provincia'] = $infoGeografica['provincia'];
+                $data['ciudad'] = $infoGeografica['ciudad'];
+                
+                // Si no hay ubicación escrita, usar la dirección completa
+                if (empty($data['ubicacion']) && isset($infoGeografica['direccion_completa'])) {
+                    $data['ubicacion'] = $infoGeografica['direccion_completa'];
+                }
+            }
+        }
+        
         $maquinaria->update($data);
         
         // Eliminar imágenes marcadas para eliminar
@@ -117,7 +162,7 @@ class MaquinariaController extends Controller
             $totalImagenesActuales = $maquinaria->imagenes()->count();
             $maxOrden = $maquinaria->imagenes()->max('orden') ?? -1;
             $orden = $maxOrden + 1;
-            $espaciosDisponibles = 4 - $totalImagenesActuales;
+            $espaciosDisponibles = 3 - $totalImagenesActuales;
             
             if ($espaciosDisponibles > 0) {
                 $imagenes = array_slice($request->file('imagenes'), 0, $espaciosDisponibles);

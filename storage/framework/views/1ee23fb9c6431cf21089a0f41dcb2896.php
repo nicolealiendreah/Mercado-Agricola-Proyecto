@@ -2,6 +2,31 @@
 
 <?php $__env->startSection('content'); ?>
 <div class="container-fluid">
+
+    
+    <style>
+        /* Card derecha (título, badges, precio, botón) */
+        .panel-info-card {
+            height: 400px; /* igual que la imagen principal */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Cards inferiores (Información Detallada y Ubicación) */
+        .panel-equal-card {
+            height: 280px; /* ajusta si quieres más o menos alto */
+        }
+
+        /* En pantallas pequeñas se vuelven automáticas */
+        @media (max-width: 992px) {
+            .panel-info-card,
+            .panel-equal-card {
+                height: auto !important;
+            }
+        }
+    </style>
+
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -21,15 +46,20 @@
             <?php if($maquinaria->imagenes && $maquinaria->imagenes->count() > 0): ?>
                 <div class="card shadow-sm border-0 mb-3">
                     <div class="card-body p-0">
-                        <div class="position-relative" style="overflow: hidden; border-radius: 8px 8px 0 0;">
-                            <img id="mainImage" 
-                                 src="<?php echo e(asset('storage/'.$maquinaria->imagenes->first()->ruta)); ?>" 
-                                 alt="<?php echo e($maquinaria->nombre); ?>" 
-                                 class="img-fluid w-100" 
-                                 style="height: 450px; object-fit: cover; cursor: pointer;"
-                                 onclick="window.open(this.src, '_blank')"
-                                 title="Click para ver imagen completa">
-                            <div class="position-absolute top-0 end-0 m-2">
+                        <div class="position-relative" style="overflow: hidden; border-radius: 8px 8px 0 0; background:#fff;">
+                            
+                            <div class="d-flex justify-content-center align-items-center" style="height: 400px;">
+                                <img id="mainImage" 
+                                     src="<?php echo e(asset('storage/'.$maquinaria->imagenes->first()->ruta)); ?>" 
+                                     alt="<?php echo e($maquinaria->nombre); ?>" 
+                                     style="max-height: 100%; max-width: 100%; object-fit: contain; cursor: pointer;"
+                                     data-toggle="modal"
+                                     data-target="#imageModal"
+                                     onclick="document.getElementById('imageModalImg').src = this.src"
+                                     title="Click para ver imagen completa">
+                            </div>
+
+                            <div class="position-absolute" style="top:10px; right:10px;">
                                 <span class="badge badge-success badge-lg">
                                     <i class="fas fa-image"></i> Click para ampliar
                                 </span>
@@ -42,14 +72,19 @@
                     <div class="row">
                         <?php $__currentLoopData = $maquinaria->imagenes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $imagen): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="col-4 mb-2">
-                                <img src="<?php echo e(asset('storage/'.$imagen->ruta)); ?>" 
-                                     alt="Imagen <?php echo e($loop->iteration); ?>" 
-                                     class="img-thumbnail w-100" 
-                                     style="height: 100px; object-fit: cover; cursor: pointer;"
-                                     onclick="document.getElementById('mainImage').src = this.src"
-                                     onmouseover="this.style.opacity='0.7'" 
-                                     onmouseout="this.style.opacity='1'"
-                                     title="Click para ver">
+                                
+                                <div class="bg-white border rounded d-flex align-items-center justify-content-center" style="height: 90px;">
+                                    <img src="<?php echo e(asset('storage/'.$imagen->ruta)); ?>" 
+                                         alt="Imagen <?php echo e($loop->iteration); ?>" 
+                                         style="max-height: 100%; max-width: 100%; object-fit: contain; cursor: pointer; transition: opacity .2s;"
+                                         onclick="
+                                            document.getElementById('mainImage').src = this.src;
+                                            document.getElementById('imageModalImg').src = this.src;
+                                         "
+                                         onmouseover="this.style.opacity='0.7'" 
+                                         onmouseout="this.style.opacity='1'"
+                                         title="Click para ver">
+                                </div>
                             </div>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
@@ -71,7 +106,7 @@
         <!-- Información Principal -->
         <div class="col-lg-7">
             <!-- Título y Precio -->
-            <div class="card shadow-sm border-0 mb-4">
+            <div class="card shadow-sm border-0 mb-4 panel-info-card">
                 <div class="card-body">
                     <h2 class="h4 mb-3 text-dark"><?php echo e($maquinaria->nombre); ?></h2>
                     
@@ -148,7 +183,7 @@
     <!-- Información Detallada -->
     <div class="row">
         <div class="col-lg-8">
-            <div class="card shadow-sm border-0 mb-4">
+            <div class="card shadow-sm border-0 mb-4 panel-equal-card">
                 <div class="card-header bg-white border-bottom">
                     <h5 class="mb-0">
                         <i class="fas fa-info-circle text-primary"></i> Información Detallada
@@ -200,42 +235,58 @@
                 </div>
             </div>
 
-            <?php if($maquinaria->latitud && $maquinaria->longitud): ?>
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-white border-bottom">
-                        <h5 class="mb-0">
-                            <i class="fas fa-map-marker-alt text-danger"></i> Ubicación
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-3">
-                            <i class="fas fa-location-dot text-danger"></i> 
-                            <strong><?php echo e($maquinaria->ubicacion ?? 'Ubicación de la maquinaria'); ?></strong>
-                        </p>
-                        <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#mapModal">
-                            <i class="fas fa-map"></i> Ver Mapa
-                        </button>
-                    </div>
+            <!-- Ubicación -->
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-map-marker-alt text-danger"></i> Ubicación
+                    </h5>
                 </div>
-            <?php endif; ?>
-        </div>
+                <div class="card-body">
+                    <?php if($maquinaria->ciudad || $maquinaria->municipio || $maquinaria->departamento): ?>
+                        <div class="mb-3">
+                            <div class="row mb-2">
+                                <div class="col-md-3">
+                                    <strong>Ciudad:</strong>
+                                </div>
+                                <div class="col-md-9">
+                                    <?php echo e($maquinaria->ciudad ?? $maquinaria->municipio ?? 'No disponible'); ?>
 
-        <div class="col-lg-4">
-            <?php if($maquinaria->ubicacion): ?>
-                <div class="card shadow-sm border-0 mb-4">
-                    <div class="card-header bg-white border-bottom">
-                        <h5 class="mb-0">
-                            <i class="fas fa-map-marker-alt text-danger"></i> Ubicación
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <p class="mb-0">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong>Dirección:</strong>
+                                </div>
+                                <div class="col-md-9">
+                                    <?php
+                                        $direccion = [];
+                                        if($maquinaria->municipio) $direccion[] = $maquinaria->municipio;
+                                        if($maquinaria->provincia) $direccion[] = 'Provincia ' . $maquinaria->provincia;
+                                        if($maquinaria->departamento) $direccion[] = $maquinaria->departamento;
+                                        $direccion[] = 'Bolivia';
+                                        $direccionCompleta = implode(', ', $direccion);
+                                    ?>
+                                    <?php echo e($direccionCompleta); ?>
+
+                                </div>
+                            </div>
+                        </div>
+                    <?php elseif($maquinaria->ubicacion): ?>
+                        <p class="mb-2">
                             <i class="fas fa-location-dot text-danger"></i> 
                             <strong><?php echo e($maquinaria->ubicacion); ?></strong>
                         </p>
-                    </div>
+                    <?php else: ?>
+                        <p class="text-muted mb-2">Sin ubicación especificada</p>
+                    <?php endif; ?>
+                    <?php if($maquinaria->latitud && $maquinaria->longitud): ?>
+                        <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#mapModal">
+                            <i class="fas fa-map"></i> Ver Mapa
+                        </button>
+                    <?php endif; ?>
                 </div>
-            <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>
@@ -254,7 +305,7 @@
                 </button>
             </div>
             <div class="modal-body p-0">
-                <div id="map" style="height: 500px; width: 100%;"></div>
+                <div id="map-maquinaria-modal" style="height: 500px; width: 100%;"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -263,36 +314,100 @@
     </div>
 </div>
 
-<!-- Leaflet CSS -->
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-<!-- Leaflet JS -->
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    var mapMaquinaria = null;
-    
-    // Inicializar el mapa cuando se abra el modal
-    $('#mapModal').on('shown.bs.modal', function () {
-        if (!mapMaquinaria) {
-            mapMaquinaria = L.map('map').setView([<?php echo e($maquinaria->latitud); ?>, <?php echo e($maquinaria->longitud); ?>], 12);
+window.addEventListener('load', function() {
+    $(document).ready(function() {
+        let mapMaquinaria = null;
+        
+        <?php
+            $popupText = $maquinaria->nombre;
+            if($maquinaria->ciudad || $maquinaria->municipio) {
+                $popupText .= ' - ' . ($maquinaria->ciudad ?? $maquinaria->municipio);
+            }
+            if($maquinaria->municipio || $maquinaria->provincia || $maquinaria->departamento) {
+                $direccion = [];
+                if($maquinaria->municipio) $direccion[] = $maquinaria->municipio;
+                if($maquinaria->provincia) $direccion[] = 'Provincia ' . $maquinaria->provincia;
+                if($maquinaria->departamento) $direccion[] = $maquinaria->departamento;
+                $direccion[] = 'Bolivia';
+                $popupText .= ' - ' . implode(', ', $direccion);
+            } elseif($maquinaria->ubicacion) {
+                $popupText .= ' - ' . $maquinaria->ubicacion;
+            }
+        ?>
 
-            // Capa gratuita de OpenStreetMap
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: 'OpenStreetMap'
-            }).addTo(mapMaquinaria);
-
-            // Agregar marcador en la ubicación
-            var marker = L.marker([<?php echo e($maquinaria->latitud); ?>, <?php echo e($maquinaria->longitud); ?>]).addTo(mapMaquinaria);
+        function initMap() {
+            if (typeof L === 'undefined') {
+                console.error('Leaflet no está disponible');
+                return false;
+            }
             
-            // Agregar popup con información
-            marker.bindPopup('<b><?php echo e($maquinaria->nombre); ?></b><br><?php echo e($maquinaria->ubicacion ?? "Ubicación de la maquinaria"); ?>').openPopup();
-        } else {
-            mapMaquinaria.invalidateSize();
+            try {
+                mapMaquinaria = L.map('map-maquinaria-modal').setView(
+                    [<?php echo e($maquinaria->latitud); ?>, <?php echo e($maquinaria->longitud); ?>],
+                    12
+                );
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(mapMaquinaria);
+
+                L.marker([<?php echo e($maquinaria->latitud); ?>, <?php echo e($maquinaria->longitud); ?>])
+                    .addTo(mapMaquinaria)
+                    .bindPopup("<?php echo e(addslashes($popupText)); ?>");
+                
+                return true;
+            } catch (error) {
+                console.error('Error al inicializar el mapa:', error);
+                return false;
+            }
         }
+
+        $('#mapModal').on('shown.bs.modal', function () {
+            if (!mapMaquinaria) {
+                // Esperar a que el modal esté completamente visible
+                setTimeout(function() {
+                    if (!initMap()) {
+                        // Si falla, reintentar después de un momento
+                        setTimeout(initMap, 500);
+                    }
+                }, 200);
+            } else {
+                // Si el mapa ya existe, solo invalidar el tamaño
+                setTimeout(function() {
+                    mapMaquinaria.invalidateSize();
+                }, 100);
+            }
+        });
     });
+});
 </script>
 <?php endif; ?>
+
+
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+
+            <button type="button" class="close text-white ml-auto mr-2 mt-2" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+
+            <div class="modal-body p-0 text-center">
+                <img id="imageModalImg" src="" class="img-fluid rounded"
+                     style="max-height: 80vh; object-fit: contain;">
+            </div>
+
+        </div>
+    </div>
+</div>
 
 <style>
 .badge-lg {

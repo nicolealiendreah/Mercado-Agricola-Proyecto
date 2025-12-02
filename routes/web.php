@@ -93,6 +93,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('carrito/{cartItem}', [App\Http\Controllers\CartController::class, 'remove'])->name('cart.remove');
     Route::delete('carrito', [App\Http\Controllers\CartController::class, 'clear'])->name('cart.clear');
     Route::get('carrito/count', [App\Http\Controllers\CartController::class, 'getCount'])->name('cart.count');
+    
+    // API para obtener información geográfica desde coordenadas
+    Route::get('/api/geocodificacion', [GanadoController::class, 'obtenerGeocodificacion'])->name('api.geocodificacion');
 });
 
 // ===== CLIENTE =====

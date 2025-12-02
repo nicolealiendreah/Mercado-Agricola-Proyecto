@@ -2,6 +2,33 @@
 
 <?php $__env->startSection('content'); ?>
 <div class="container-fluid">
+
+    
+    <style>
+        /* Card derecha (título, badges, precio, botón) */
+        .panel-info-card {
+            height: 450px; /* igual que la imagen principal */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* En pantallas pequeñas que se adapte normal */
+        @media (max-width: 992px) {
+            .panel-info-card {
+                height: auto !important;
+            }
+        }
+
+        .badge-lg {
+            font-size: 0.9rem;
+            padding: 0.5rem 0.75rem;
+        }
+        .bg-success-light {
+            background-color: #d4edda !important;
+        }
+    </style>
+
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -16,40 +43,87 @@
     </div>
 
     <div class="row">
-        <!-- Imagen Principal -->
+        <!-- Galería de Imágenes -->
         <div class="col-lg-5 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-0">
-                    <?php if($ganado->imagen): ?>
-                        <div class="position-relative" style="overflow: hidden; border-radius: 8px 8px 0 0;">
-                            <img src="<?php echo e(asset('storage/'.$ganado->imagen)); ?>" 
-                                 alt="Imagen de <?php echo e($ganado->nombre); ?>" 
-                                 class="img-fluid w-100" 
-                                 style="height: 450px; object-fit: cover; cursor: pointer;"
-                                 onclick="window.open('<?php echo e(asset('storage/'.$ganado->imagen)); ?>', '_blank')"
+            <?php if($ganado->imagenes && $ganado->imagenes->count() > 0): ?>
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-body p-0">
+                        <div class="position-relative bg-white d-flex justify-content-center align-items-center" 
+                             style="height: 450px; border-radius: 8px;">
+                            <img id="imagen-principal" 
+                                 src="<?php echo e(asset('storage/'.$ganado->imagenes->first()->ruta)); ?>" 
+                                 alt="<?php echo e($ganado->nombre); ?>" 
+                                 style="max-height: 100%; max-width: 100%; object-fit: contain; cursor: pointer;"
+                                 data-toggle="modal"
+                                 data-target="#imageModal"
+                                 onclick="document.getElementById('imageModalImg').src = this.src"
                                  title="Click para ver imagen completa">
-                            <div class="position-absolute top-0 end-0 m-2">
+                            <div class="position-absolute" style="top:10px; right:10px;">
                                 <span class="badge badge-success badge-lg">
                                     <i class="fas fa-image"></i> Click para ampliar
                                 </span>
                             </div>
                         </div>
-                    <?php else: ?>
+                    </div>
+                </div>
+                
+                <?php if($ganado->imagenes->count() > 1): ?>
+                    <div class="row">
+                        <?php $__currentLoopData = $ganado->imagenes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $imagen): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="col-4 mb-2">
+                                <div class="bg-white border rounded d-flex align-items-center justify-content-center" 
+                                     style="height: 90px; cursor: pointer; transition: all 0.2s;"
+                                     onclick="
+                                        document.getElementById('imagen-principal').src = '<?php echo e(asset('storage/'.$imagen->ruta)); ?>';
+                                        document.getElementById('imageModalImg').src = '<?php echo e(asset('storage/'.$imagen->ruta)); ?>';
+                                     "
+                                     onmouseover="this.style.borderColor='#28a745'; this.style.transform='scale(1.05)'" 
+                                     onmouseout="this.style.borderColor='#dee2e6'; this.style.transform='scale(1)'">
+                                    <img src="<?php echo e(asset('storage/'.$imagen->ruta)); ?>" 
+                                         alt="Imagen <?php echo e($loop->iteration); ?>" 
+                                         style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                </div>
+                            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                <?php endif; ?>
+            <?php elseif($ganado->imagen): ?>
+                <!-- Compatibilidad con imagen antigua -->
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-0">
+                        <div class="position-relative bg-white d-flex justify-content-center align-items-center" 
+                             style="height: 450px; border-radius: 8px;">
+                            <img src="<?php echo e(asset('storage/'.$ganado->imagen)); ?>" 
+                                 alt="Imagen de <?php echo e($ganado->nombre); ?>" 
+                                 style="max-height: 100%; max-width: 100%; object-fit: contain; cursor: pointer;"
+                                 onclick="window.open('<?php echo e(asset('storage/'.$ganado->imagen)); ?>', '_blank')"
+                                 title="Click para ver imagen completa">
+                            <div class="position-absolute" style="top:10px; right:10px;">
+                                <span class="badge badge-success badge-lg">
+                                    <i class="fas fa-image"></i> Click para ampliar
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php else: ?>
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
                         <div class="d-flex align-items-center justify-content-center bg-light" style="height: 450px;">
                             <div class="text-center text-muted">
                                 <i class="fas fa-image fa-4x mb-3"></i>
-                                <p class="mb-0">Sin imagen disponible</p>
+                                <p class="mb-0">Sin imágenes disponibles</p>
                             </div>
                         </div>
-                    <?php endif; ?>
+                    </div>
                 </div>
-            </div>
+            <?php endif; ?>
         </div>
 
         <!-- Información Principal -->
         <div class="col-lg-7">
             <!-- Título y Precio -->
-            <div class="card shadow-sm border-0 mb-4">
+            <div class="card shadow-sm border-0 mb-4 panel-info-card">
                 <div class="card-body">
                     <h2 class="h4 mb-3 text-dark"><?php echo e($ganado->nombre); ?></h2>
                     
@@ -73,7 +147,7 @@
                     </div>
 
                     <?php if($ganado->precio): ?>
-                        <div class="bg-success-light p-4 rounded mb-3" style="background-color: #d4edda;">
+                        <div class="bg-success-light p-4 rounded mb-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <small class="text-muted d-block mb-1">Precio</small>
@@ -275,18 +349,12 @@
                             </div>
                         </div>
 
-                        <?php if($ganado->datoSanitario->destino_matadero_campo || $ganado->datoSanitario->hoja_ruta_foto || $ganado->datoSanitario->marca_ganado || $ganado->datoSanitario->senal_numero): ?>
+                        <?php if($ganado->datoSanitario->marca_ganado || $ganado->datoSanitario->senal_numero || $ganado->datoSanitario->marca_ganado_foto): ?>
                         <div class="mt-4 pt-3 border-top">
                             <h6 class="text-muted mb-3">
-                                <i class="fas fa-road text-primary"></i> Guía de Movimiento del Animal
+                                <i class="fas fa-tag text-primary"></i> Marca del Animal
                             </h6>
                             <div class="row">
-                                <?php if($ganado->datoSanitario->destino_matadero_campo): ?>
-                                    <div class="col-md-6 mb-2">
-                                        <small class="text-muted d-block">Destino (Matadero o Campo)</small>
-                                        <strong><?php echo e($ganado->datoSanitario->destino_matadero_campo); ?></strong>
-                                    </div>
-                                <?php endif; ?>
                                 <?php if($ganado->datoSanitario->marca_ganado): ?>
                                     <div class="col-md-6 mb-2">
                                         <small class="text-muted d-block">Marca del Ganado</small>
@@ -299,19 +367,19 @@
                                         <strong><?php echo e($ganado->datoSanitario->senal_numero); ?></strong>
                                     </div>
                                 <?php endif; ?>
-                                <?php if($ganado->datoSanitario->hoja_ruta_foto): ?>
+                                <?php if($ganado->datoSanitario->marca_ganado_foto): ?>
                                     <div class="col-12 mb-2">
-                                        <small class="text-muted d-block mb-2">Hoja de Ruta</small>
-                                        <a href="<?php echo e(asset('storage/'.$ganado->datoSanitario->hoja_ruta_foto)); ?>" 
+                                        <small class="text-muted d-block mb-2">Foto de la Marca</small>
+                                        <a href="<?php echo e(asset('storage/'.$ganado->datoSanitario->marca_ganado_foto)); ?>" 
                                            target="_blank" 
-                                           class="btn btn-warning btn-sm">
-                                            <i class="fas fa-road"></i> Ver Hoja de Ruta
+                                           class="btn btn-primary btn-sm">
+                                            <i class="fas fa-image"></i> Ver Foto Marca
                                         </a>
-                                        <img src="<?php echo e(asset('storage/'.$ganado->datoSanitario->hoja_ruta_foto)); ?>" 
-                                             alt="Hoja de Ruta" 
+                                        <img src="<?php echo e(asset('storage/'.$ganado->datoSanitario->marca_ganado_foto)); ?>" 
+                                             alt="Foto de la Marca" 
                                              class="img-thumbnail mt-2" 
                                              style="max-width: 200px; cursor: pointer;"
-                                             onclick="window.open('<?php echo e(asset('storage/'.$ganado->datoSanitario->hoja_ruta_foto)); ?>', '_blank')"
+                                             onclick="window.open('<?php echo e(asset('storage/'.$ganado->datoSanitario->marca_ganado_foto)); ?>', '_blank')"
                                              title="Click para ver imagen completa">
                                     </div>
                                 <?php endif; ?>
@@ -364,7 +432,36 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <?php if($ganado->ubicacion): ?>
+                    <?php if($ganado->ciudad || $ganado->municipio || $ganado->departamento): ?>
+                        <div class="mb-3">
+                            <div class="row mb-2">
+                                <div class="col-md-3">
+                                    <strong>Ciudad:</strong>
+                                </div>
+                                <div class="col-md-9">
+                                    <?php echo e($ganado->ciudad ?? $ganado->municipio ?? 'No disponible'); ?>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong>Dirección:</strong>
+                                </div>
+                                <div class="col-md-9">
+                                    <?php
+                                        $direccion = [];
+                                        if($ganado->municipio) $direccion[] = $ganado->municipio;
+                                        if($ganado->provincia) $direccion[] = 'Provincia ' . $ganado->provincia;
+                                        if($ganado->departamento) $direccion[] = $ganado->departamento;
+                                        $direccion[] = 'Bolivia';
+                                        $direccionCompleta = implode(', ', $direccion);
+                                    ?>
+                                    <?php echo e($direccionCompleta); ?>
+
+                                </div>
+                            </div>
+                        </div>
+                    <?php elseif($ganado->ubicacion): ?>
                         <p class="mb-2">
                             <i class="fas fa-location-dot text-danger"></i> 
                             <strong><?php echo e($ganado->ubicacion); ?></strong>
@@ -373,11 +470,6 @@
                         <p class="text-muted mb-2">Sin ubicación especificada</p>
                     <?php endif; ?>
                     <?php if($ganado->latitud && $ganado->longitud): ?>
-                        <small class="text-muted d-block mb-3">
-                            <i class="fas fa-globe"></i> 
-                            Lat: <?php echo e($ganado->latitud); ?>, Lng: <?php echo e($ganado->longitud); ?>
-
-                        </small>
                         <button type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#mapModal">
                             <i class="fas fa-map"></i> Ver Mapa
                         </button>
@@ -394,15 +486,13 @@
                 </div>
                 <div class="card-body">
                     <?php if($ganado->fecha_publicacion): ?>
-                        <div class="mb-3">
+                        <div>
                             <small class="text-muted d-block mb-1">Fecha de Publicación</small>
                             <strong><?php echo e(\Carbon\Carbon::parse($ganado->fecha_publicacion)->format('d/m/Y')); ?></strong>
                         </div>
+                    <?php else: ?>
+                        <p class="text-muted mb-0">Sin fecha de publicación</p>
                     <?php endif; ?>
-                    <div>
-                        <small class="text-muted d-block mb-1">Fecha de Registro</small>
-                        <strong><?php echo e($ganado->created_at->format('d/m/Y H:i')); ?></strong>
-                    </div>
                 </div>
             </div>
         </div>
@@ -411,67 +501,118 @@
 
 <!-- Modal del Mapa -->
 <?php if($ganado->latitud && $ganado->longitud): ?>
-<div class="modal fade" id="mapModal" tabindex="-1" role="dialog" aria-labelledby="mapModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+<div class="modal fade" id="mapModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="mapModalLabel">
+                <h5 class="modal-title">
                     <i class="fas fa-map-marker-alt text-danger"></i> Ubicación del Anuncio
                 </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body p-0">
-                <div id="map" style="height: 500px; width: 100%;"></div>
+                <div id="map-ganado-modal" style="height:500px; width:100%;"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                <button class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Leaflet CSS -->
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-<!-- Leaflet JS -->
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-    var mapGanado = null;
-    
-    // Inicializar el mapa cuando se abra el modal
-    $('#mapModal').on('shown.bs.modal', function () {
-        if (!mapGanado) {
-            mapGanado = L.map('map').setView([<?php echo e($ganado->latitud); ?>, <?php echo e($ganado->longitud); ?>], 12);
+// Esperar a que todo esté cargado
+window.addEventListener('load', function() {
+    $(document).ready(function() {
+        let mapGanado = null;
+        
+        <?php
+            $popupText = $ganado->nombre;
+            if($ganado->ciudad || $ganado->municipio) {
+                $popupText .= ' - ' . ($ganado->ciudad ?? $ganado->municipio);
+            }
+            if($ganado->municipio || $ganado->provincia || $ganado->departamento) {
+                $direccion = [];
+                if($ganado->municipio) $direccion[] = $ganado->municipio;
+                if($ganado->provincia) $direccion[] = 'Provincia ' . $ganado->provincia;
+                if($ganado->departamento) $direccion[] = $ganado->departamento;
+                $direccion[] = 'Bolivia';
+                $popupText .= ' - ' . implode(', ', $direccion);
+            } elseif($ganado->ubicacion) {
+                $popupText .= ' - ' . $ganado->ubicacion;
+            }
+        ?>
 
-            // Capa gratuita de OpenStreetMap
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: 'OpenStreetMap'
-            }).addTo(mapGanado);
-
-            // Agregar marcador en la ubicación
-            var marker = L.marker([<?php echo e($ganado->latitud); ?>, <?php echo e($ganado->longitud); ?>]).addTo(mapGanado);
+        function initMap() {
+            if (typeof L === 'undefined') {
+                console.error('Leaflet no está disponible');
+                return false;
+            }
             
-            // Agregar popup con información
-            marker.bindPopup('<b><?php echo e($ganado->nombre); ?></b><br><?php echo e($ganado->ubicacion ?? "Ubicación del ganado"); ?>').openPopup();
-        } else {
-            mapGanado.invalidateSize();
+            try {
+                mapGanado = L.map('map-ganado-modal').setView(
+                    [<?php echo e($ganado->latitud); ?>, <?php echo e($ganado->longitud); ?>],
+                    12
+                );
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(mapGanado);
+
+                L.marker([<?php echo e($ganado->latitud); ?>, <?php echo e($ganado->longitud); ?>])
+                    .addTo(mapGanado)
+                    .bindPopup("<?php echo e(addslashes($popupText)); ?>");
+                
+                return true;
+            } catch (error) {
+                console.error('Error al inicializar el mapa:', error);
+                return false;
+            }
         }
+
+        $('#mapModal').on('shown.bs.modal', function () {
+            if (!mapGanado) {
+                // Esperar a que el modal esté completamente visible
+                setTimeout(function() {
+                    if (!initMap()) {
+                        // Si falla, reintentar después de un momento
+                        setTimeout(initMap, 500);
+                    }
+                }, 200);
+            } else {
+                // Si el mapa ya existe, solo invalidar el tamaño
+                setTimeout(function() {
+                    mapGanado.invalidateSize();
+                }, 100);
+            }
+        });
     });
+});
 </script>
 <?php endif; ?>
 
-<style>
-.badge-lg {
-    font-size: 0.9rem;
-    padding: 0.5rem 0.75rem;
-}
-.bg-success-light {
-    background-color: #d4edda !important;
-}
-</style>
+
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+            <button type="button" class="close text-white ml-auto mr-2 mt-2" data-dismiss="modal" aria-label="Close" style="font-size: 2rem; z-index: 1051;">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="modal-body p-0 text-center">
+                <img id="imageModalImg" src="" class="img-fluid rounded"
+                     style="max-height: 80vh; object-fit: contain;">
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php $__env->stopSection(); ?>
 
 <?php echo $__env->make('layouts.adminlte', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\dev\Proyecto-Mercado-Agricola-main\Proyecto-Mercado-Agricola-main\resources\views/ganados/show.blade.php ENDPATH**/ ?>

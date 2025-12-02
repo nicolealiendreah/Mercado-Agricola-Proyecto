@@ -19,6 +19,10 @@ class Maquinaria extends Model
     'descripcion',
     'categoria_id',
     'ubicacion',
+    'departamento',
+    'municipio',
+    'provincia',
+    'ciudad',
     'latitud',
     'longitud',
 ];

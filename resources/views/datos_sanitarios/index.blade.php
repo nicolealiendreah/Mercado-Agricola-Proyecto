@@ -129,26 +129,30 @@
                                     <span class="badge badge-secondary badge-lg">#{{ $item->id }}</span>
                                 </td>
                                 <td>
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-cow text-primary mr-2"></i>
-                                        <div>
-                                            <strong class="d-block">{{ $item->ganado->nombre }}</strong>
-                                            @if($item->ganado->tipoAnimal)
-                                                <small class="text-muted">
-                                                    <i class="fas fa-paw"></i> {{ $item->ganado->tipoAnimal->nombre }}
-                                                </small>
-                                            @endif
-                                            @if(!$item->ganado->fecha_publicacion)
-                                                <br><span class="badge badge-warning badge-sm mt-1">
-                                                    <i class="fas fa-eye-slash"></i> Sin publicar
-                                                </span>
-                                            @else
-                                                <br><span class="badge badge-success badge-sm mt-1">
-                                                    <i class="fas fa-eye"></i> Publicado
-                                                </span>
-                                            @endif
+                                    @if($item->ganado)
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-cow text-primary mr-2"></i>
+                                            <div>
+                                                <strong class="d-block">{{ $item->ganado->nombre }}</strong>
+                                                @if($item->ganado->tipoAnimal)
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-paw"></i> {{ $item->ganado->tipoAnimal->nombre }}
+                                                    </small>
+                                                @endif
+                                                @if(!$item->ganado->fecha_publicacion)
+                                                    <br><span class="badge badge-warning badge-sm mt-1">
+                                                        <i class="fas fa-eye-slash"></i> Sin publicar
+                                                    </span>
+                                                @else
+                                                    <br><span class="badge badge-success badge-sm mt-1">
+                                                        <i class="fas fa-eye"></i> Publicado
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
+                                    @else
+                                        <span class="text-muted"><i class="fas fa-info-circle"></i> Sin datos</span>
+                                    @endif
                                 </td>
                                 <td>
                                     @if($item->nombre_dueño)
@@ -168,7 +172,7 @@
                                             </div>
                                         </div>
                                     @else
-                                        <span class="text-muted">—</span>
+                                        <span class="text-muted"><i class="fas fa-info-circle"></i> Sin datos</span>
                                     @endif
                                 </td>
                                 <td>
@@ -189,7 +193,7 @@
                                             </small>
                                         @endif
                                         @if(!$item->vacunado_fiebre_aftosa && !$item->vacunado_antirabica && !$item->vacuna)
-                                            <span class="text-muted">—</span>
+                                            <span class="text-muted"><i class="fas fa-info-circle"></i> Sin datos</span>
                                         @endif
                                     </div>
                                 </td>
@@ -202,20 +206,13 @@
                                                 <i class="fas fa-certificate"></i> Certificado
                                             </a>
                                         @else
-                                            <span class="badge badge-secondary badge-sm">Sin certificado</span>
+                                            <span class="text-muted"><i class="fas fa-info-circle"></i> Sin datos</span>
                                         @endif
                                     </div>
                                 </td>
                                 <td>
-                                    @if($item->destino_matadero_campo || $item->hoja_ruta_foto || $item->marca_ganado || $item->senal_numero)
+                                    @if($item->marca_ganado || $item->senal_numero || $item->marca_ganado_foto)
                                         <div class="small">
-                                            @if($item->destino_matadero_campo)
-                                                <div class="mb-1">
-                                                    <i class="fas fa-map-marker-alt text-primary"></i> 
-                                                    <strong>Destino:</strong><br>
-                                                    <span class="text-muted">{{ Str::limit($item->destino_matadero_campo, 25) }}</span>
-                                                </div>
-                                            @endif
                                             @if($item->marca_ganado)
                                                 <div class="mb-1">
                                                     <i class="fas fa-tag text-primary"></i> 
@@ -228,16 +225,18 @@
                                                     <strong>Señal:</strong> {{ $item->senal_numero }}
                                                 </div>
                                             @endif
-                                            @if($item->hoja_ruta_foto)
-                                                <a href="{{ asset('storage/'.$item->hoja_ruta_foto) }}" 
-                                                   target="_blank" 
-                                                   class="btn btn-sm btn-warning">
-                                                    <i class="fas fa-route"></i> Hoja Ruta
-                                                </a>
+                                            @if($item->marca_ganado_foto)
+                                                <div class="mb-1">
+                                                    <a href="{{ asset('storage/'.$item->marca_ganado_foto) }}" 
+                                                       target="_blank" 
+                                                       class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-image"></i> Ver Foto Marca
+                                                    </a>
+                                                </div>
                                             @endif
                                         </div>
                                     @else
-                                        <span class="text-muted">—</span>
+                                        <span class="text-muted"><i class="fas fa-info-circle"></i> Sin datos</span>
                                     @endif
                                 </td>
                                 <td>
@@ -247,7 +246,7 @@
                                             <strong>{{ \Carbon\Carbon::parse($item->fecha_aplicacion)->format('d/m/Y') }}</strong>
                                         </div>
                                     @else
-                                        <span class="text-muted">—</span>
+                                        <span class="text-muted"><i class="fas fa-info-circle"></i> Sin datos</span>
                                     @endif
                                 </td>
                                 <td>
