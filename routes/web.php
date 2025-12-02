@@ -12,6 +12,9 @@ use App\Http\Controllers\EstadoMaquinariaController;
 use App\Http\Controllers\SolicitudVendedorController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\AdminPedidoController;
 
 // 1) Raíz -> login (pantalla principal)
 Route::redirect('/', '/login');
@@ -44,6 +47,9 @@ Route::view('/publicar', 'public.ads.create')->name('ads.create');
 // ===== ADMINISTRADOR =====
 // Solo ADMIN puede acceder a configuración y parámetros
 Route::middleware(['auth', 'role.admin'])->prefix('admin')->name('admin.')->group(function () {
+
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
     // Gestión de solicitudes de vendedor
     Route::get('/solicitudes-vendedor', [SolicitudVendedorController::class, 'index'])->name('solicitudes-vendedor.index');
     Route::get('/solicitudes-vendedor/{solicitudVendedor}', [SolicitudVendedorController::class, 'show'])->name('solicitudes-vendedor.show');
@@ -59,6 +65,11 @@ Route::middleware(['auth', 'role.admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('marcas_maquinarias', App\Http\Controllers\MarcaMaquinariaController::class);
     Route::resource('estado_maquinarias', EstadoMaquinariaController::class);
     Route::resource('unidades_organicos', App\Http\Controllers\UnidadOrganicoController::class);
+
+    Route::get('/pedidos', [AdminPedidoController::class, 'index'])->name('pedidos.index');
+    Route::get('/pedidos/{pedido}', [AdminPedidoController::class, 'show'])->name('pedidos.show');
+    Route::put('/pedidos/{pedido}/estado', [AdminPedidoController::class, 'updateEstado'])->name('pedidos.updateEstado');
+
 });
 
 // ===== VENDEDOR Y ADMINISTRADOR =====
@@ -96,6 +107,12 @@ Route::middleware('auth')->group(function () {
     
     // API para obtener información geográfica desde coordenadas
     Route::get('/api/geocodificacion', [GanadoController::class, 'obtenerGeocodificacion'])->name('api.geocodificacion');
+
+        // Pedidos (historial del usuario)
+    Route::get('/mis-pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
+    Route::get('/mis-pedidos/{pedido}', [PedidoController::class, 'show'])->name('pedidos.show');
+    Route::post('/pedidos', [PedidoController::class, 'store'])->name('pedidos.store');
+
 });
 
 // ===== CLIENTE =====

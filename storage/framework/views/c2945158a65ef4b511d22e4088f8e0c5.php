@@ -1,9 +1,7 @@
-@extends('layouts.adminlte')
+<?php $__env->startSection('title', 'Carrito de Compras'); ?>
+<?php $__env->startSection('page_title', 'Carrito de Compras'); ?>
 
-@section('title', 'Carrito de Compras')
-@section('page_title', 'Carrito de Compras')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <style>
   .cart-container {
     max-width: 1200px;
@@ -233,49 +231,52 @@
             <h3 class="mb-1" style="font-weight: 700;">
               <i class="fas fa-shopping-cart mr-2"></i>Mi Carrito
             </h3>
-            @if($cartItems->count() > 0)
+            <?php if($cartItems->count() > 0): ?>
               <p class="mb-0 text-white-50">
-                <i class="fas fa-box mr-1"></i>{{ $cartItems->sum('cantidad') }} 
-                {{ $cartItems->sum('cantidad') == 1 ? 'producto' : 'productos' }}
+                <i class="fas fa-box mr-1"></i><?php echo e($cartItems->sum('cantidad')); ?> 
+                <?php echo e($cartItems->sum('cantidad') == 1 ? 'producto' : 'productos'); ?>
+
               </p>
-            @endif
+            <?php endif; ?>
           </div>
-          @if($cartItems->count() > 0)
-            <form action="{{ route('cart.clear') }}" method="POST" class="d-inline" id="clearCartForm">
-              @csrf
-              @method('DELETE')
+          <?php if($cartItems->count() > 0): ?>
+            <form action="<?php echo e(route('cart.clear')); ?>" method="POST" class="d-inline" id="clearCartForm">
+              <?php echo csrf_field(); ?>
+              <?php echo method_field('DELETE'); ?>
               <button type="button" class="btn btn-light btn-sm" onclick="confirmClearCart()">
                 <i class="fas fa-trash mr-1"></i>Vaciar Carrito
               </button>
             </form>
-          @endif
+          <?php endif; ?>
         </div>
       </div>
 
       <div class="card-body p-4">
-        @if(session('success'))
+        <?php if(session('success')): ?>
           <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
+            <i class="fas fa-check-circle mr-2"></i><?php echo e(session('success')); ?>
+
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-        @endif
+        <?php endif; ?>
 
-        @if(session('error'))
+        <?php if(session('error')): ?>
           <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
+            <i class="fas fa-exclamation-circle mr-2"></i><?php echo e(session('error')); ?>
+
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-        @endif
+        <?php endif; ?>
 
-        @if($cartItems->count() > 0)
+        <?php if($cartItems->count() > 0): ?>
           <div class="row">
             <div class="col-lg-8">
-              @foreach($cartItems as $item)
-                @php
+              <?php $__currentLoopData = $cartItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php
                   $product = $item->product;
                   $imageUrl = null;
                   if ($item->product_type == 'ganado' && $product && $product->imagen) {
@@ -285,47 +286,48 @@
                   } elseif ($item->product_type == 'organico' && $product && $product->imagenes && $product->imagenes->count() > 0) {
                     $imageUrl = asset('storage/'.$product->imagenes->first()->ruta);
                   }
-                @endphp
+                ?>
                 
                 <div class="cart-item-card">
                   <div class="row">
                     <div class="col-md-2 col-4 mb-3 mb-md-0">
-                      @if($imageUrl)
-                        <img src="{{ $imageUrl }}" 
-                             alt="{{ $product ? $product->nombre : 'Producto' }}" 
+                      <?php if($imageUrl): ?>
+                        <img src="<?php echo e($imageUrl); ?>" 
+                             alt="<?php echo e($product ? $product->nombre : 'Producto'); ?>" 
                              class="product-image"
-                             onclick="window.open('{{ $imageUrl }}', '_blank')"
+                             onclick="window.open('<?php echo e($imageUrl); ?>', '_blank')"
                              style="cursor: pointer;">
-                      @else
+                      <?php else: ?>
                         <div class="bg-light d-flex align-items-center justify-content-center product-image">
                           <i class="fas fa-image fa-2x text-muted"></i>
                         </div>
-                      @endif
+                      <?php endif; ?>
                     </div>
                     
                     <div class="col-md-4 col-8">
                       <div class="product-info">
-                        <h5>{{ $product ? $product->nombre : 'Producto eliminado' }}</h5>
-                        @if($item->product_type == 'ganado')
+                        <h5><?php echo e($product ? $product->nombre : 'Producto eliminado'); ?></h5>
+                        <?php if($item->product_type == 'ganado'): ?>
                           <span class="badge badge-info badge-modern mb-2">
                             <i class="fas fa-cow mr-1"></i>Animal
                           </span>
-                        @elseif($item->product_type == 'maquinaria')
+                        <?php elseif($item->product_type == 'maquinaria'): ?>
                           <span class="badge badge-warning badge-modern mb-2">
                             <i class="fas fa-tractor mr-1"></i>Maquinaria
                           </span>
-                        @elseif($item->product_type == 'organico')
+                        <?php elseif($item->product_type == 'organico'): ?>
                           <span class="badge badge-success badge-modern mb-2">
                             <i class="fas fa-leaf mr-1"></i>Orgánico
                           </span>
-                        @endif
-                        @if($item->notas)
+                        <?php endif; ?>
+                        <?php if($item->notas): ?>
                           <p class="text-muted small mt-2 mb-2">
-                            <i class="fas fa-sticky-note mr-1"></i>{{ $item->notas }}
+                            <i class="fas fa-sticky-note mr-1"></i><?php echo e($item->notas); ?>
+
                           </p>
-                        @endif
-                        @if($product)
-                          @php
+                        <?php endif; ?>
+                        <?php if($product): ?>
+                          <?php
                             $showRoute = '';
                             if ($item->product_type == 'ganado') {
                               $showRoute = route('ganados.show', $product->id);
@@ -334,13 +336,13 @@
                             } elseif ($item->product_type == 'organico') {
                               $showRoute = route('organicos.show', $product->id);
                             }
-                          @endphp
-                          @if($showRoute)
-                            <a href="{{ $showRoute }}" class="btn btn-sm btn-outline-primary mt-2" target="_blank">
+                          ?>
+                          <?php if($showRoute): ?>
+                            <a href="<?php echo e($showRoute); ?>" class="btn btn-sm btn-outline-primary mt-2" target="_blank">
                               <i class="fas fa-eye mr-1"></i>Ver Anuncio
                             </a>
-                          @endif
-                        @endif
+                          <?php endif; ?>
+                        <?php endif; ?>
                       </div>
                     </div>
                     
@@ -348,22 +350,22 @@
                       <div class="d-flex flex-wrap align-items-end gap-3" style="gap: 1rem;">
                         <div style="min-width: 140px;">
                           <label class="text-muted small mb-1 d-block" style="font-size: 0.75rem; margin-bottom: 0.3rem;">Cantidad</label>
-                          <form action="{{ route('cart.update', $item) }}" method="POST" id="quantityForm{{ $item->id }}" style="margin: 0;">
-                            @csrf
-                            @method('PUT')
+                          <form action="<?php echo e(route('cart.update', $item)); ?>" method="POST" id="quantityForm<?php echo e($item->id); ?>" style="margin: 0;">
+                            <?php echo csrf_field(); ?>
+                            <?php echo method_field('PUT'); ?>
                             <div class="quantity-controls">
-                              <button type="button" class="quantity-btn" onclick="decreaseQuantity({{ $item->id }})">
+                              <button type="button" class="quantity-btn" onclick="decreaseQuantity(<?php echo e($item->id); ?>)">
                                 <i class="fas fa-minus"></i>
                               </button>
                               <input type="number" 
                                      name="cantidad" 
                                      class="quantity-input" 
-                                     value="{{ $item->cantidad }}" 
+                                     value="<?php echo e($item->cantidad); ?>" 
                                      min="1"
-                                     id="quantity{{ $item->id }}"
-                                     onchange="updateQuantity({{ $item->id }})"
+                                     id="quantity<?php echo e($item->id); ?>"
+                                     onchange="updateQuantity(<?php echo e($item->id); ?>)"
                                      readonly>
-                              <button type="button" class="quantity-btn" onclick="increaseQuantity({{ $item->id }})">
+                              <button type="button" class="quantity-btn" onclick="increaseQuantity(<?php echo e($item->id); ?>)">
                                 <i class="fas fa-plus"></i>
                               </button>
                             </div>
@@ -372,19 +374,19 @@
                         
                         <div style="min-width: 100px;">
                           <label class="text-muted small mb-1 d-block" style="font-size: 0.75rem; margin-bottom: 0.3rem;">Precio Unit.</label>
-                          <div class="subtotal-display" style="font-size: 0.95rem; line-height: 1.2;">Bs {{ number_format($item->precio_unitario, 2) }}</div>
+                          <div class="subtotal-display" style="font-size: 0.95rem; line-height: 1.2;">Bs <?php echo e(number_format($item->precio_unitario, 2)); ?></div>
                         </div>
                         
                         <div style="min-width: 100px; text-align: right;">
                           <label class="text-muted small mb-1 d-block" style="font-size: 0.75rem; margin-bottom: 0.3rem;">Subtotal</label>
-                          <div class="price-display" style="font-size: 1.1rem; line-height: 1.2;">Bs {{ number_format($item->subtotal, 2) }}</div>
+                          <div class="price-display" style="font-size: 1.1rem; line-height: 1.2;">Bs <?php echo e(number_format($item->subtotal, 2)); ?></div>
                         </div>
                         
                         <div class="ml-auto">
-                          <form action="{{ route('cart.remove', $item) }}" method="POST" class="d-inline" id="removeForm{{ $item->id }}">
-                            @csrf
-                            @method('DELETE')
-                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmRemoveItem({{ $item->id }})" title="Eliminar" style="margin-top: 1.5rem;">
+                          <form action="<?php echo e(route('cart.remove', $item)); ?>" method="POST" class="d-inline" id="removeForm<?php echo e($item->id); ?>">
+                            <?php echo csrf_field(); ?>
+                            <?php echo method_field('DELETE'); ?>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmRemoveItem(<?php echo e($item->id); ?>)" title="Eliminar" style="margin-top: 1.5rem;">
                               <i class="fas fa-trash mr-1"></i>Eliminar
                             </button>
                           </form>
@@ -393,7 +395,7 @@
                     </div>
                   </div>
                 </div>
-              @endforeach
+              <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
             
             <div class="col-lg-4">
@@ -404,21 +406,21 @@
                 
                 <div class="summary-row">
                   <span class="text-muted">Subtotal:</span>
-                  <strong>Bs {{ number_format($total, 2) }}</strong>
+                  <strong>Bs <?php echo e(number_format($total, 2)); ?></strong>
                 </div>
                 
                 <div class="summary-row">
                   <span class="text-muted">Productos:</span>
-                  <strong>{{ $cartItems->sum('cantidad') }}</strong>
+                  <strong><?php echo e($cartItems->sum('cantidad')); ?></strong>
                 </div>
                 
                 <div class="summary-row total">
                   <span>Total:</span>
-                  <span>Bs {{ number_format($total, 2) }}</span>
+                  <span>Bs <?php echo e(number_format($total, 2)); ?></span>
                 </div>
                 
                 <div class="mt-4">
-                  <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('home') }}" 
+                  <a href="<?php echo e(url()->previous() !== url()->current() ? url()->previous() : route('home')); ?>" 
                      class="btn btn-outline-secondary btn-block btn-modern mb-3">
                     <i class="fas fa-arrow-left mr-2"></i>Continuar Comprando
                   </a>
@@ -427,8 +429,8 @@
                     <i class="fas fa-check mr-2"></i>Procesar Pedido
                   </button>
                   
-                  <form id="checkoutForm" action="{{ route('pedidos.store') }}" method="POST" style="display: none;">
-                      @csrf
+                  <form id="checkoutForm" action="<?php echo e(route('pedidos.store')); ?>" method="POST" style="display: none;">
+                      <?php echo csrf_field(); ?>
                   </form>
 
                 </div>
@@ -441,16 +443,16 @@
               </div>
             </div>
           </div>
-        @else
+        <?php else: ?>
           <div class="empty-cart">
             <i class="fas fa-shopping-cart"></i>
             <h3 class="text-muted mb-3">Tu carrito está vacío</h3>
             <p class="text-muted mb-4">Agrega productos para comenzar a comprar</p>
-            <a href="{{ route('home') }}" class="btn btn-success btn-lg btn-modern">
+            <a href="<?php echo e(route('home')); ?>" class="btn btn-success btn-lg btn-modern">
               <i class="fas fa-shopping-bag mr-2"></i>Ir a Comprar
             </a>
           </div>
-        @endif
+        <?php endif; ?>
       </div>
     </div>
   </div>
@@ -521,4 +523,6 @@ function proceedToCheckout() {
 }
 
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.adminlte', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nicole\proyecto\Proyecto-Agricola\resources\views/cart/index.blade.php ENDPATH**/ ?>

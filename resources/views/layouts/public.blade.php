@@ -64,6 +64,12 @@
                 @endif
               </a>
             </li>
+
+            <li class="nav-item">
+              <a class="nav-link" href="{{ route('pedidos.index') }}">
+                  <i class="fas fa-receipt"></i> Mis Pedidos
+              </a>
+          </li>
           @else
             <li class="nav-item">
               <a class="nav-link text-white" href="{{ route('solicitar-vendedor') }}">

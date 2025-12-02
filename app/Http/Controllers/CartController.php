@@ -36,7 +36,7 @@ class CartController extends Controller
             'product_type' => 'required|in:ganado,maquinaria,organico',
             'product_id' => 'required|integer',
             'cantidad' => 'required|integer|min:1',
-            'dias_alquiler' => 'nullable|integer|min:1', // Para maquinaria
+            'dias_alquiler' => 'nullable|integer|min:1',
         ]);
 
         $productType = $request->product_type;
@@ -69,7 +69,6 @@ class CartController extends Controller
             return back()->with('error', 'Este producto no tiene precio disponible.');
         }
 
-        // Verificar stock (si aplica)
         if (in_array($productType, ['ganado', 'organico'])) {
             $stock = $product->stock ?? 0;
             if ($stock < $cantidad) {
@@ -77,19 +76,16 @@ class CartController extends Controller
             }
         }
 
-        // Verificar si el producto ya está en el carrito
         $existingItem = CartItem::where('user_id', Auth::id())
             ->where('product_type', $productType)
             ->where('product_id', $productId)
             ->first();
 
         if ($existingItem) {
-            // Actualizar cantidad y subtotal
             $existingItem->cantidad += $cantidad;
             $existingItem->subtotal = $existingItem->precio_unitario * $existingItem->cantidad;
             $existingItem->save();
         } else {
-            // Crear nuevo item
             CartItem::create([
                 'user_id' => Auth::id(),
                 'product_type' => $productType,
@@ -109,7 +105,6 @@ class CartController extends Controller
      */
     public function update(Request $request, CartItem $cartItem)
     {
-        // Verificar que el item pertenece al usuario
         if ($cartItem->user_id !== Auth::id()) {
             return back()->with('error', 'No tienes permisos para modificar este item.');
         }
@@ -120,7 +115,6 @@ class CartController extends Controller
 
         $cantidad = $request->cantidad;
 
-        // Verificar stock si es ganado u orgánico
         $product = $cartItem->product;
         if ($product && in_array($cartItem->product_type, ['ganado', 'organico'])) {
             $stock = $product->stock ?? 0;
@@ -141,7 +135,6 @@ class CartController extends Controller
      */
     public function remove(CartItem $cartItem)
     {
-        // Verificar que el item pertenece al usuario
         if ($cartItem->user_id !== Auth::id()) {
             return back()->with('error', 'No tienes permisos para eliminar este item.');
         }
