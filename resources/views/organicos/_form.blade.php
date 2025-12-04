@@ -41,6 +41,19 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+        <label for="tipo_cultivo_id" class="mb-1">Tipo de Cultivo *</label>
+        <select name="tipo_cultivo_id" id="tipo_cultivo_id" class="form-control" required>
+            <option value="">Seleccione un tipo</option>
+            @foreach($tiposCultivo as $tipo)
+                <option value="{{ $tipo->id }}"
+                    {{ old('tipo_cultivo_id', $organico->tipo_cultivo_id ?? '') == $tipo->id ? 'selected' : '' }}>
+                    {{ $tipo->nombre }}
+                </option>
+            @endforeach
+        </select>
+    </div>
+
                 <div class="form-group mb-0">
                     <label for="unidad_id" class="mb-1">Unidad de Medida</label>
                     <select name="unidad_id" id="unidad_id" class="form-control">

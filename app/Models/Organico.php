@@ -29,6 +29,7 @@ class Organico extends Model
         'origen',
         'latitud_origen',
         'longitud_origen',
+        'tipo_cultivo_id',
     ];
 
     /**
@@ -62,4 +63,10 @@ class Organico extends Model
     {
         return $this->hasMany(OrganicoImagen::class)->orderBy('orden');
     }
+
+    public function tipoCultivo()
+{
+    return $this->belongsTo(TipoCultivo::class, 'tipo_cultivo_id');
+}
+
 }
