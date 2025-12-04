@@ -1,6 +1,6 @@
-@csrf
+<?php echo csrf_field(); ?>
 
-{{-- ====== CARD 1: DATOS DEL PRODUCTO ====== --}}
+
 <div class="card card-outline card-success shadow-sm mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h3 class="card-title mb-0">
@@ -12,7 +12,7 @@
     <div class="card-body">
         <div class="row">
 
-            {{-- COLUMNA IZQUIERDA: DATOS BÁSICOS --}}
+            
             <div class="col-md-6">
                 <h6 class="text-muted text-uppercase mb-3">
                     <i class="fas fa-info-circle mr-1"></i> Datos básicos
@@ -24,7 +24,7 @@
                            name="nombre"
                            class="form-control"
                            placeholder="Ej: Zanahoria orgánica fresca"
-                           value="{{ old('nombre', $organico->nombre ?? '') }}"
+                           value="<?php echo e(old('nombre', $organico->nombre ?? '')); ?>"
                            required>
                 </div>
 
@@ -32,12 +32,13 @@
                     <label for="categoria_id" class="mb-1">Categoría *</label>
                     <select name="categoria_id" id="categoria_id" class="form-control" required>
                         <option value="">Seleccione una categoría</option>
-                        @foreach($categorias as $categoria)
-                            <option value="{{ $categoria->id }}"
-                                {{ old('categoria_id', $organico->categoria_id ?? '') == $categoria->id ? 'selected' : '' }}>
-                                {{ $categoria->nombre }}
+                        <?php $__currentLoopData = $categorias; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $categoria): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($categoria->id); ?>"
+                                <?php echo e(old('categoria_id', $organico->categoria_id ?? '') == $categoria->id ? 'selected' : ''); ?>>
+                                <?php echo e($categoria->nombre); ?>
+
                             </option>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
 
@@ -45,12 +46,13 @@
                     <label for="unidad_id" class="mb-1">Unidad de Medida</label>
                     <select name="unidad_id" id="unidad_id" class="form-control">
                         <option value="">Seleccione una unidad</option>
-                        @foreach($unidades as $unidad)
-                            <option value="{{ $unidad->id }}"
-                                {{ old('unidad_id', $organico->unidad_id ?? '') == $unidad->id ? 'selected' : '' }}>
-                                {{ $unidad->nombre }}
+                        <?php $__currentLoopData = $unidades; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $unidad): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($unidad->id); ?>"
+                                <?php echo e(old('unidad_id', $organico->unidad_id ?? '') == $unidad->id ? 'selected' : ''); ?>>
+                                <?php echo e($unidad->nombre); ?>
+
                             </option>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                     <small class="form-text text-muted">
                         Ejemplos: Kg, Libras, Atados, Saco 50kg, Docena
@@ -58,7 +60,7 @@
                 </div>
             </div>
 
-            {{-- COLUMNA DERECHA: INFORMACIÓN COMERCIAL --}}
+            
             <div class="col-md-6">
                 <h6 class="text-muted text-uppercase mb-3">
                     <i class="fas fa-chart-line mr-1"></i> Información comercial
@@ -75,7 +77,7 @@
                                name="precio"
                                class="form-control"
                                placeholder="0.00"
-                               value="{{ old('precio', $organico->precio ?? 0) }}"
+                               value="<?php echo e(old('precio', $organico->precio ?? 0)); ?>"
                                required>
                     </div>
                     <small class="form-text text-muted">
@@ -89,7 +91,7 @@
                            name="stock"
                            class="form-control"
                            placeholder="Cantidad disponible"
-                           value="{{ old('stock', $organico->stock ?? 0) }}"
+                           value="<?php echo e(old('stock', $organico->stock ?? 0)); ?>"
                            required>
                     <small class="form-text text-muted">
                         Cantidad disponible para la venta.
@@ -101,7 +103,7 @@
                     <input type="date"
                            name="fecha_cosecha"
                            class="form-control"
-                           value="{{ old('fecha_cosecha', $organico->fecha_cosecha ?? '') }}">
+                           value="<?php echo e(old('fecha_cosecha', $organico->fecha_cosecha ?? '')); ?>">
                     <small class="form-text text-muted">
                         Opcional, pero ayuda a dar confianza al comprador.
                     </small>
@@ -111,7 +113,7 @@
     </div>
 </div>
 
-{{-- ====== CARD 2: DESCRIPCIÓN + ORIGEN ====== --}}
+
 <div class="card card-outline card-success shadow-sm mb-4">
     <div class="card-header">
         <h3 class="card-title mb-0">
@@ -122,21 +124,21 @@
     <div class="card-body">
         <div class="row">
 
-            {{-- DESCRIPCIÓN --}}
+            
             <div class="col-md-5">
                 <div class="form-group mb-0">
                     <label class="mb-1">Descripción</label>
                     <textarea name="descripcion"
                               class="form-control"
                               rows="6"
-                              placeholder="Describe características, certificaciones, forma de cultivo, etc.">{{ old('descripcion', $organico->descripcion ?? '') }}</textarea>
+                              placeholder="Describe características, certificaciones, forma de cultivo, etc."><?php echo e(old('descripcion', $organico->descripcion ?? '')); ?></textarea>
                     <small class="form-text text-muted">
                         Esta información aparecerá en la ficha del producto.
                     </small>
                 </div>
             </div>
 
-            {{-- ORIGEN / MAPA --}}
+            
             <div class="col-md-7 mt-3 mt-md-0">
                 <div class="form-group mb-0">
                     <label class="mb-1">Origen / Procedencia</label>
@@ -144,7 +146,7 @@
                            id="origen"
                            name="origen"
                            class="form-control mb-2"
-                           value="{{ old('origen', $organico->origen ?? '') }}"
+                           value="<?php echo e(old('origen', $organico->origen ?? '')); ?>"
                            readonly>
                     <small class="form-text text-muted mb-2">
                         Haz clic en el mapa para seleccionar el lugar donde se cosechó.
@@ -154,16 +156,16 @@
                          style="height: 320px; border-radius: 8px; border: 1px solid #e0e0e0;"></div>
 
                     <input type="hidden" name="latitud_origen" id="latitud_origen"
-                           value="{{ old('latitud_origen', $organico->latitud_origen ?? '') }}">
+                           value="<?php echo e(old('latitud_origen', $organico->latitud_origen ?? '')); ?>">
                     <input type="hidden" name="longitud_origen" id="longitud_origen"
-                           value="{{ old('longitud_origen', $organico->longitud_origen ?? '') }}">
+                           value="<?php echo e(old('longitud_origen', $organico->longitud_origen ?? '')); ?>">
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-{{-- ====== CARD 3: IMÁGENES ====== --}}
+
 <div class="card card-outline card-success shadow-sm mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h3 class="card-title mb-0">
@@ -176,29 +178,29 @@
         <div class="form-group mb-0">
             <label class="mb-2 d-block">Imágenes</label>
 
-            @if(isset($organico) && $organico->imagenes && $organico->imagenes->count() > 0)
+            <?php if(isset($organico) && $organico->imagenes && $organico->imagenes->count() > 0): ?>
                 <div class="mb-3">
                     <p class="text-muted mb-2">Imágenes actuales:</p>
                     <div class="row" id="imagenes-actuales">
-                        @foreach($organico->imagenes as $imagen)
-                            <div class="col-md-3 mb-3 imagen-item" data-imagen-id="{{ $imagen->id }}">
+                        <?php $__currentLoopData = $organico->imagenes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $imagen): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="col-md-3 mb-3 imagen-item" data-imagen-id="<?php echo e($imagen->id); ?>">
                                 <div class="position-relative">
-                                    <img src="{{ asset('storage/'.$imagen->ruta) }}"
-                                         alt="Imagen {{ $loop->iteration }}"
+                                    <img src="<?php echo e(asset('storage/'.$imagen->ruta)); ?>"
+                                         alt="Imagen <?php echo e($loop->iteration); ?>"
                                          class="img-thumbnail"
                                          style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px;">
                                     <button type="button"
                                             class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 eliminar-imagen"
-                                            data-imagen-id="{{ $imagen->id }}">
+                                            data-imagen-id="<?php echo e($imagen->id); ?>">
                                         <i class="fas fa-times"></i>
                                     </button>
                                 </div>
                                 <input type="hidden" name="imagenes_eliminar[]" value="" class="imagen-eliminar-input">
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?>
 
             <div id="preview-container" class="row mb-3"></div>
 
@@ -217,9 +219,9 @@
     </div>
 </div>
 
-{{-- BOTONES --}}
+
 <div class="d-flex justify-content-end mb-2">
-    <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('organicos.index') }}"
+    <a href="<?php echo e(url()->previous() !== url()->current() ? url()->previous() : route('organicos.index')); ?>"
        class="btn btn-outline-secondary mr-2">
         <i class="fas fa-arrow-left mr-1"></i> Volver
     </a>
@@ -228,15 +230,15 @@
     </button>
 </div>
 
-{{-- ====== LEAFLET CSS / JS ====== --}}
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
     // Coordenadas iniciales (centro de Bolivia)
-    var initialLat = {{ old('latitud_origen', $organico->latitud_origen ?? -17.7833) }};
-    var initialLng = {{ old('longitud_origen', $organico->longitud_origen ?? -63.1821) }};
-    var initialZoom = {{ isset($organico) && $organico->latitud_origen ? 12 : 6 }};
+    var initialLat = <?php echo e(old('latitud_origen', $organico->latitud_origen ?? -17.7833)); ?>;
+    var initialLng = <?php echo e(old('longitud_origen', $organico->longitud_origen ?? -63.1821)); ?>;
+    var initialZoom = <?php echo e(isset($organico) && $organico->latitud_origen ? 12 : 6); ?>;
 
     // Crear el mapa
     var mapOrigen = L.map('map-origen').setView([initialLat, initialLng], initialZoom);
@@ -249,9 +251,9 @@
     var markerOrigen;
 
     // Si hay coordenadas existentes, mostrar el marcador
-    @if(isset($organico) && $organico->latitud_origen && $organico->longitud_origen)
+    <?php if(isset($organico) && $organico->latitud_origen && $organico->longitud_origen): ?>
         markerOrigen = L.marker([initialLat, initialLng]).addTo(mapOrigen);
-    @endif
+    <?php endif; ?>
 
     // Evento click en mapa
     mapOrigen.on('click', function(e) {
@@ -275,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const input = document.getElementById('imagenes-input');
     const previewContainer = document.getElementById('preview-container');
     const countDisplay = document.getElementById('imagenes-count');
-    const imagenesActuales = {{ isset($organico) && $organico->imagenes ? $organico->imagenes->count() : 0 }};
+    const imagenesActuales = <?php echo e(isset($organico) && $organico->imagenes ? $organico->imagenes->count() : 0); ?>;
     let imagenesNuevas = 0;
     let imagenesAEliminar = [];
 
@@ -373,3 +375,4 @@ document.addEventListener('DOMContentLoaded', function() {
     updateCount();
 });
 </script>
+<?php /**PATH C:\Users\Nicole\proyecto\Proyecto-Agricola\resources\views/organicos/_form.blade.php ENDPATH**/ ?>
