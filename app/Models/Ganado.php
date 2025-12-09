@@ -32,8 +32,12 @@ class Ganado extends Model
         'provincia',
         'ciudad',
         'latitud',
-        'longitud'
+        'longitud',
+        'es_campeon',     // 👈 nuevo
+        'madre_id',       // 👈 nuevo
+        'padre_id',       // 👈 nuevo
     ];
+
 
     public function categoria()
     {

@@ -68,4 +68,8 @@ class Organico extends Model
     {
         return $this->belongsTo(TipoCultivo::class, 'tipo_cultivo_id');
     }
+    public function unidadOrganico()
+    {
+        return $this->belongsTo(\App\Models\UnidadOrganico::class, 'unidad_id');
+    }
 }
