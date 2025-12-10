@@ -15,6 +15,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\AdminPedidoController;
+use App\Http\Controllers\ReporteController;
 
 // 1) Raíz -> login (pantalla principal)
 Route::redirect('/', '/login');
@@ -70,6 +71,12 @@ Route::middleware(['auth', 'role.admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/pedidos', [AdminPedidoController::class, 'index'])->name('pedidos.index');
     Route::get('/pedidos/{pedido}', [AdminPedidoController::class, 'show'])->name('pedidos.show');
     Route::put('/pedidos/{pedido}/estado', [AdminPedidoController::class, 'updateEstado'])->name('pedidos.updateEstado');
+
+    // Reportes
+    Route::get('/reportes/ventas', [ReporteController::class, 'ventas'])->name('reportes.ventas');
+    Route::get('/reportes/ventas/exportar-excel', [ReporteController::class, 'exportarVentasExcel'])->name('reportes.ventas.excel');
+    Route::get('/reportes/vendedores', [ReporteController::class, 'vendedores'])->name('reportes.vendedores');
+    Route::get('/reportes/vendedores/exportar-excel', [ReporteController::class, 'exportarVendedoresExcel'])->name('reportes.vendedores.excel');
 });
 
 // ===== VENDEDOR Y ADMINISTRADOR =====
