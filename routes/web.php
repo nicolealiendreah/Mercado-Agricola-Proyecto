@@ -17,6 +17,7 @@ use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\AdminPedidoController;
 use App\Http\Controllers\ReporteController;
 
+
 // 1) Raíz -> login (pantalla principal)
 Route::redirect('/', '/login');
 
@@ -73,10 +74,50 @@ Route::middleware(['auth', 'role.admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/pedidos/{pedido}/estado', [AdminPedidoController::class, 'updateEstado'])->name('pedidos.updateEstado');
 
     // Reportes
-    Route::get('/reportes/ventas', [ReporteController::class, 'ventas'])->name('reportes.ventas');
-    Route::get('/reportes/ventas/exportar-excel', [ReporteController::class, 'exportarVentasExcel'])->name('reportes.ventas.excel');
-    Route::get('/reportes/vendedores', [ReporteController::class, 'vendedores'])->name('reportes.vendedores');
-    Route::get('/reportes/vendedores/exportar-excel', [ReporteController::class, 'exportarVendedoresExcel'])->name('reportes.vendedores.excel');
+    // ================== REPORTES ==================
+
+    // Ventas
+    Route::get(
+        '/reportes/ventas',
+        [ReporteController::class, 'ventas']
+    )->name('reportes.ventas');
+
+    Route::get(
+        '/reportes/ventas/exportar-excel',
+        [ReporteController::class, 'exportarVentasExcel']
+    )->name('reportes.ventas.excel');
+
+    Route::get(
+        '/reportes/ventas/exportar-pdf',
+        [ReporteController::class, 'exportarVentasPdf']
+    )->name('reportes.ventas.export.pdf');
+
+    // Vendedores
+    Route::get(
+        '/reportes/vendedores',
+        [ReporteController::class, 'vendedores']
+    )->name('reportes.vendedores');
+
+    Route::get(
+        '/reportes/vendedores/exportar-excel',
+        [ReporteController::class, 'exportarVendedoresExcel']
+    )->name('reportes.vendedores.excel');
+
+    Route::get(
+        '/reportes/vendedores/exportar-pdf',
+        [ReporteController::class, 'exportarVendedoresPdf']
+    )->name('reportes.vendedores.export.pdf');
+
+    // Productos con bajo movimiento
+    Route::get(
+        '/productos-lentos',
+        [ReporteController::class, 'reporteProductosLentos']
+    )->name('productos_lentos');
+
+    Route::get(
+        '/productos-lentos/export/{tipo}',
+        [ReporteController::class, 'exportProductosLentos']
+    )->name('productos_lentos.export');
 });
 
 // ===== VENDEDOR Y ADMINISTRADOR =====

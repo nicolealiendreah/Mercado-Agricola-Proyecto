@@ -1,8 +1,6 @@
-@extends('layouts.adminlte')
+<?php $__env->startSection('title', 'Reporte de Rendimiento de Vendedores'); ?>
 
-@section('title', 'Reporte de Rendimiento de Vendedores')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
@@ -14,51 +12,52 @@
                 </p>
             </div>
             <div>
-                <a href="{{ route('admin.reportes.vendedores.export.pdf', request()->all()) }}"
+                <a href="<?php echo e(route('admin.reportes.vendedores.export.pdf', request()->all())); ?>"
                     class="btn btn-outline-success btn-sm">
                     Exportar PDF
                 </a>
 
 
-                <a href="{{ route('admin.reportes.vendedores.excel', request()->all()) }}" class="btn btn-info btn-sm">
+                <a href="<?php echo e(route('admin.reportes.vendedores.excel', request()->all())); ?>" class="btn btn-info btn-sm">
                     <i class="fas fa-file-excel mr-1"></i> Exportar Excel
                 </a>
             </div>
         </div>
 
-        {{-- Filtros --}}
+        
         <div class="card mb-4 shadow-sm">
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0"><i class="fas fa-filter mr-2"></i>Filtros de Búsqueda</h5>
             </div>
             <div class="card-body">
-                <form method="GET" action="{{ route('admin.reportes.vendedores') }}">
+                <form method="GET" action="<?php echo e(route('admin.reportes.vendedores')); ?>">
                     <div class="row">
                         <div class="col-md-3 mb-3">
                             <label class="font-weight-bold">Desde</label>
-                            <input type="date" name="desde" value="{{ $desde->format('Y-m-d') }}" class="form-control">
+                            <input type="date" name="desde" value="<?php echo e($desde->format('Y-m-d')); ?>" class="form-control">
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="font-weight-bold">Hasta</label>
-                            <input type="date" name="hasta" value="{{ $hasta->format('Y-m-d') }}" class="form-control">
+                            <input type="date" name="hasta" value="<?php echo e($hasta->format('Y-m-d')); ?>" class="form-control">
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="font-weight-bold">Vendedor</label>
                             <select name="vendedor_id" class="form-control">
                                 <option value="">Todos</option>
-                                @foreach ($vendedores as $vendedor)
-                                    <option value="{{ $vendedor->id }}"
-                                        {{ $vendedor_id == $vendedor->id ? 'selected' : '' }}>
-                                        {{ $vendedor->name }}
+                                <?php $__currentLoopData = $vendedores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $vendedor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($vendedor->id); ?>"
+                                        <?php echo e($vendedor_id == $vendedor->id ? 'selected' : ''); ?>>
+                                        <?php echo e($vendedor->name); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                         <div class="col-md-3 mb-3 d-flex align-items-end">
                             <button type="submit" class="btn btn-primary mr-2">
                                 <i class="fas fa-search mr-1"></i> Aplicar Filtros
                             </button>
-                            <a href="{{ route('admin.reportes.vendedores') }}" class="btn btn-secondary">
+                            <a href="<?php echo e(route('admin.reportes.vendedores')); ?>" class="btn btn-secondary">
                                 <i class="fas fa-undo mr-1"></i> Limpiar
                             </a>
                         </div>
@@ -67,7 +66,7 @@
             </div>
         </div>
 
-        {{-- Métricas Generales --}}
+        
         <div class="row mb-4">
             <div class="col-md-4">
                 <div class="card shadow-sm border-left-primary">
@@ -75,7 +74,7 @@
                         <h6 class="text-muted mb-1">
                             <i class="fas fa-users text-primary mr-1"></i> Total Vendedores
                         </h6>
-                        <h2 class="mb-0">{{ count($rendimientoVendedores) }}</h2>
+                        <h2 class="mb-0"><?php echo e(count($rendimientoVendedores)); ?></h2>
                     </div>
                 </div>
             </div>
@@ -85,7 +84,7 @@
                         <h6 class="text-muted mb-1">
                             <i class="fas fa-box text-info mr-1"></i> Total Productos
                         </h6>
-                        <h2 class="mb-0">{{ array_sum(array_column($rendimientoVendedores, 'total_productos')) }}</h2>
+                        <h2 class="mb-0"><?php echo e(array_sum(array_column($rendimientoVendedores, 'total_productos'))); ?></h2>
                     </div>
                 </div>
             </div>
@@ -96,13 +95,13 @@
                             <i class="fas fa-chart-line text-warning mr-1"></i> Ventas Totales
                         </h6>
                         <h2 class="mb-0">Bs.
-                            {{ number_format(array_sum(array_column($rendimientoVendedores, 'total_ventas')), 2) }}</h2>
+                            <?php echo e(number_format(array_sum(array_column($rendimientoVendedores, 'total_ventas')), 2)); ?></h2>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Tabla de Rendimiento --}}
+        
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
@@ -110,7 +109,7 @@
                         <h5 class="mb-0"><i class="fas fa-trophy mr-2"></i>Rendimiento de Vendedores</h5>
                     </div>
                     <div class="card-body">
-                        @if (count($rendimientoVendedores) > 0)
+                        <?php if(count($rendimientoVendedores) > 0): ?>
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped">
                                     <thead>
@@ -126,32 +125,34 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($rendimientoVendedores as $index => $vendedor)
+                                        <?php $__currentLoopData = $rendimientoVendedores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $vendedor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <tr>
-                                                <td><strong>{{ $index + 1 }}</strong></td>
-                                                <td>{{ $vendedor['nombre'] }}</td>
-                                                <td><small class="text-muted">{{ $vendedor['email'] }}</small></td>
-                                                <td class="text-right">{{ $vendedor['total_productos'] }}</td>
-                                                <td class="text-right">{{ $vendedor['total_ganados'] }}</td>
-                                                <td class="text-right">{{ $vendedor['total_maquinarias'] }}</td>
-                                                <td class="text-right">{{ $vendedor['total_organicos'] }}</td>
+                                                <td><strong><?php echo e($index + 1); ?></strong></td>
+                                                <td><?php echo e($vendedor['nombre']); ?></td>
+                                                <td><small class="text-muted"><?php echo e($vendedor['email']); ?></small></td>
+                                                <td class="text-right"><?php echo e($vendedor['total_productos']); ?></td>
+                                                <td class="text-right"><?php echo e($vendedor['total_ganados']); ?></td>
+                                                <td class="text-right"><?php echo e($vendedor['total_maquinarias']); ?></td>
+                                                <td class="text-right"><?php echo e($vendedor['total_organicos']); ?></td>
                                                 <td class="text-right">
-                                                    <strong>Bs. {{ number_format($vendedor['total_ventas'], 2) }}</strong>
+                                                    <strong>Bs. <?php echo e(number_format($vendedor['total_ventas'], 2)); ?></strong>
                                                 </td>
                                             </tr>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </tbody>
                                 </table>
                             </div>
-                        @else
+                        <?php else: ?>
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle mr-2"></i>No hay datos de vendedores para el período
                                 seleccionado.
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.adminlte', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nicole\proyecto\Proyecto-Agricola\resources\views/admin/reportes/vendedores.blade.php ENDPATH**/ ?>

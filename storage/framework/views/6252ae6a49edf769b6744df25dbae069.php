@@ -1,8 +1,6 @@
-@extends('layouts.adminlte')
+<?php $__env->startSection('title', 'Reporte de Ventas y Rentabilidad'); ?>
 
-@section('title', 'Reporte de Ventas y Rentabilidad')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
@@ -14,42 +12,42 @@
                 </p>
             </div>
             <div>
-                <a href="{{ route('admin.reportes.ventas.export.pdf', request()->all()) }}"
+                <a href="<?php echo e(route('admin.reportes.ventas.export.pdf', request()->all())); ?>"
                     class="btn btn-outline-success btn-sm">
                     Exportar PDF
                 </a>
 
 
-                <a href="{{ route('admin.reportes.ventas.excel', request()->all()) }}" class="btn btn-info btn-sm">
+                <a href="<?php echo e(route('admin.reportes.ventas.excel', request()->all())); ?>" class="btn btn-info btn-sm">
                     <i class="fas fa-file-excel mr-1"></i> Exportar Excel
                 </a>
             </div>
         </div>
 
-        {{-- Filtros --}}
+        
         <div class="card mb-4 shadow-sm">
             <div class="card-header bg-primary text-white">
                 <h5 class="mb-0"><i class="fas fa-filter mr-2"></i>Filtros de Búsqueda</h5>
             </div>
             <div class="card-body">
-                <form method="GET" action="{{ route('admin.reportes.ventas') }}">
+                <form method="GET" action="<?php echo e(route('admin.reportes.ventas')); ?>">
                     <div class="row">
                         <div class="col-md-3 mb-3">
                             <label class="font-weight-bold">Desde</label>
-                            <input type="date" name="desde" value="{{ $desde->format('Y-m-d') }}" class="form-control">
+                            <input type="date" name="desde" value="<?php echo e($desde->format('Y-m-d')); ?>" class="form-control">
                         </div>
                         <div class="col-md-3 mb-3">
                             <label class="font-weight-bold">Hasta</label>
-                            <input type="date" name="hasta" value="{{ $hasta->format('Y-m-d') }}" class="form-control">
+                            <input type="date" name="hasta" value="<?php echo e($hasta->format('Y-m-d')); ?>" class="form-control">
                         </div>
                         <div class="col-md-2 mb-3">
                             <label class="font-weight-bold">Categoría</label>
                             <select name="categoria" class="form-control">
                                 <option value="">Todas</option>
-                                <option value="ganado" {{ $categoria == 'ganado' ? 'selected' : '' }}>Animales</option>
-                                <option value="maquinaria" {{ $categoria == 'maquinaria' ? 'selected' : '' }}>Maquinaria
+                                <option value="ganado" <?php echo e($categoria == 'ganado' ? 'selected' : ''); ?>>Animales</option>
+                                <option value="maquinaria" <?php echo e($categoria == 'maquinaria' ? 'selected' : ''); ?>>Maquinaria
                                 </option>
-                                <option value="organico" {{ $categoria == 'organico' ? 'selected' : '' }}>Orgánicos
+                                <option value="organico" <?php echo e($categoria == 'organico' ? 'selected' : ''); ?>>Orgánicos
                                 </option>
                             </select>
                         </div>
@@ -57,13 +55,13 @@
                             <label class="font-weight-bold">Estado</label>
                             <select name="estado" class="form-control">
                                 <option value="">Todos</option>
-                                <option value="pendiente" {{ $estado == 'pendiente' ? 'selected' : '' }}>Pendiente
+                                <option value="pendiente" <?php echo e($estado == 'pendiente' ? 'selected' : ''); ?>>Pendiente
                                 </option>
-                                <option value="en_proceso" {{ $estado == 'en_proceso' ? 'selected' : '' }}>En Proceso
+                                <option value="en_proceso" <?php echo e($estado == 'en_proceso' ? 'selected' : ''); ?>>En Proceso
                                 </option>
-                                <option value="entregado" {{ $estado == 'entregado' ? 'selected' : '' }}>Entregado
+                                <option value="entregado" <?php echo e($estado == 'entregado' ? 'selected' : ''); ?>>Entregado
                                 </option>
-                                <option value="cancelado" {{ $estado == 'cancelado' ? 'selected' : '' }}>Cancelado
+                                <option value="cancelado" <?php echo e($estado == 'cancelado' ? 'selected' : ''); ?>>Cancelado
                                 </option>
                             </select>
                         </div>
@@ -71,12 +69,13 @@
                             <label class="font-weight-bold">Vendedor</label>
                             <select name="vendedor_id" class="form-control">
                                 <option value="">Todos</option>
-                                @foreach ($vendedores as $vendedor)
-                                    <option value="{{ $vendedor->id }}"
-                                        {{ $vendedor_id == $vendedor->id ? 'selected' : '' }}>
-                                        {{ $vendedor->name }}
+                                <?php $__currentLoopData = $vendedores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $vendedor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($vendedor->id); ?>"
+                                        <?php echo e($vendedor_id == $vendedor->id ? 'selected' : ''); ?>>
+                                        <?php echo e($vendedor->name); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                     </div>
@@ -85,7 +84,7 @@
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-search mr-1"></i> Aplicar Filtros
                             </button>
-                            <a href="{{ route('admin.reportes.ventas') }}" class="btn btn-secondary">
+                            <a href="<?php echo e(route('admin.reportes.ventas')); ?>" class="btn btn-secondary">
                                 <i class="fas fa-undo mr-1"></i> Limpiar
                             </a>
                         </div>
@@ -94,7 +93,7 @@
             </div>
         </div>
 
-        {{-- Métricas Generales --}}
+        
         <div class="row mb-4">
             <div class="col-md-4">
                 <div class="card shadow-sm border-left-primary">
@@ -102,7 +101,7 @@
                         <h6 class="text-muted mb-1">
                             <i class="fas fa-shopping-cart text-primary mr-1"></i> Total de Pedidos
                         </h6>
-                        <h2 class="mb-0">{{ number_format($totalPedidos, 0) }}</h2>
+                        <h2 class="mb-0"><?php echo e(number_format($totalPedidos, 0)); ?></h2>
                         <small class="text-muted">En el período seleccionado</small>
                     </div>
                 </div>
@@ -113,7 +112,7 @@
                         <h6 class="text-muted mb-1">
                             <i class="fas fa-dollar-sign text-success mr-1"></i> Ingresos Totales
                         </h6>
-                        <h2 class="mb-0">Bs. {{ number_format($totalIngresos, 2) }}</h2>
+                        <h2 class="mb-0">Bs. <?php echo e(number_format($totalIngresos, 2)); ?></h2>
                         <small class="text-muted">Suma de todos los pedidos</small>
                     </div>
                 </div>
@@ -124,14 +123,14 @@
                         <h6 class="text-muted mb-1">
                             <i class="fas fa-percentage text-warning mr-1"></i> Tasa de Conversión
                         </h6>
-                        <h2 class="mb-0">{{ number_format($tasaConversion, 1) }}%</h2>
+                        <h2 class="mb-0"><?php echo e(number_format($tasaConversion, 1)); ?>%</h2>
                         <small class="text-muted">Pedidos entregados</small>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Ventas por Categoría --}}
+        
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
@@ -139,7 +138,7 @@
                         <h5 class="mb-0"><i class="fas fa-chart-pie mr-2"></i>Ventas por Categoría</h5>
                     </div>
                     <div class="card-body">
-                        @if ($ventasPorCategoria->count() > 0)
+                        <?php if($ventasPorCategoria->count() > 0): ?>
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
@@ -151,41 +150,43 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($ventasPorCategoria as $venta)
-                                            @php
+                                        <?php $__currentLoopData = $ventasPorCategoria; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $venta): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php
                                                 $categoriaNombre =
                                                     [
                                                         'ganado' => 'Animales',
                                                         'maquinaria' => 'Maquinaria',
                                                         'organico' => 'Orgánicos',
                                                     ][$venta->categoria] ?? ucfirst($venta->categoria);
-                                            @endphp
+                                            ?>
                                             <tr>
-                                                <td><strong>{{ $categoriaNombre }}</strong></td>
-                                                <td class="text-right">{{ number_format($venta->total_pedidos, 0) }}
+                                                <td><strong><?php echo e($categoriaNombre); ?></strong></td>
+                                                <td class="text-right"><?php echo e(number_format($venta->total_pedidos, 0)); ?>
+
                                                 </td>
-                                                <td class="text-right">{{ number_format($venta->total_cantidad, 0) }}
+                                                <td class="text-right"><?php echo e(number_format($venta->total_cantidad, 0)); ?>
+
                                                 </td>
                                                 <td class="text-right">
-                                                    <strong>Bs. {{ number_format($venta->ingresos_totales, 2) }}</strong>
+                                                    <strong>Bs. <?php echo e(number_format($venta->ingresos_totales, 2)); ?></strong>
                                                 </td>
                                             </tr>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </tbody>
                                 </table>
                             </div>
-                        @else
+                        <?php else: ?>
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle mr-2"></i>No hay datos de ventas para el período
                                 seleccionado.
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Top Vendedores --}}
+        
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
@@ -194,7 +195,7 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        @if ($topVendedores->count() > 0)
+                        <?php if($topVendedores->count() > 0): ?>
                             <div class="table-responsive">
                                 <table class="table table-hover table-striped">
                                     <thead>
@@ -207,34 +208,35 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($topVendedores as $index => $vendedor)
+                                        <?php $__currentLoopData = $topVendedores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $vendedor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <tr>
-                                                <td><strong>{{ $index + 1 }}</strong></td>
-                                                <td>{{ $vendedor['nombre'] }}</td>
-                                                <td><small class="text-muted">{{ $vendedor['email'] }}</small></td>
-                                                <td class="text-right">{{ number_format($vendedor['total_pedidos'], 0) }}
+                                                <td><strong><?php echo e($index + 1); ?></strong></td>
+                                                <td><?php echo e($vendedor['nombre']); ?></td>
+                                                <td><small class="text-muted"><?php echo e($vendedor['email']); ?></small></td>
+                                                <td class="text-right"><?php echo e(number_format($vendedor['total_pedidos'], 0)); ?>
+
                                                 </td>
                                                 <td class="text-right">
                                                     <strong>Bs.
-                                                        {{ number_format($vendedor['ingresos_totales'], 2) }}</strong>
+                                                        <?php echo e(number_format($vendedor['ingresos_totales'], 2)); ?></strong>
                                                 </td>
                                             </tr>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </tbody>
                                 </table>
                             </div>
-                        @else
+                        <?php else: ?>
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle mr-2"></i>No hay datos de vendedores para el período
                                 seleccionado.
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Productos Más Vendidos --}}
+        
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm">
@@ -242,7 +244,7 @@
                         <h5 class="mb-0"><i class="fas fa-star mr-2"></i>Productos Más Vendidos</h5>
                     </div>
                     <div class="card-body">
-                        @if ($productosMasVendidos->count() > 0)
+                        <?php if($productosMasVendidos->count() > 0): ?>
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
@@ -254,43 +256,47 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($productosMasVendidos as $producto)
-                                            @php
+                                        <?php $__currentLoopData = $productosMasVendidos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $producto): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php
                                                 $categoriaNombre =
                                                     [
                                                         'ganado' => 'Animales',
                                                         'maquinaria' => 'Maquinaria',
                                                         'organico' => 'Orgánicos',
                                                     ][$producto->product_type] ?? ucfirst($producto->product_type);
-                                            @endphp
+                                            ?>
                                             <tr>
                                                 <td>
                                                     <span
-                                                        class="badge badge-{{ $producto->product_type == 'ganado' ? 'success' : ($producto->product_type == 'maquinaria' ? 'info' : 'warning') }}">
-                                                        {{ $categoriaNombre }}
+                                                        class="badge badge-<?php echo e($producto->product_type == 'ganado' ? 'success' : ($producto->product_type == 'maquinaria' ? 'info' : 'warning')); ?>">
+                                                        <?php echo e($categoriaNombre); ?>
+
                                                     </span>
                                                 </td>
-                                                <td><strong>{{ $producto->nombre_producto }}</strong></td>
-                                                <td class="text-right">{{ number_format($producto->total_vendido, 0) }}
+                                                <td><strong><?php echo e($producto->nombre_producto); ?></strong></td>
+                                                <td class="text-right"><?php echo e(number_format($producto->total_vendido, 0)); ?>
+
                                                 </td>
                                                 <td class="text-right">
-                                                    <strong>Bs. {{ number_format($producto->ingresos, 2) }}</strong>
+                                                    <strong>Bs. <?php echo e(number_format($producto->ingresos, 2)); ?></strong>
                                                 </td>
                                             </tr>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </tbody>
                                 </table>
                             </div>
-                        @else
+                        <?php else: ?>
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle mr-2"></i>No hay datos de productos vendidos para el período
                                 seleccionado.
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.adminlte', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\Nicole\proyecto\Proyecto-Agricola\resources\views/admin/reportes/ventas.blade.php ENDPATH**/ ?>

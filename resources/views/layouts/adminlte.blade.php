@@ -266,6 +266,14 @@
                                         <p>Reporte de Vendedores</p>
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.productos_lentos') }}"
+                                        class="nav-link {{ request()->routeIs('admin.productos_lentos*') ? 'active' : '' }}">
+                                        <i class="nav-icon fas fa-box-open"></i>
+                                        <p>Productos con Bajo<br> Movimiento</p>
+
+                                    </a>
+                                </li>
 
                                 <li class="nav-item">
                                     <a href="{{ route('admin.pedidos.index') }}" class="nav-link">
@@ -273,7 +281,7 @@
                                         <p>Pedidos</p>
                                     </a>
                                 </li>
-                                
+
                                 <!-- SOLICITUDES DE VENDEDOR -->
                                 <li class="nav-item">
                                     <a href="{{ route('admin.solicitudes-vendedor.index') }}"

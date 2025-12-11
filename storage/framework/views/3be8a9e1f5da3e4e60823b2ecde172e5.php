@@ -11,61 +11,6 @@
     <link rel="stylesheet" href="<?php echo e(asset('vendor/adminlte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('vendor/adminlte/dist/css/adminlte.min.css')); ?>">
     <link rel="stylesheet" href="<?php echo e(asset('css/custom.css')); ?>">
-    <style>
-        /* Estilos para el panel de categorías estilo Facebook */
-        .sidebar .nav-header {
-            padding: 0.75rem 1rem 0.5rem;
-            font-weight: 600;
-            color: #cfe6d0;
-            border-bottom: 1px solid rgba(207, 230, 208, 0.2);
-            margin-bottom: 0.5rem;
-        }
-
-        .sidebar .nav-item .nav-link {
-            transition: all 0.2s ease;
-            border-radius: 8px;
-            margin: 0.15rem 0.5rem;
-        }
-
-        .sidebar .nav-item .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: translateX(3px);
-        }
-
-        .sidebar .nav-item .nav-link.active {
-            background-color: rgba(40, 167, 69, 0.3);
-            border-left: 3px solid #28a745;
-        }
-
-        .sidebar .nav-item .nav-link i {
-            width: 20px;
-            text-align: center;
-            margin-right: 0.5rem;
-        }
-
-        /* Scrollbar personalizado para categorías si hay muchas */
-        .sidebar .nav-pills {
-            max-height: calc(100vh - 200px);
-            overflow-y: auto;
-        }
-
-        .sidebar .nav-pills::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .sidebar .nav-pills::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar .nav-pills::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 3px;
-        }
-
-        .sidebar .nav-pills::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.5);
-        }
-    </style>
 </head>
 
 <?php echo $__env->yieldContent('js'); ?>
@@ -209,77 +154,6 @@
                                 </li>
                             <?php endif; ?>
 
-                            
-                            <?php if(isset($categorias) && $categorias->count() > 0): ?>
-                                <li class="nav-header mt-3 mb-2">
-                                    <span
-                                        style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7;">
-                                        <i class="fas fa-th-large mr-1"></i>Categorías
-                                    </span>
-                                </li>
-
-                                <?php
-                                    // Mapeo de iconos para categorías comunes
-                                    $iconosCategorias = [
-                                        'animal' => 'fa-horse',
-                                        'animales' => 'fa-horse',
-                                        'ganado' => 'fa-horse',
-                                        'maquinaria' => 'fa-tractor',
-                                        'tractor' => 'fa-tractor',
-                                        'orgánico' => 'fa-leaf',
-                                        'organicos' => 'fa-leaf',
-                                        'vehículo' => 'fa-car',
-                                        'vehículos' => 'fa-car',
-                                        'propiedad' => 'fa-home',
-                                        'inmueble' => 'fa-building',
-                                        'deporte' => 'fa-running',
-                                        'electrónica' => 'fa-mobile-alt',
-                                        'ropa' => 'fa-tshirt',
-                                        'mascota' => 'fa-paw',
-                                        'jardín' => 'fa-seedling',
-                                        'música' => 'fa-guitar',
-                                        'juego' => 'fa-gamepad',
-                                        'oficina' => 'fa-briefcase',
-                                        'hogar' => 'fa-home',
-                                        'familia' => 'fa-heart',
-                                        'entretenimiento' => 'fa-film',
-                                        'gratis' => 'fa-gift',
-                                        'clasificado' => 'fa-tag',
-                                        'afición' => 'fa-pencil-alt',
-                                    ];
-
-                                    // Función para obtener icono según nombre de categoría
-                                    $obtenerIcono = function ($nombre) use ($iconosCategorias) {
-                                        $nombreLower = strtolower($nombre);
-                                        foreach ($iconosCategorias as $key => $icono) {
-                                            if (strpos($nombreLower, $key) !== false) {
-                                                return $icono;
-                                            }
-                                        }
-                                        return 'fa-tag'; // Icono por defecto
-                                    };
-                                ?>
-
-                                <?php $__currentLoopData = $categorias->take(10); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $categoria): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <li class="nav-item">
-                                        <a href="<?php echo e(route('ads.index', ['categoria_id' => $categoria->id])); ?>"
-                                            class="nav-link <?php echo e(request('categoria_id') == $categoria->id ? 'active' : ''); ?>"
-                                            style="padding: 0.5rem 1rem;">
-                                            <i class="nav-icon fas <?php echo e($obtenerIcono($categoria->nombre)); ?>"></i>
-                                            <p style="margin: 0; font-size: 0.9rem;"><?php echo e($categoria->nombre); ?></p>
-                                        </a>
-                                    </li>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-
-                                <?php if($categorias->count() > 10): ?>
-                                    <li class="nav-item">
-                                        <a href="<?php echo e(route('ads.index')); ?>" class="nav-link" style="padding: 0.5rem 1rem;">
-                                            <i class="nav-icon fas fa-ellipsis-h"></i>
-                                            <p style="margin: 0; font-size: 0.85rem; opacity: 0.8;">Ver todas</p>
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-                            <?php endif; ?>
 
                             
                             <?php if(auth()->user()->isAdmin()): ?>
@@ -377,13 +251,38 @@
                                     </a>
                                 </li>
 
+                                <!-- REPORTES -->
+                                <li class="nav-header">REPORTES</li>
+                                <li class="nav-item">
+                                    <a href="<?php echo e(route('admin.reportes.ventas')); ?>"
+                                        class="nav-link <?php echo e(request()->routeIs('admin.reportes.ventas*') ? 'active' : ''); ?>">
+                                        <i class="nav-icon fas fa-chart-line"></i>
+                                        <p>Reporte de Ventas</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?php echo e(route('admin.reportes.vendedores')); ?>"
+                                        class="nav-link <?php echo e(request()->routeIs('admin.reportes.vendedores*') ? 'active' : ''); ?>">
+                                        <i class="nav-icon fas fa-users"></i>
+                                        <p>Reporte de Vendedores</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?php echo e(route('admin.productos_lentos')); ?>"
+                                        class="nav-link <?php echo e(request()->routeIs('admin.productos_lentos*') ? 'active' : ''); ?>">
+                                        <i class="nav-icon fas fa-box-open"></i>
+                                        <p>Productos con Bajo<br> Movimiento</p>
+
+                                    </a>
+                                </li>
+
                                 <li class="nav-item">
                                     <a href="<?php echo e(route('admin.pedidos.index')); ?>" class="nav-link">
                                         <i class="nav-icon fas fa-receipt"></i>
                                         <p>Pedidos</p>
                                     </a>
                                 </li>
-                                
+
                                 <!-- SOLICITUDES DE VENDEDOR -->
                                 <li class="nav-item">
                                     <a href="<?php echo e(route('admin.solicitudes-vendedor.index')); ?>"
