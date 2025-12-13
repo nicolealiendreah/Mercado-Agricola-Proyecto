@@ -13,7 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Ejecutar seeders en orden
         $this->call([
         RoleSeeder::class,
         AdminUserSeeder::class,

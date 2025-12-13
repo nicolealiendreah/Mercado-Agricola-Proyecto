@@ -14,15 +14,14 @@ return new class extends Migration
         Schema::create('cart_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->string('product_type'); // 'ganado', 'maquinaria', 'organico'
+            $table->string('product_type'); 
             $table->unsignedBigInteger('product_id');
             $table->integer('cantidad')->default(1);
             $table->decimal('precio_unitario', 10, 2);
             $table->decimal('subtotal', 10, 2);
-            $table->text('notas')->nullable(); // Para maquinaria: días de alquiler, etc.
+            $table->text('notas')->nullable(); 
             $table->timestamps();
             
-            // Índice único para evitar duplicados del mismo producto
             $table->unique(['user_id', 'product_type', 'product_id']);
         });
     }

@@ -16,12 +16,12 @@ return new class extends Migration
             $table->foreignId('pedido_id')->constrained('pedidos')->onDelete('cascade');
 
             $table->unsignedBigInteger('product_id');
-            $table->string('product_type'); // ganado, maquinaria, organico
+            $table->string('product_type');
             $table->string('nombre_producto');
             $table->integer('cantidad');
             $table->decimal('precio_unitario', 10, 2);
             $table->decimal('subtotal', 10, 2);
-            $table->string('notas')->nullable(); // alquiler por 1 día, unidad, etc.
+            $table->string('notas')->nullable(); 
 
             $table->timestamps();
         });

@@ -166,7 +166,7 @@
 
         <div class="row">
             <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card shadow-sm border-left-success h-100">
+                <div class="card shadow-sm border-left-success h-100 kpi-click" data-kpi="hoy" style="cursor:pointer;">
                     <div class="card-body">
                         <h6 class="text-muted mb-1">
                             <i class="fas fa-calendar-day text-success mr-1"></i> Publicaciones de hoy
@@ -178,7 +178,7 @@
             </div>
 
             <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card shadow-sm border-left-info h-100">
+                <div class="card shadow-sm border-left-info h-100 kpi-click" data-kpi="semana" style="cursor:pointer;">
                     <div class="card-body">
                         <h6 class="text-muted mb-1">
                             <i class="fas fa-calendar-week text-info mr-1"></i> Últimos 7 días
@@ -196,7 +196,7 @@
             </div>
 
             <div class="col-md-3 col-sm-6 mb-3">
-                <div class="card shadow-sm border-left-warning h-100">
+                <div class="card shadow-sm border-left-warning h-100 kpi-click" data-kpi="mes" style="cursor:pointer;">
                     <div class="card-body">
                         <h6 class="text-muted mb-1">
                             <i class="fas fa-calendar-alt text-warning mr-1"></i> Mes actual
@@ -277,7 +277,7 @@
             @endif
 
             <div class="col-md-3 mb-3">
-                <div class="card shadow-sm h-100">
+                <div class="card shadow-sm h-100 kpi-click" data-kpi="vendedores" style="cursor:pointer;">
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted mb-1">Vendedores activos</h6>
@@ -542,4 +542,172 @@
             });
         });
     </script>
+
+    <!-- MODAL DETALLE KPI -->
+    <div class="modal fade" id="modalDetalle" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitulo">Detalle</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm">
+                            <thead class="thead-light" id="theadDetalle">
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Publicación</th>
+                                    <th>Usuario</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaDetalle">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted">
+                                        Cargando información...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            document.querySelectorAll('.kpi-click').forEach(card => {
+                card.addEventListener('click', async () => {
+
+                    const kpi = card.dataset.kpi || '';
+                    const tipo = document.querySelector('select[name="tipo"]')?.value || '';
+                    const desde = document.querySelector('input[name="desde"]')?.value || '';
+                    const hasta = document.querySelector('input[name="hasta"]')?.value || '';
+
+                    const params = new URLSearchParams({
+                        kpi,
+                        tipo,
+                        desde,
+                        hasta
+                    }).toString();
+                    const url = `/admin/dashboard/detalle-json?${params}`;
+
+                    document.getElementById('modalTitulo').innerText =
+                        kpi === 'hoy' ? 'Detalle: Publicaciones de hoy' :
+                        kpi === 'semana' ? 'Detalle: Últimos 7 días' :
+                        kpi === 'mes' ? 'Detalle: Mes actual' :
+                        'Detalle: Vendedores activos';
+
+                    document.getElementById('tablaDetalle').innerHTML =
+                        `<tr><td colspan="4" class="text-center text-muted">Cargando...</td></tr>`;
+
+                    $('#modalDetalle').modal('show');
+
+                    try {
+                        console.log('FETCH URL:', url);
+
+                        const res = await fetch(url, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+
+                        const raw = await res.text();
+                        console.log('RAW RESPONSE:', raw);
+
+                        let data = [];
+                        try {
+                            data = JSON.parse(raw);
+                        } catch (e) {
+                            data = null;
+                        }
+
+                        if (data && data.modo === 'usuarios') {
+
+                            document.getElementById('theadDetalle').innerHTML = `
+                        <tr>
+                        <th>Usuario</th>
+                        <th>Email</th>
+                        <th>Total (30d)</th>
+                        <th>Desglose</th>
+                        </tr>
+                    `;
+
+                            const rows = data.data || [];
+                            document.getElementById('tablaDetalle').innerHTML = rows.length ?
+                                rows.map(u => `
+                            <tr>
+                            <td>${u.usuario}</td>
+                            <td>${u.email}</td>
+                            <td>${u.total}</td>
+                            <td>
+                                Animales: ${u.animales} · Maquinaria: ${u.maquinaria} · Orgánicos: ${u.organicos}
+                            </td>
+                            </tr>
+                        `).join('') :
+                                `<tr><td colspan="4" class="text-center text-muted">Sin vendedores activos</td></tr>`;
+
+                            return;
+                        }
+
+                        if (!Array.isArray(data)) {
+                            document.getElementById('tablaDetalle').innerHTML =
+                                `<tr><td colspan="4" class="text-danger">No llegó JSON válido.</td></tr>`;
+                            return;
+                        }
+
+                        document.getElementById('theadDetalle').innerHTML = `
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Publicación</th>
+                        <th>Usuario</th>
+                        <th>Fecha</th>
+                    </tr>
+                    `;
+
+                        document.getElementById('tablaDetalle').innerHTML = data.length ?
+                            data.map(x => `
+                        <tr>
+                            <td>${x.tipo ?? '—'}</td>
+                            <td>${x.titulo ?? '—'}</td>
+                            <td>${x.usuario ?? '—'}</td>
+                            <td>${x.fecha ?? '—'}</td>
+                        </tr>
+                        `).join('') :
+                            `<tr><td colspan="4" class="text-center text-muted">Sin datos</td></tr>`;
+
+
+                        document.getElementById('tablaDetalle').innerHTML = data.length ?
+                            data.map(x => `
+              <tr>
+                <td>${x.tipo ?? '—'}</td>
+                <td>${x.titulo ?? '—'}</td>
+                <td>${x.usuario ?? '—'}</td>
+                <td>${x.fecha ?? '—'}</td>
+              </tr>
+            `).join('') :
+                            `<tr><td colspan="4" class="text-center text-muted">Sin datos</td></tr>`;
+
+                    } catch (err) {
+                        console.error(err);
+                        document.getElementById('tablaDetalle').innerHTML =
+                            `<tr><td colspan="4" class="text-center text-danger">Error en fetch (mira consola)</td></tr>`;
+                    }
+                });
+            });
+
+        });
+    </script>
+
+
+
+
 @endsection

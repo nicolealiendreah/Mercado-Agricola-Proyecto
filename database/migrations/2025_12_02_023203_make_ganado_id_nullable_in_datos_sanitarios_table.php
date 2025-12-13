@@ -12,13 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('datos_sanitarios', function (Blueprint $table) {
-            // Eliminar la foreign key existente
             $table->dropForeign(['ganado_id']);
             
-            // Hacer ganado_id nullable
             $table->unsignedBigInteger('ganado_id')->nullable()->change();
             
-            // Recrear la foreign key con nullable
             $table->foreign('ganado_id')
                   ->references('id')
                   ->on('ganados')
@@ -32,13 +29,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('datos_sanitarios', function (Blueprint $table) {
-            // Eliminar la foreign key
             $table->dropForeign(['ganado_id']);
             
-            // Hacer ganado_id no nullable
             $table->unsignedBigInteger('ganado_id')->nullable(false)->change();
             
-            // Recrear la foreign key sin nullable
             $table->foreign('ganado_id')
                   ->references('id')
                   ->on('ganados')

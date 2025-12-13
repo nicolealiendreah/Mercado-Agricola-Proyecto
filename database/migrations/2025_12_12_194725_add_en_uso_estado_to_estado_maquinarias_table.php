@@ -12,7 +12,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Agregar el estado "en_uso" si no existe
         EstadoMaquinaria::firstOrCreate(
             ['nombre' => 'en_uso'],
             ['descripcion' => 'Maquinaria actualmente en uso']
@@ -24,7 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Eliminar el estado "en_uso" si existe
         EstadoMaquinaria::where('nombre', 'en_uso')->delete();
     }
 };

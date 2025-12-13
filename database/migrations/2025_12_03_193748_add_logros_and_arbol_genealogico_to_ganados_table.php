@@ -12,28 +12,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('datos_sanitarios', function (Blueprint $table) {
-            // Belleza y estructura
             $table->boolean('logro_campeon_raza')->default(false)->after('certificado_campeon_imagen');
             $table->boolean('logro_gran_campeon_macho')->default(false)->after('logro_campeon_raza');
             $table->boolean('logro_gran_campeon_hembra')->default(false)->after('logro_gran_campeon_macho');
             $table->boolean('logro_mejor_ubre')->default(false)->after('logro_gran_campeon_hembra');
             
-            // Producción de leche
             $table->boolean('logro_campeona_litros_dia')->default(false)->after('logro_mejor_ubre');
             $table->boolean('logro_mejor_lactancia')->default(false)->after('logro_campeona_litros_dia');
             $table->boolean('logro_mejor_calidad_leche')->default(false)->after('logro_mejor_lactancia');
             
-            // Producción de carne
             $table->boolean('logro_mejor_novillo')->default(false)->after('logro_mejor_calidad_leche');
             $table->boolean('logro_gran_campeon_carne')->default(false)->after('logro_mejor_novillo');
             $table->boolean('logro_mejor_semental')->default(false)->after('logro_gran_campeon_carne');
             
-            // Reproducción
             $table->boolean('logro_mejor_madre')->default(false)->after('logro_mejor_semental');
             $table->boolean('logro_mejor_padre')->default(false)->after('logro_mejor_madre');
             $table->boolean('logro_mejor_fertilidad')->default(false)->after('logro_mejor_padre');
             
-            // Árbol genealógico
             $table->string('arbol_genealogico')->nullable()->after('logro_mejor_fertilidad')->comment('PDF o imagen del árbol genealógico');
         });
     }

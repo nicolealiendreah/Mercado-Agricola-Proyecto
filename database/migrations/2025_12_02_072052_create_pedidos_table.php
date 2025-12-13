@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->decimal('total', 10, 2);
-            $table->string('estado')->default('pendiente'); // pendiente, en_proceso, entregado, cancelado
+            $table->string('estado')->default('pendiente');
             $table->string('metodo_pago')->nullable();
             $table->text('observaciones')->nullable();
             $table->timestamps();

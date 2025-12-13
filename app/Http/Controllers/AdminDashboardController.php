@@ -96,8 +96,6 @@ class AdminDashboardController extends Controller
             $organicosPorMes[] = Organico::whereRaw("TO_CHAR(created_at, 'YYYY-MM') = ?", [$mes])->count();
         }
 
-
-
         $semanaAnterior =
             Ganado::whereBetween('created_at', [now()->subDays(14), now()->subDays(7)])->count() +
             Maquinaria::whereBetween('created_at', [now()->subDays(14), now()->subDays(7)])->count() +
@@ -156,5 +154,119 @@ class AdminDashboardController extends Controller
             'hasta',
             'tipo'
         ));
+    }
+
+    public function detalleJson(Request $request)
+    {
+        $kpi   = $request->kpi;
+        $tipo  = $request->tipo;
+        $desde = $request->desde;
+        $hasta = $request->hasta;
+
+        $qGanado = Ganado::query();
+        $qMaq    = Maquinaria::query();
+        $qOrg    = Organico::query();
+        if ($kpi === 'vendedores') {
+            $inicio = now()->subDays(30);
+
+            $usuarios = User::where(function ($q) use ($inicio) {
+                $q->whereHas('ganados', fn($qq) => $qq->where('created_at', '>=', $inicio));
+            })
+                ->orWhere(function ($q) use ($inicio) {
+                    $q->whereHas('maquinarias', fn($qq) => $qq->where('created_at', '>=', $inicio));
+                })
+                ->orWhere(function ($q) use ($inicio) {
+                    $q->whereHas('organicos', fn($qq) => $qq->where('created_at', '>=', $inicio));
+                })
+                ->withCount([
+                    'ganados as animales_recientes' => fn($q) => $q->where('created_at', '>=', $inicio),
+                    'maquinarias as maquinaria_reciente' => fn($q) => $q->where('created_at', '>=', $inicio),
+                    'organicos as organicos_recientes' => fn($q) => $q->where('created_at', '>=', $inicio),
+                ])
+                ->get()
+                ->map(function ($u) {
+                    $total = ($u->animales_recientes ?? 0)
+                        + ($u->maquinaria_reciente ?? 0)
+                        + ($u->organicos_recientes ?? 0);
+
+                    return [
+                        'usuario' => $u->name,
+                        'email' => $u->email ?? '—',
+                        'total' => $total,
+                        'animales' => $u->animales_recientes ?? 0,
+                        'maquinaria' => $u->maquinaria_reciente ?? 0,
+                        'organicos' => $u->organicos_recientes ?? 0,
+                    ];
+                })
+                ->sortByDesc('total')
+                ->values();
+
+            return response()->json([
+                'modo' => 'usuarios',
+                'data' => $usuarios,
+            ]);
+        }
+
+        if ($tipo === 'ganado') {
+            $qMaq->whereNull('id');
+            $qOrg->whereNull('id');
+        } elseif ($tipo === 'maquinaria') {
+            $qGanado->whereNull('id');
+            $qOrg->whereNull('id');
+        } elseif ($tipo === 'organico') {
+            $qGanado->whereNull('id');
+            $qMaq->whereNull('id');
+        }
+
+        if ($desde) {
+            $qGanado->whereDate('created_at', '>=', $desde);
+            $qMaq->whereDate('created_at', '>=', $desde);
+            $qOrg->whereDate('created_at', '>=', $desde);
+        }
+        if ($hasta) {
+            $qGanado->whereDate('created_at', '<=', $hasta);
+            $qMaq->whereDate('created_at', '<=', $hasta);
+            $qOrg->whereDate('created_at', '<=', $hasta);
+        }
+
+        $hoy = Carbon::today();
+
+        $inicio = now()->subDays(30)->startOfDay();
+        $fin    = now()->endOfDay();
+
+        if ($kpi === 'hoy') {
+        } elseif ($kpi === 'semana') {
+            $inicio = now()->subDays(7)->startOfDay();
+        } elseif ($kpi === 'mes') {
+            $inicio = now()->startOfMonth()->startOfDay();
+        } elseif ($kpi === 'vendedores') {
+            $inicio = now()->subDays(30)->startOfDay();
+        }
+
+        $data = collect();
+
+        $agregar = function ($query, $label) use (&$data, $kpi, $hoy, $inicio, $fin) {
+
+            if ($kpi === 'hoy') {
+                $items = (clone $query)->whereDate('created_at', $hoy)->latest()->take(50)->get();
+            } else {
+                $items = (clone $query)->whereBetween('created_at', [$inicio, $fin])->latest()->take(50)->get();
+            }
+
+            $data = $data->merge(
+                $items->map(fn($x) => [
+                    'tipo' => $label,
+                    'titulo' => $x->nombre ?? $x->titulo ?? $x->descripcion ?? ('ID ' . $x->id),
+                    'usuario' => optional($x->user)->name ?? '—',
+                    'fecha' => optional($x->created_at)?->format('d/m/Y H:i') ?? '—',
+                ])
+            );
+        };
+
+        $agregar($qGanado, 'Animal');
+        $agregar($qMaq, 'Maquinaria');
+        $agregar($qOrg, 'Orgánico');
+
+        return response()->json($data->values());
     }
 }

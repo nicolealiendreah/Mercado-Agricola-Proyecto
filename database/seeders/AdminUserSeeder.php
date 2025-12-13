@@ -14,7 +14,6 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Obtener rol de administrador
         $adminRole = Role::where('nombre', 'admin')->first();
 
         if (!$adminRole) {
@@ -22,7 +21,6 @@ class AdminUserSeeder extends Seeder
             return;
         }
 
-        // Verificar si ya existe un admin
         $adminExists = User::where('email', 'admin@agrovida.com')->exists();
 
         if (!$adminExists) {
@@ -37,7 +35,6 @@ class AdminUserSeeder extends Seeder
             $this->command->info('   Email: admin@agrovida.com');
             $this->command->info('   Contraseña: admin123');
         } else {
-            // Actualizar usuario existente para usar role_id
             $admin = User::where('email', 'admin@agrovida.com')->first();
             if ($admin && !$admin->role_id) {
                 $admin->update(['role_id' => $adminRole->id]);

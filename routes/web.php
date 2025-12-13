@@ -18,39 +18,26 @@ use App\Http\Controllers\AdminPedidoController;
 use App\Http\Controllers\ReporteController;
 
 
-// 1) Raíz -> login (pantalla principal)
 Route::redirect('/', '/login');
-
-// 2) Autenticación
 Route::middleware('guest')->group(function () {
-    // Login
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 
-    // Registro
     Route::get('/registro', [RegisterController::class, 'showRegisterForm'])->name('register');
     Route::post('/registro', [RegisterController::class, 'register'])->name('register.post');
 });
 
-// Logout (solo para usuarios autenticados)
 Route::middleware('auth')->post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-// 3) Home público (portada con hero)
 Route::get('/inicio', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-// 4) Páginas públicas
 Route::get('/anuncios', [App\Http\Controllers\HomeController::class, 'anuncios'])->name('ads.index');
 Route::view('/publicar', 'public.ads.create')->name('ads.create');
 
-// ============================================
 // RUTAS POR ROLES
-// ============================================
 
-// ===== ADMINISTRADOR =====
-// Solo ADMIN puede acceder a configuración y parámetros
+// ADMINISTRADOR 
 Route::middleware(['auth', 'role.admin'])->prefix('admin')->name('admin.')->group(function () {
-
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/detalle-json', [AdminDashboardController::class, 'detalleJson'])->name('dashboard.detalleJson');
 
     // Gestión de solicitudes de vendedor
     Route::get('/solicitudes-vendedor', [SolicitudVendedorController::class, 'index'])->name('solicitudes-vendedor.index');
@@ -58,7 +45,7 @@ Route::middleware(['auth', 'role.admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/solicitudes-vendedor/{id}/aprobar', [SolicitudVendedorController::class, 'aprobar'])->name('solicitudes-vendedor.aprobar');
     Route::post('/solicitudes-vendedor/{id}/rechazar', [SolicitudVendedorController::class, 'rechazar'])->name('solicitudes-vendedor.rechazar');
 
-    // Parámetros del sistema (solo ADMIN)
+    // Parámetros del sistema
     Route::resource('categorias', App\Http\Controllers\CategoriaController::class);
     Route::resource('tipo_animals', TipoAnimalController::class);
     Route::resource('tipo-pesos', TipoPesoController::class);
@@ -73,71 +60,42 @@ Route::middleware(['auth', 'role.admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/pedidos/{pedido}', [AdminPedidoController::class, 'show'])->name('pedidos.show');
     Route::put('/pedidos/{pedido}/estado', [AdminPedidoController::class, 'updateEstado'])->name('pedidos.updateEstado');
 
-    // Reportes
-    // ================== REPORTES ==================
-
+    // REPORTES
     // Ventas
-    Route::get('/reportes/ventas',[ReporteController::class, 'ventas'])->name('reportes.ventas');
-    Route::get('/reportes/ventas/exportar-excel',[ReporteController::class, 'exportarVentasExcel'])->name('reportes.ventas.excel');
-    Route::get('/reportes/ventas/exportar-pdf',[ReporteController::class, 'exportarVentasPdf'])->name('reportes.ventas.export.pdf');
+    Route::get('/reportes/ventas', [ReporteController::class, 'ventas'])->name('reportes.ventas');
+    Route::get('/reportes/ventas/exportar-excel', [ReporteController::class, 'exportarVentasExcel'])->name('reportes.ventas.excel');
+    Route::get('/reportes/ventas/exportar-pdf', [ReporteController::class, 'exportarVentasPdf'])->name('reportes.ventas.export.pdf');
 
     // Vendedores
-    Route::get(
-        '/reportes/vendedores',
-        [ReporteController::class, 'vendedores']
-    )->name('reportes.vendedores');
+    Route::get('/reportes/vendedores',[ReporteController::class, 'vendedores'])->name('reportes.vendedores');
 
-    Route::get(
-        '/reportes/vendedores/exportar-excel',
-        [ReporteController::class, 'exportarVendedoresExcel']
-    )->name('reportes.vendedores.excel');
+    Route::get('/reportes/vendedores/exportar-excel',[ReporteController::class, 'exportarVendedoresExcel'])->name('reportes.vendedores.excel');
 
-    Route::get(
-        '/reportes/vendedores/exportar-pdf',
-        [ReporteController::class, 'exportarVendedoresPdf']
-    )->name('reportes.vendedores.export.pdf');
+    Route::get('/reportes/vendedores/exportar-pdf',[ReporteController::class, 'exportarVendedoresPdf'])->name('reportes.vendedores.export.pdf');
 
     // Productos con bajo movimiento
-    Route::get(
-        '/productos-lentos',
-        [ReporteController::class, 'reporteProductosLentos']
-    )->name('productos_lentos');
+    Route::get('/productos-lentos',[ReporteController::class, 'reporteProductosLentos'])->name('productos_lentos');
 
-    Route::get(
-        '/productos-lentos/export/{tipo}',
-        [ReporteController::class, 'exportProductosLentos']
-    )->name('productos_lentos.export');
+    Route::get('/productos-lentos/export/{tipo}',[ReporteController::class, 'exportProductosLentos'])->name('productos_lentos.export');
 
-    // ================== PEDIDOS POR CLIENTE ==================
-
-    Route::get(
-        '/reportes/pedidos-clientes',
-        [ReporteController::class, 'pedidosPorCliente']
-    )->name('reportes.pedidos_clientes');
-
-    Route::get(
-        '/reportes/pedidos-clientes/exportar-pdf',
-        [ReporteController::class, 'exportarPedidosClientesPdf']
-    )->name('reportes.pedidos_clientes.export.pdf');
+    // PEDIDOS POR CLIENTE
+    Route::get('/reportes/pedidos-clientes',[ReporteController::class, 'pedidosPorCliente'])->name('reportes.pedidos_clientes');
+    Route::get('/reportes/pedidos-clientes/exportar-pdf',[ReporteController::class, 'exportarPedidosClientesPdf'])->name('reportes.pedidos_clientes.export.pdf');
 });
 
-// ===== VENDEDOR Y ADMINISTRADOR =====
-// Datos sanitarios (VENDEDOR y ADMIN pueden acceder)
+// VENDEDOR Y ADMINISTRADOR
+// Datos sanitarios
 Route::middleware(['auth', 'role.vendedor'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('datos-sanitarios', DatoSanitarioController::class);
 });
 
-// ===== VENDEDOR Y ADMINISTRADOR =====
-// VENDEDOR y ADMIN pueden publicar productos
 Route::middleware(['auth', 'role.vendedor'])->group(function () {
-    // Publicación de productos (crear, editar, eliminar)
     Route::resource('ganados', GanadoController::class)->except(['index', 'show']);
     Route::resource('maquinarias', MaquinariaController::class)->except(['index', 'show'])->names('maquinarias');
     Route::resource('organicos', OrganicoController::class)->except(['index', 'show'])->names('organicos');
 });
 
-// ===== TODOS LOS USUARIOS AUTENTICADOS =====
-// Rutas de visualización que todos pueden ver (solo lectura)
+// TODOS LOS USUARIOS AUTENTICADOS
 Route::middleware('auth')->group(function () {
     Route::get('ganados', [GanadoController::class, 'index'])->name('ganados.index');
     Route::get('ganados/{ganado}', [GanadoController::class, 'show'])->name('ganados.show');
@@ -154,17 +112,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('carrito', [App\Http\Controllers\CartController::class, 'clear'])->name('cart.clear');
     Route::get('carrito/count', [App\Http\Controllers\CartController::class, 'getCount'])->name('cart.count');
 
-    // API para obtener información geográfica desde coordenadas
     Route::get('/api/geocodificacion', [GanadoController::class, 'obtenerGeocodificacion'])->name('api.geocodificacion');
 
-    // Pedidos (historial del usuario)
     Route::get('/mis-pedidos', [PedidoController::class, 'index'])->name('pedidos.index');
     Route::get('/mis-pedidos/{pedido}', [PedidoController::class, 'show'])->name('pedidos.show');
     Route::post('/pedidos', [PedidoController::class, 'store'])->name('pedidos.store');
 });
 
-// ===== CLIENTE =====
-// CLIENTE puede solicitar ser vendedor
+// CLIENTE
 Route::middleware(['auth', 'role.cliente'])->group(function () {
     Route::get('/solicitar-vendedor', [SolicitudVendedorController::class, 'create'])->name('solicitar-vendedor');
     Route::post('/solicitar-vendedor', [SolicitudVendedorController::class, 'store'])->name('solicitar-vendedor.store');

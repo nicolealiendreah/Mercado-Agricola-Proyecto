@@ -37,7 +37,6 @@ class RoleSeeder extends Seeder
 
         $this->command->info('✅ Roles creados exitosamente!');
 
-        // Asignar rol cliente por defecto a usuarios sin role_id
         $clienteRole = Role::where('nombre', 'cliente')->first();
         if ($clienteRole) {
             DB::table('users')
