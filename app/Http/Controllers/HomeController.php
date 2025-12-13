@@ -69,7 +69,7 @@ class HomeController extends Controller
             $ganados = $ganadosQuery->orderBy('created_at', 'desc')->paginate(12);
 
             // Búsqueda en Maquinarias (siempre mostrar)
-            $maquinariasQuery = Maquinaria::with(['categoria', 'tipoMaquinaria', 'marcaMaquinaria', 'imagenes'])
+            $maquinariasQuery = Maquinaria::with(['categoria', 'tipoMaquinaria', 'marcaMaquinaria', 'estadoMaquinaria', 'imagenes'])
                 ->where(function ($query) use ($q) {
                     if ($q) {
                         $query->where('nombre', 'ilike', "%{$q}%")
@@ -110,7 +110,7 @@ class HomeController extends Controller
                 ->take(3)
                 ->get();
 
-            $maquinarias = Maquinaria::with(['categoria', 'tipoMaquinaria', 'marcaMaquinaria', 'imagenes'])
+            $maquinarias = Maquinaria::with(['categoria', 'tipoMaquinaria', 'marcaMaquinaria', 'estadoMaquinaria', 'imagenes'])
                 ->orderBy('created_at', 'desc')
                 ->take(3)
                 ->get();
@@ -149,6 +149,7 @@ class HomeController extends Controller
         // Parámetros de búsqueda
         $q            = $request->get('q', '');
         $categoria_id = $request->get('categoria_id', '');
+        $fecha_publicacion = $request->get('fecha_publicacion', '');
 
         // Determinar tipo seleccionado a partir del nombre de la categoría
         $tipoSeleccionado = null; // 'ganados', 'maquinarias', 'organicos'
@@ -180,6 +181,32 @@ class HomeController extends Controller
                     }
                 });
 
+            // Filtro por fecha de publicación
+            if ($fecha_publicacion) {
+                $fechaQuery = null;
+                if ($fecha_publicacion === 'hoy') {
+                    $fechaQuery = now()->startOfDay();
+                } elseif ($fecha_publicacion === 'semana') {
+                    $fechaQuery = now()->subWeek();
+                } elseif ($fecha_publicacion === 'mes') {
+                    $fechaQuery = now()->subMonth();
+                } elseif ($fecha_publicacion === '3meses') {
+                    $fechaQuery = now()->subMonths(3);
+                } elseif ($fecha_publicacion === '6meses') {
+                    $fechaQuery = now()->subMonths(6);
+                }
+                
+                if ($fechaQuery) {
+                    $ganadosQuery->where(function($query) use ($fechaQuery) {
+                        $query->where('fecha_publicacion', '>=', $fechaQuery)
+                            ->orWhere(function($q) use ($fechaQuery) {
+                                $q->whereNull('fecha_publicacion')
+                                  ->where('created_at', '>=', $fechaQuery);
+                            });
+                    });
+                }
+            }
+
             // (Opcional) si igual quieres usar categoria_id para subcategorías:
             // if ($categoria_id) {
             //     $ganadosQuery->where('categoria_id', $categoria_id);
@@ -195,7 +222,7 @@ class HomeController extends Controller
 
         // ================= MAQUINARIAS =================
         if (!$tipoSeleccionado || $tipoSeleccionado === 'maquinarias') {
-            $maquinariasQuery = Maquinaria::with(['categoria', 'tipoMaquinaria', 'marcaMaquinaria', 'imagenes'])
+            $maquinariasQuery = Maquinaria::with(['categoria', 'tipoMaquinaria', 'marcaMaquinaria', 'estadoMaquinaria', 'imagenes'])
                 ->where(function ($query) use ($q) {
                     if ($q) {
                         $query->where('nombre', 'ilike', "%{$q}%")
@@ -208,6 +235,26 @@ class HomeController extends Controller
                             });
                     }
                 });
+
+            // Filtro por fecha de publicación
+            if ($fecha_publicacion) {
+                $fechaQuery = null;
+                if ($fecha_publicacion === 'hoy') {
+                    $fechaQuery = now()->startOfDay();
+                } elseif ($fecha_publicacion === 'semana') {
+                    $fechaQuery = now()->subWeek();
+                } elseif ($fecha_publicacion === 'mes') {
+                    $fechaQuery = now()->subMonth();
+                } elseif ($fecha_publicacion === '3meses') {
+                    $fechaQuery = now()->subMonths(3);
+                } elseif ($fecha_publicacion === '6meses') {
+                    $fechaQuery = now()->subMonths(6);
+                }
+                
+                if ($fechaQuery) {
+                    $maquinariasQuery->where('created_at', '>=', $fechaQuery);
+                }
+            }
 
             // if ($categoria_id) {
             //     $maquinariasQuery->where('categoria_id', $categoria_id);
@@ -230,6 +277,26 @@ class HomeController extends Controller
                     }
                 });
 
+            // Filtro por fecha de publicación
+            if ($fecha_publicacion) {
+                $fechaQuery = null;
+                if ($fecha_publicacion === 'hoy') {
+                    $fechaQuery = now()->startOfDay();
+                } elseif ($fecha_publicacion === 'semana') {
+                    $fechaQuery = now()->subWeek();
+                } elseif ($fecha_publicacion === 'mes') {
+                    $fechaQuery = now()->subMonth();
+                } elseif ($fecha_publicacion === '3meses') {
+                    $fechaQuery = now()->subMonths(3);
+                } elseif ($fecha_publicacion === '6meses') {
+                    $fechaQuery = now()->subMonths(6);
+                }
+                
+                if ($fechaQuery) {
+                    $organicosQuery->where('created_at', '>=', $fechaQuery);
+                }
+            }
+
             // if ($categoria_id) {
             //     $organicosQuery->where('categoria_id', $categoria_id);
             // }
@@ -247,7 +314,8 @@ class HomeController extends Controller
             'maquinarias',
             'organicos',
             'q',
-            'categoria_id'
+            'categoria_id',
+            'fecha_publicacion'
         ));
     }
 }

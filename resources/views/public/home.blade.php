@@ -56,6 +56,112 @@
         .ganado-card:hover .card-organico-img {
             transform: none !important;
         }
+
+        /* Cinta de Estado para Maquinaria */
+        .status-ribbon {
+            position: absolute;
+            top: 15px;
+            left: -35px;
+            width: 180px;
+            padding: 8px 0;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            z-index: 20;
+            transform: rotate(-45deg);
+            transition: all 0.3s ease;
+        }
+
+        .status-ribbon:hover {
+            transform: rotate(-45deg) scale(1.05);
+        }
+
+        .status-ribbon::before,
+        .status-ribbon::after {
+            content: '';
+            position: absolute;
+            border-style: solid;
+            border-color: transparent;
+        }
+
+        .status-ribbon::before {
+            bottom: -8px;
+            left: 0;
+            border-width: 0 8px 8px 0;
+        }
+
+        .status-ribbon::after {
+            bottom: -8px;
+            right: 0;
+            border-width: 0 0 8px 8px;
+        }
+
+        /* Colores según estado */
+        .status-ribbon.disponible {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .status-ribbon.disponible::before {
+            border-right-color: #1e7e34;
+        }
+
+        .status-ribbon.disponible::after {
+            border-left-color: #1e7e34;
+        }
+
+        .status-ribbon.en_mantenimiento,
+        .status-ribbon.mantenimiento {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        }
+
+        .status-ribbon.en_mantenimiento::before,
+        .status-ribbon.mantenimiento::before {
+            border-right-color: #e0a800;
+        }
+
+        .status-ribbon.en_mantenimiento::after,
+        .status-ribbon.mantenimiento::after {
+            border-left-color: #e0a800;
+        }
+
+        .status-ribbon.en_uso,
+        .status-ribbon.uso {
+            background: linear-gradient(135deg, #17a2b8 0%, #007bff 100%);
+        }
+
+        .status-ribbon.en_uso::before,
+        .status-ribbon.uso::before {
+            border-right-color: #138496;
+        }
+
+        .status-ribbon.en_uso::after,
+        .status-ribbon.uso::after {
+            border-left-color: #138496;
+        }
+
+        .status-ribbon.dado_baja,
+        .status-ribbon.dado-de-baja {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .status-ribbon.dado_baja::before,
+        .status-ribbon.dado-de-baja::before {
+            border-right-color: #bd2130;
+        }
+
+        .status-ribbon.dado_baja::after,
+        .status-ribbon.dado-de-baja::after {
+            border-left-color: #bd2130;
+        }
+
+        .status-ribbon i {
+            margin-right: 3px;
+            font-size: 0.7rem;
+        }
     </style>
 
     <section class="hero"
@@ -313,6 +419,47 @@
                                         @endphp
                                         @if ($imagenPrincipal)
                                             <div class="card-img-wrapper position-relative overflow-hidden">
+                                                @if ($maquinaria->estadoMaquinaria)
+                                                    @php
+                                                        $estadoNombre = strtolower($maquinaria->estadoMaquinaria->nombre);
+                                                        $estadoClase = str_replace(' ', '_', $estadoNombre);
+                                                        $estadoTexto = ucfirst(str_replace('_', ' ', $estadoNombre));
+                                                        
+                                                        $iconos = [
+                                                            'disponible' => 'fa-check-circle',
+                                                            'en_mantenimiento' => 'fa-tools',
+                                                            'mantenimiento' => 'fa-tools',
+                                                            'en_uso' => 'fa-cog',
+                                                            'uso' => 'fa-cog',
+                                                            'dado_baja' => 'fa-ban',
+                                                            'dado-de-baja' => 'fa-ban'
+                                                        ];
+                                                        $icono = $iconos[$estadoClase] ?? 'fa-info-circle';
+                                                    @endphp
+                                                    <div class="status-ribbon {{ $estadoClase }}">
+                                                        <i class="fas {{ $icono }}"></i>{{ $estadoTexto }}
+                                                    </div>
+                                                @elseif($maquinaria->estado)
+                                                    @php
+                                                        $estadoNombre = strtolower($maquinaria->estado);
+                                                        $estadoClase = str_replace(' ', '_', $estadoNombre);
+                                                        $estadoTexto = ucfirst(str_replace('_', ' ', $estadoNombre));
+                                                        
+                                                        $iconos = [
+                                                            'disponible' => 'fa-check-circle',
+                                                            'en_mantenimiento' => 'fa-tools',
+                                                            'mantenimiento' => 'fa-tools',
+                                                            'en_uso' => 'fa-cog',
+                                                            'uso' => 'fa-cog',
+                                                            'dado_baja' => 'fa-ban',
+                                                            'dado-de-baja' => 'fa-ban'
+                                                        ];
+                                                        $icono = $iconos[$estadoClase] ?? 'fa-info-circle';
+                                                    @endphp
+                                                    <div class="status-ribbon {{ $estadoClase }}">
+                                                        <i class="fas {{ $icono }}"></i>{{ $estadoTexto }}
+                                                    </div>
+                                                @endif
                                                 <img src="{{ asset('storage/' . $imagenPrincipal) }}"
                                                     class="card-img-top card-maquinaria-img"
                                                     alt="{{ $maquinaria->nombre }}">
@@ -324,8 +471,49 @@
                                                 </div>
                                             </div>
                                         @else
-                                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center position-relative"
                                                 style="height:220px; border-bottom: 3px solid #28a745;">
+                                                @if ($maquinaria->estadoMaquinaria)
+                                                    @php
+                                                        $estadoNombre = strtolower($maquinaria->estadoMaquinaria->nombre);
+                                                        $estadoClase = str_replace(' ', '_', $estadoNombre);
+                                                        $estadoTexto = ucfirst(str_replace('_', ' ', $estadoNombre));
+                                                        
+                                                        $iconos = [
+                                                            'disponible' => 'fa-check-circle',
+                                                            'en_mantenimiento' => 'fa-tools',
+                                                            'mantenimiento' => 'fa-tools',
+                                                            'en_uso' => 'fa-cog',
+                                                            'uso' => 'fa-cog',
+                                                            'dado_baja' => 'fa-ban',
+                                                            'dado-de-baja' => 'fa-ban'
+                                                        ];
+                                                        $icono = $iconos[$estadoClase] ?? 'fa-info-circle';
+                                                    @endphp
+                                                    <div class="status-ribbon {{ $estadoClase }}">
+                                                        <i class="fas {{ $icono }}"></i>{{ $estadoTexto }}
+                                                    </div>
+                                                @elseif($maquinaria->estado)
+                                                    @php
+                                                        $estadoNombre = strtolower($maquinaria->estado);
+                                                        $estadoClase = str_replace(' ', '_', $estadoNombre);
+                                                        $estadoTexto = ucfirst(str_replace('_', ' ', $estadoNombre));
+                                                        
+                                                        $iconos = [
+                                                            'disponible' => 'fa-check-circle',
+                                                            'en_mantenimiento' => 'fa-tools',
+                                                            'mantenimiento' => 'fa-tools',
+                                                            'en_uso' => 'fa-cog',
+                                                            'uso' => 'fa-cog',
+                                                            'dado_baja' => 'fa-ban',
+                                                            'dado-de-baja' => 'fa-ban'
+                                                        ];
+                                                        $icono = $iconos[$estadoClase] ?? 'fa-info-circle';
+                                                    @endphp
+                                                    <div class="status-ribbon {{ $estadoClase }}">
+                                                        <i class="fas {{ $icono }}"></i>{{ $estadoTexto }}
+                                                    </div>
+                                                @endif
                                                 <i class="fas fa-tractor fa-4x text-muted"></i>
                                             </div>
                                         @endif
@@ -681,6 +869,47 @@
                                         @endphp
                                         @if ($imagenPrincipal)
                                             <div class="card-img-wrapper position-relative overflow-hidden">
+                                                @if ($maquinaria->estadoMaquinaria)
+                                                    @php
+                                                        $estadoNombre = strtolower($maquinaria->estadoMaquinaria->nombre);
+                                                        $estadoClase = str_replace(' ', '_', $estadoNombre);
+                                                        $estadoTexto = ucfirst(str_replace('_', ' ', $estadoNombre));
+                                                        
+                                                        $iconos = [
+                                                            'disponible' => 'fa-check-circle',
+                                                            'en_mantenimiento' => 'fa-tools',
+                                                            'mantenimiento' => 'fa-tools',
+                                                            'en_uso' => 'fa-cog',
+                                                            'uso' => 'fa-cog',
+                                                            'dado_baja' => 'fa-ban',
+                                                            'dado-de-baja' => 'fa-ban'
+                                                        ];
+                                                        $icono = $iconos[$estadoClase] ?? 'fa-info-circle';
+                                                    @endphp
+                                                    <div class="status-ribbon {{ $estadoClase }}">
+                                                        <i class="fas {{ $icono }}"></i>{{ $estadoTexto }}
+                                                    </div>
+                                                @elseif($maquinaria->estado)
+                                                    @php
+                                                        $estadoNombre = strtolower($maquinaria->estado);
+                                                        $estadoClase = str_replace(' ', '_', $estadoNombre);
+                                                        $estadoTexto = ucfirst(str_replace('_', ' ', $estadoNombre));
+                                                        
+                                                        $iconos = [
+                                                            'disponible' => 'fa-check-circle',
+                                                            'en_mantenimiento' => 'fa-tools',
+                                                            'mantenimiento' => 'fa-tools',
+                                                            'en_uso' => 'fa-cog',
+                                                            'uso' => 'fa-cog',
+                                                            'dado_baja' => 'fa-ban',
+                                                            'dado-de-baja' => 'fa-ban'
+                                                        ];
+                                                        $icono = $iconos[$estadoClase] ?? 'fa-info-circle';
+                                                    @endphp
+                                                    <div class="status-ribbon {{ $estadoClase }}">
+                                                        <i class="fas {{ $icono }}"></i>{{ $estadoTexto }}
+                                                    </div>
+                                                @endif
                                                 <img src="{{ asset('storage/' . $imagenPrincipal) }}"
                                                     class="card-img-top card-maquinaria-img"
                                                     alt="{{ $maquinaria->nombre }}">
@@ -692,8 +921,49 @@
                                                 </div>
                                             </div>
                                         @else
-                                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center position-relative"
                                                 style="height:220px; border-bottom: 3px solid #28a745;">
+                                                @if ($maquinaria->estadoMaquinaria)
+                                                    @php
+                                                        $estadoNombre = strtolower($maquinaria->estadoMaquinaria->nombre);
+                                                        $estadoClase = str_replace(' ', '_', $estadoNombre);
+                                                        $estadoTexto = ucfirst(str_replace('_', ' ', $estadoNombre));
+                                                        
+                                                        $iconos = [
+                                                            'disponible' => 'fa-check-circle',
+                                                            'en_mantenimiento' => 'fa-tools',
+                                                            'mantenimiento' => 'fa-tools',
+                                                            'en_uso' => 'fa-cog',
+                                                            'uso' => 'fa-cog',
+                                                            'dado_baja' => 'fa-ban',
+                                                            'dado-de-baja' => 'fa-ban'
+                                                        ];
+                                                        $icono = $iconos[$estadoClase] ?? 'fa-info-circle';
+                                                    @endphp
+                                                    <div class="status-ribbon {{ $estadoClase }}">
+                                                        <i class="fas {{ $icono }}"></i>{{ $estadoTexto }}
+                                                    </div>
+                                                @elseif($maquinaria->estado)
+                                                    @php
+                                                        $estadoNombre = strtolower($maquinaria->estado);
+                                                        $estadoClase = str_replace(' ', '_', $estadoNombre);
+                                                        $estadoTexto = ucfirst(str_replace('_', ' ', $estadoNombre));
+                                                        
+                                                        $iconos = [
+                                                            'disponible' => 'fa-check-circle',
+                                                            'en_mantenimiento' => 'fa-tools',
+                                                            'mantenimiento' => 'fa-tools',
+                                                            'en_uso' => 'fa-cog',
+                                                            'uso' => 'fa-cog',
+                                                            'dado_baja' => 'fa-ban',
+                                                            'dado-de-baja' => 'fa-ban'
+                                                        ];
+                                                        $icono = $iconos[$estadoClase] ?? 'fa-info-circle';
+                                                    @endphp
+                                                    <div class="status-ribbon {{ $estadoClase }}">
+                                                        <i class="fas {{ $icono }}"></i>{{ $estadoTexto }}
+                                                    </div>
+                                                @endif
                                                 <i class="fas fa-tractor fa-4x text-muted"></i>
                                             </div>
                                         @endif

@@ -391,11 +391,20 @@
     <script>
         // Script para reemplazar confirm() con modal de confirmación
         $(document).ready(function() {
+            // Asegurarse de que Bootstrap esté cargado
+            if (typeof $.fn.modal === 'undefined') {
+                console.error('Bootstrap modal no está disponible');
+                return;
+            }
             // Función para configurar y mostrar el modal
             function showConfirmModal($form, message) {
                 // Configurar el modal
                 $('#confirmDeleteMessage').text(message);
                 $('#confirmDeleteForm').attr('action', $form.attr('action'));
+                
+                // Copiar el método del formulario original
+                var formMethod = $form.attr('method') || 'POST';
+                $('#confirmDeleteForm').attr('method', formMethod);
 
                 // Limpiar el formulario del modal
                 $('#confirmDeleteForm').find('input[type="hidden"]').remove();
@@ -433,8 +442,19 @@
                     }
                 }
 
-                // Mostrar el modal
-                $('#confirmDeleteModal').modal('show');
+                // Verificar que el modal exista antes de mostrarlo
+                var $modal = $('#confirmDeleteModal');
+                if ($modal.length === 0) {
+                    console.error('Modal de confirmación no encontrado en el DOM');
+                    // Fallback al confirm nativo
+                    if (confirm(message)) {
+                        $form.off('submit').submit();
+                    }
+                    return;
+                }
+
+                // Mostrar el modal usando Bootstrap 4
+                $modal.modal('show');
             }
 
             // Interceptar todos los formularios con onsubmit que contengan confirm()
@@ -449,7 +469,13 @@
                 // Remover el onsubmit original
                 $form.removeAttr('onsubmit');
 
-                // Agregar evento click al botón submit
+                // Interceptar el evento submit del formulario (más confiable que solo el click)
+                $form.on('submit', function(e) {
+                    e.preventDefault();
+                    showConfirmModal($form, message);
+                });
+
+                // También interceptar el click del botón submit como respaldo
                 $form.find('button[type="submit"], input[type="submit"]').on('click', function(e) {
                     e.preventDefault();
                     showConfirmModal($form, message);
@@ -478,6 +504,35 @@
                         showConfirmModal($form, message);
                     });
                 }
+            });
+
+            // Interceptar formularios con clase delete-form (enfoque más directo)
+            $('form.delete-form').on('submit', function(e) {
+                e.preventDefault();
+                var $form = $(this);
+                var message = $form.data('message') || '¿Está seguro de eliminar este registro?';
+                showConfirmModal($form, message);
+            });
+
+            // Delegación de eventos para formularios que se agreguen dinámicamente
+            $(document).on('submit', 'form[onsubmit*="confirm"]', function(e) {
+                e.preventDefault();
+                var $form = $(this);
+                var originalOnsubmit = $form.attr('onsubmit');
+                
+                if (originalOnsubmit) {
+                    var messageMatch = originalOnsubmit.match(/confirm\(['"](.*?)['"]\)/);
+                    var message = messageMatch ? messageMatch[1] : '¿Está seguro de eliminar este registro?';
+                    showConfirmModal($form, message);
+                }
+            });
+
+            // Delegación de eventos para formularios delete-form que se agreguen dinámicamente
+            $(document).on('submit', 'form.delete-form', function(e) {
+                e.preventDefault();
+                var $form = $(this);
+                var message = $form.data('message') || '¿Está seguro de eliminar este registro?';
+                showConfirmModal($form, message);
             });
         });
     </script>

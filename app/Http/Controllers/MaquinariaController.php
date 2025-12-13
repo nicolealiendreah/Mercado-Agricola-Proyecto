@@ -89,7 +89,7 @@ class MaquinariaController extends Controller
 
     public function show(Maquinaria $maquinaria)
     {
-        $maquinaria->load(['tipoMaquinaria', 'marcaMaquinaria', 'categoria', 'user', 'estadoMaquinaria', 'imagenes']);
+        $maquinaria->load(['tipoMaquinaria', 'marcaMaquinaria', 'categoria', 'user.role', 'estadoMaquinaria', 'imagenes']);
         return view('maquinarias.show', compact('maquinaria'));
     }
 

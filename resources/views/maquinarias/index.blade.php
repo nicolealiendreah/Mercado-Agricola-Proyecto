@@ -152,10 +152,10 @@
                                     </a>
 
                                     <form action="{{ route('maquinarias.destroy', $m) }}" method="post"
-                                        onsubmit="return confirm('¿Eliminar esta maquinaria?')">
+                                        class="delete-form" data-message="¿Está seguro de eliminar esta maquinaria?">
                                         @csrf
                                         @method('DELETE')
-                                        <button class="btn btn-outline-danger btn-block">
+                                        <button type="submit" class="btn btn-outline-danger btn-block">
                                             <i class="fas fa-trash-alt"></i> Eliminar
                                         </button>
                                     </form>
