@@ -278,10 +278,17 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
+                                    <a href="{{ route('admin.reportes.pedidos_clientes') }}"
+                                        class="nav-link {{ request()->routeIs('admin.reportes.pedidos_clientes*') ? 'active' : '' }}">
+                                        <i class="nav-icon fas fa-receipt"></i>
+                                        <p>Reporte de Pedidos<br> por Cliente</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
                                     <a href="{{ route('admin.productos_lentos') }}"
                                         class="nav-link {{ request()->routeIs('admin.productos_lentos*') ? 'active' : '' }}">
                                         <i class="nav-icon fas fa-box-open"></i>
-                                        <p>Productos con Bajo<br> Movimiento</p>
+                                        <p>Reporte de Productos <br> Bajo Movimiento</p>
 
                                     </a>
                                 </li>
@@ -590,7 +597,7 @@
                 if (originalOnsubmit) {
                     var messageMatch = originalOnsubmit.match(/confirm\(['"](.*?)['"]\)/);
                     var message = messageMatch ? messageMatch[1] :
-                    '¿Está seguro de eliminar este registro?';
+                        '¿Está seguro de eliminar este registro?';
                     showConfirmModal($form, message);
                 }
             });

@@ -77,20 +77,9 @@ Route::middleware(['auth', 'role.admin'])->prefix('admin')->name('admin.')->grou
     // ================== REPORTES ==================
 
     // Ventas
-    Route::get(
-        '/reportes/ventas',
-        [ReporteController::class, 'ventas']
-    )->name('reportes.ventas');
-
-    Route::get(
-        '/reportes/ventas/exportar-excel',
-        [ReporteController::class, 'exportarVentasExcel']
-    )->name('reportes.ventas.excel');
-
-    Route::get(
-        '/reportes/ventas/exportar-pdf',
-        [ReporteController::class, 'exportarVentasPdf']
-    )->name('reportes.ventas.export.pdf');
+    Route::get('/reportes/ventas',[ReporteController::class, 'ventas'])->name('reportes.ventas');
+    Route::get('/reportes/ventas/exportar-excel',[ReporteController::class, 'exportarVentasExcel'])->name('reportes.ventas.excel');
+    Route::get('/reportes/ventas/exportar-pdf',[ReporteController::class, 'exportarVentasPdf'])->name('reportes.ventas.export.pdf');
 
     // Vendedores
     Route::get(
@@ -118,6 +107,18 @@ Route::middleware(['auth', 'role.admin'])->prefix('admin')->name('admin.')->grou
         '/productos-lentos/export/{tipo}',
         [ReporteController::class, 'exportProductosLentos']
     )->name('productos_lentos.export');
+
+    // ================== PEDIDOS POR CLIENTE ==================
+
+    Route::get(
+        '/reportes/pedidos-clientes',
+        [ReporteController::class, 'pedidosPorCliente']
+    )->name('reportes.pedidos_clientes');
+
+    Route::get(
+        '/reportes/pedidos-clientes/exportar-pdf',
+        [ReporteController::class, 'exportarPedidosClientesPdf']
+    )->name('reportes.pedidos_clientes.export.pdf');
 });
 
 // ===== VENDEDOR Y ADMINISTRADOR =====
