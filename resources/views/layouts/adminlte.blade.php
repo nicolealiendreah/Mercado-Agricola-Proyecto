@@ -349,33 +349,33 @@
 
     </div>
 
-    <!-- Modal de Confirmación de Eliminación -->
+    <!-- Modal de Confirmación Genérico -->
     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog"
         aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
+                <div class="modal-header" id="confirmModalHeader">
                     <h5 class="modal-title" id="confirmDeleteModalLabel">
-                        <i class="fas fa-exclamation-triangle mr-2"></i>Confirmar Eliminación
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Confirmar Acción
                     </h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" id="confirmModalClose" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body text-center">
-                    <div class="mb-3">
-                        <i class="fas fa-trash-alt fa-4x text-danger"></i>
+                    <div class="mb-3" id="confirmModalIcon">
+                        <i class="fas fa-exclamation-triangle fa-4x text-warning"></i>
                     </div>
-                    <h5 id="confirmDeleteMessage">¿Está seguro de eliminar este registro?</h5>
-                    <p class="text-muted mt-3">Esta acción no se puede deshacer.</p>
+                    <h5 id="confirmDeleteMessage">¿Está seguro de realizar esta acción?</h5>
+                    <p class="text-muted mt-3" id="confirmDeleteWarning">Esta acción no se puede deshacer.</p>
                 </div>
                 <div class="modal-footer justify-content-center">
                     <button type="button" class="btn btn-secondary btn-lg" data-dismiss="modal">
                         <i class="fas fa-times mr-2"></i>Cancelar
                     </button>
                     <form id="confirmDeleteForm" method="POST" style="display: inline;">
-                        <button type="submit" class="btn btn-danger btn-lg">
-                            <i class="fas fa-trash mr-2"></i>Eliminar
+                        <button type="submit" class="btn btn-lg" id="confirmModalButton">
+                            <i class="fas fa-check mr-2"></i>Confirmar
                         </button>
                     </form>
                 </div>
@@ -398,9 +398,62 @@
             }
             // Función para configurar y mostrar el modal
             function showConfirmModal($form, message) {
+                // Detectar el tipo de acción basado en el mensaje o la ruta
+                var actionType = 'delete'; // Por defecto
+                var actionUrl = $form.attr('action') || '';
+                
+                // Detectar si es aprobación o rechazo
+                if (message.includes('Aprobar') || message.includes('aprob') || actionUrl.includes('aprobar')) {
+                    actionType = 'approve';
+                } else if (message.includes('Rechazar') || message.includes('rechaz') || actionUrl.includes('rechazar')) {
+                    actionType = 'reject';
+                } else if (message.includes('Eliminar') || message.includes('elimin') || actionUrl.includes('destroy') || actionUrl.includes('delete')) {
+                    actionType = 'delete';
+                }
+                
+                // Configurar el modal según el tipo de acción
+                var modalHeader = $('#confirmModalHeader');
+                var modalTitle = $('#confirmDeleteModalLabel');
+                var modalIcon = $('#confirmModalIcon');
+                var modalButton = $('#confirmModalButton');
+                var modalWarning = $('#confirmDeleteWarning');
+                
+                // Resetear clases
+                modalHeader.removeClass('bg-danger bg-success bg-warning').addClass('bg-primary');
+                modalButton.removeClass('btn-danger btn-success btn-warning').addClass('btn-primary');
+                
+                var modalClose = $('#confirmModalClose');
+                
+                if (actionType === 'approve') {
+                    modalHeader.removeClass('bg-primary').addClass('bg-success text-white');
+                    modalTitle.html('<i class="fas fa-check-circle mr-2"></i>Confirmar Aprobación');
+                    modalIcon.html('<i class="fas fa-check-circle fa-4x text-success"></i>');
+                    modalButton.removeClass('btn-primary').addClass('btn-success');
+                    modalButton.html('<i class="fas fa-check mr-2"></i>Aprobar');
+                    modalWarning.text('Esta acción otorgará permisos de vendedor al usuario.');
+                    modalClose.removeClass('text-dark').addClass('text-white');
+                } else if (actionType === 'reject') {
+                    modalHeader.removeClass('bg-primary').addClass('bg-warning text-dark');
+                    modalTitle.html('<i class="fas fa-exclamation-triangle mr-2"></i>Confirmar Rechazo');
+                    modalIcon.html('<i class="fas fa-times-circle fa-4x text-warning"></i>');
+                    modalButton.removeClass('btn-primary').addClass('btn-warning');
+                    modalButton.html('<i class="fas fa-times mr-2"></i>Rechazar');
+                    modalWarning.text('Esta acción rechazará la solicitud del usuario.');
+                    modalClose.removeClass('text-white').addClass('text-dark');
+                } else {
+                    // Eliminación (por defecto)
+                    modalHeader.removeClass('bg-primary').addClass('bg-danger text-white');
+                    modalTitle.html('<i class="fas fa-exclamation-triangle mr-2"></i>Confirmar Eliminación');
+                    modalIcon.html('<i class="fas fa-trash-alt fa-4x text-danger"></i>');
+                    modalButton.removeClass('btn-primary').addClass('btn-danger');
+                    modalButton.html('<i class="fas fa-trash mr-2"></i>Eliminar');
+                    modalWarning.text('Esta acción no se puede deshacer.');
+                    modalClose.removeClass('text-dark').addClass('text-white');
+                }
+                
                 // Configurar el modal
                 $('#confirmDeleteMessage').text(message);
-                $('#confirmDeleteForm').attr('action', $form.attr('action'));
+                $('#confirmDeleteForm').attr('action', actionUrl);
                 
                 // Copiar el método del formulario original
                 var formMethod = $form.attr('method') || 'POST';
