@@ -89,60 +89,116 @@ http://localhost:8000
 * Docker
 * Docker Compose
 
+---
+
 ### Archivos necesarios en la raíz del proyecto
 
 * `docker-compose.yml`
 * `Dockerfile`
 * `entrypoint.sh`
 * `nginx.conf`
+* `.env.docker`
+* `.dockerignore` (recomendado)
+
+---
 
 ### Pasos
 
-1. Clonar el repositorio:
+#### 1. Clonar el repositorio
 
 ```bash
 git clone https://github.com/nicolealiendreah/Mercado-Agricola-Proyecto
 cd Proyecto-Agricola
 ```
 
-2. Crear el archivo de entorno:
+---
+
+#### 2. Crear el archivo de entorno para Docker
 
 ```bash
-cp .env.example .env
+cp .env.example .env.docker
 ```
 
-3. Construir y levantar los contenedores:
+> ⚠️ Docker carga las variables de entorno desde el archivo `.env.docker`, configurado en `docker-compose.yml` mediante `env_file`.
+
+---
+
+#### 3. Construir y levantar los contenedores
 
 ```bash
 docker compose up -d --build
 ```
 
-4. Configurar la aplicación dentro del contenedor:
+---
+
+#### 4. Configurar la aplicación dentro del contenedor Laravel
 
 ```bash
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan migrate:fresh --seed
-docker compose exec app php artisan storage:link
+docker compose exec laravel php artisan key:generate
+docker compose exec laravel php artisan migrate --seed
+docker compose exec laravel php artisan storage:link
 ```
 
-5. Acceder al sistema:
+> Si necesitas reiniciar completamente la base de datos:
+>
+> ```bash
+> docker compose down -v
+> docker compose up -d --build
+> docker compose exec laravel php artisan migrate --seed
+> ```
+
+---
+
+### Acceso al sistema
+
+####  Modo local (pruebas rápidas)
+
+Si en `docker-compose.yml` está habilitado:
+
+```yaml
+ports:
+  - "8080:80"
+```
+
+Acceso desde el navegador:
 
 ```
-http://localhost
+http://localhost:8080
 ```
+
+---
+
+####  Modo integración (proxy / otros proyectos)
+
+En modo integración, **Nginx no expone puertos al host** (`expose: 80`).
+El acceso se realiza mediante un **proxy externo** conectado a la red Docker:
+
+* `proxy-network`
+
+Este modo permite integrar AgroVida con otros proyectos o servicios.
 
 ---
 
 ## Verificación
 
 * La aplicación web debe cargar correctamente.
-* Verificar el estado de la API:
+* Verificar conexión a base de datos y estado general:
 
-```http
-GET /api/health
+```bash
+docker compose exec laravel php artisan about
 ```
 
-Debe responder con estado OK.
+* Verificar migraciones:
+
+```bash
+docker compose exec laravel php artisan migrate:status
+```
+
+* Verificar enlace de almacenamiento:
+
+```bash
+docker compose exec laravel php artisan storage:link
+```
 
 ---
 
