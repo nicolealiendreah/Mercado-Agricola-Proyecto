@@ -322,8 +322,8 @@
                                 <label class="label-modern">
                                     <i class="fas fa-user-circle label-icon"></i> Nombre del Dueño
                                 </label>
-                                <input type="text" name="nombre_dueño" class="form-control-modern"
-                                    value="{{ old('nombre_dueño', $datoSanitario->nombre_dueño ?? '') }}"
+                                <input type="text" name="nombre_dueno" class="form-control-modern"
+                                    value="{{ old('nombre_dueno', $datoSanitario->nombre_dueno ?? '') }}"
                                     placeholder="Ej: Juan Pérez, María González">
                                 <small class="form-text-modern">Nombre completo del dueño de los animales</small>
                             </div>
@@ -332,7 +332,7 @@
                                 <label class="label-modern">
                                     <i class="fas fa-id-card label-icon"></i> Foto del Carnet del Dueño
                                 </label>
-                                @if ($datoSanitario->carnet_dueño_foto)
+                                @if ($datoSanitario->carnet_dueno_foto)
                                     <div class="mb-3 p-3 bg-light rounded">
                                         <div class="d-flex align-items-center mb-2">
                                             <i class="fas fa-image text-info fa-2x mr-3"></i>
@@ -342,20 +342,20 @@
                                                     completo</p>
                                             </div>
                                         </div>
-                                        <img src="{{ asset('storage/' . $datoSanitario->carnet_dueño_foto) }}"
+                                        <img src="{{ asset('storage/' . $datoSanitario->carnet_dueno_foto) }}"
                                             alt="Carnet Dueño" class="img-thumbnail"
                                             style="max-width: 300px; max-height: 300px; cursor: pointer;"
-                                            onclick="window.open('{{ asset('storage/' . $datoSanitario->carnet_dueño_foto) }}', '_blank')"
+                                            onclick="window.open('{{ asset('storage/' . $datoSanitario->carnet_dueno_foto) }}', '_blank')"
                                             title="Click para ver imagen completa">
                                     </div>
                                 @endif
                                 <div class="file-upload-modern">
-                                    <input type="file" name="carnet_dueño_foto" class="file-input-modern"
-                                        id="carnet_dueño_foto" accept="image/*">
-                                    <label class="file-label-modern" for="carnet_dueño_foto">
+                                    <input type="file" name="carnet_dueno_foto" class="file-input-modern"
+                                        id="carnet_dueno_foto" accept="image/*">
+                                    <label class="file-label-modern" for="carnet_dueno_foto">
                                         <i class="fas fa-cloud-upload-alt"></i>
                                         <span class="file-text">
-                                            @if ($datoSanitario->carnet_dueño_foto)
+                                            @if ($datoSanitario->carnet_dueno_foto)
                                                 Deje vacío para mantener la imagen actual o seleccione una nueva...
                                             @else
                                                 Seleccione una imagen...
@@ -700,7 +700,7 @@
                 icon: 'fa-file-image'
             },
             {
-                id: 'carnet_dueño_foto',
+                id: 'carnet_dueno_foto',
                 icon: 'fa-file-image'
             },
             {

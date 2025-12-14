@@ -156,13 +156,13 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($item->nombre_dueño)
+                                            @if ($item->nombre_dueno)
                                                 <div class="d-flex align-items-center">
                                                     <i class="fas fa-user text-info mr-2"></i>
                                                     <div>
-                                                        <strong class="d-block">{{ $item->nombre_dueño }}</strong>
-                                                        @if ($item->carnet_dueño_foto)
-                                                            <a href="{{ asset('storage/' . $item->carnet_dueño_foto) }}"
+                                                        <strong class="d-block">{{ $item->nombre_dueno }}</strong>
+                                                        @if ($item->carnet_dueno_foto)
+                                                            <a href="{{ asset('storage/' . $item->carnet_dueno_foto) }}"
                                                                 target="_blank" class="btn btn-sm btn-info mt-1">
                                                                 <i class="fas fa-id-card"></i> Ver Carnet
                                                             </a>

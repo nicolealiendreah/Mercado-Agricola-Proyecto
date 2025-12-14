@@ -79,8 +79,8 @@ class DatoSanitarioController extends Controller
             'marca_ganado' => 'nullable|string|max:255',
             'marca_ganado_foto' => 'nullable|image|max:5120', // 5MB máximo
             'senal_numero' => 'nullable|string|max:255',
-            'nombre_dueño' => 'nullable|string|max:255',
-            'carnet_dueño_foto' => 'nullable|image|max:5120', // 5MB máximo
+            'nombre_dueno' => 'nullable|string|max:255',
+            'carnet_dueno_foto' => 'nullable|image|max:5120', // 5MB máximo
         ]);
 
         // Verificar que el ganado pertenece al vendedor (si no es admin y hay ganado_id)
@@ -104,7 +104,7 @@ class DatoSanitarioController extends Controller
             'observaciones',
             'marca_ganado',
             'senal_numero',
-            'nombre_dueño'
+            'nombre_dueno'
         ]);
 
         // Asignar el user_id del usuario autenticado
@@ -150,8 +150,8 @@ class DatoSanitarioController extends Controller
         }
 
         // Manejar la imagen del carnet del dueño
-        if ($request->hasFile('carnet_dueño_foto')) {
-            $data['carnet_dueño_foto'] = $request->file('carnet_dueño_foto')->store('carnets_dueños', 'public');
+        if ($request->hasFile('carnet_dueno_foto')) {
+            $data['carnet_dueno_foto'] = $request->file('carnet_dueno_foto')->store('carnets_dueños', 'public');
         }
 
         // Crear el dato sanitario
@@ -222,8 +222,8 @@ class DatoSanitarioController extends Controller
             'marca_ganado' => 'nullable|string|max:255',
             'marca_ganado_foto' => 'nullable|image|max:5120', // 5MB máximo
             'senal_numero' => 'nullable|string|max:255',
-            'nombre_dueño' => 'nullable|string|max:255',
-            'carnet_dueño_foto' => 'nullable|image|max:5120', // 5MB máximo
+            'nombre_dueno' => 'nullable|string|max:255',
+            'carnet_dueno_foto' => 'nullable|image|max:5120', // 5MB máximo
         ]);
 
         // Verificar que el ganado pertenece al vendedor (si no es admin y hay ganado_id)
@@ -264,7 +264,7 @@ class DatoSanitarioController extends Controller
             'observaciones',
             'marca_ganado',
             'senal_numero',
-            'nombre_dueño'
+            'nombre_dueno'
         ]);
 
         // Convertir checkboxes a boolean
@@ -323,12 +323,12 @@ class DatoSanitarioController extends Controller
         }
 
         // Manejar la imagen del carnet del dueño
-        if ($request->hasFile('carnet_dueño_foto')) {
+        if ($request->hasFile('carnet_dueno_foto')) {
             // Eliminar la imagen anterior si existe
-            if ($datos_sanitario->carnet_dueño_foto && Storage::disk('public')->exists($datos_sanitario->carnet_dueño_foto)) {
-                Storage::disk('public')->delete($datos_sanitario->carnet_dueño_foto);
+            if ($datos_sanitario->carnet_dueno_foto && Storage::disk('public')->exists($datos_sanitario->carnet_dueno_foto)) {
+                Storage::disk('public')->delete($datos_sanitario->carnet_dueno_foto);
             }
-            $data['carnet_dueño_foto'] = $request->file('carnet_dueño_foto')->store('carnets_dueños', 'public');
+            $data['carnet_dueno_foto'] = $request->file('carnet_dueno_foto')->store('carnets_dueños', 'public');
         }
 
         $datos_sanitario->update($data);
@@ -375,8 +375,8 @@ class DatoSanitarioController extends Controller
         if ($datos_sanitario->marca_ganado_foto && Storage::disk('public')->exists($datos_sanitario->marca_ganado_foto)) {
             Storage::disk('public')->delete($datos_sanitario->marca_ganado_foto);
         }
-        if ($datos_sanitario->carnet_dueño_foto && Storage::disk('public')->exists($datos_sanitario->carnet_dueño_foto)) {
-            Storage::disk('public')->delete($datos_sanitario->carnet_dueño_foto);
+        if ($datos_sanitario->carnet_dueno_foto && Storage::disk('public')->exists($datos_sanitario->carnet_dueno_foto)) {
+            Storage::disk('public')->delete($datos_sanitario->carnet_dueno_foto);
         }
 
         $datos_sanitario->delete();

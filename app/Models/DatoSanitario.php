@@ -41,8 +41,8 @@ class DatoSanitario extends Model
         'marca_ganado',
         'marca_ganado_foto',
         'senal_numero',
-        'nombre_dueño',
-        'carnet_dueño_foto'
+        'nombre_dueno',
+        'carnet_dueno_foto'
     ];
 
     protected $casts = [

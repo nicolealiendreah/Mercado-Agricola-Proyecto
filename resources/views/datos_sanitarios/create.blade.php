@@ -287,7 +287,7 @@
                                 <label class="label-modern">
                                     <i class="fas fa-user-circle label-icon"></i> Nombre del Dueño
                                 </label>
-                                <input type="text" name="nombre_dueño" class="form-control-modern"
+                                <input type="text" name="nombre_dueno" class="form-control-modern"
                                     placeholder="Ej: Juan Pérez, María González">
                                 <small class="form-text-modern">Nombre completo del dueño de los animales</small>
                             </div>
@@ -297,9 +297,9 @@
                                     <i class="fas fa-id-card label-icon"></i> Foto del Carnet del Dueño
                                 </label>
                                 <div class="file-upload-modern">
-                                    <input type="file" name="carnet_dueño_foto" class="file-input-modern"
-                                        id="carnet_dueño_foto" accept="image/*">
-                                    <label class="file-label-modern" for="carnet_dueño_foto">
+                                    <input type="file" name="carnet_dueno_foto" class="file-input-modern"
+                                        id="carnet_dueno_foto" accept="image/*">
+                                    <label class="file-label-modern" for="carnet_dueno_foto">
                                         <i class="fas fa-cloud-upload-alt"></i>
                                         <span class="file-text">Seleccione una imagen...</span>
                                     </label>
@@ -559,7 +559,7 @@
                 icon: 'fa-file-image'
             },
             {
-                id: 'carnet_dueño_foto',
+                id: 'carnet_dueno_foto',
                 icon: 'fa-file-image'
             },
             {

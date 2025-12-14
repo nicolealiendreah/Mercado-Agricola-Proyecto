@@ -804,7 +804,7 @@
                 @endif
 
                 {{-- Información del Dueño --}}
-                @if ($ganado->datoSanitario && ($ganado->datoSanitario->nombre_dueño || $ganado->datoSanitario->carnet_dueño_foto))
+                @if ($ganado->datoSanitario && ($ganado->datoSanitario->nombre_dueno || $ganado->datoSanitario->carnet_dueno_foto))
                     <div class="card shadow-sm border-0 mb-3">
                         <div class="card-header bg-info text-white">
                             <h5 class="mb-0">
@@ -812,7 +812,7 @@
                             </h5>
                         </div>
                         <div class="card-body">
-                            @if ($ganado->datoSanitario->nombre_dueño)
+                            @if ($ganado->datoSanitario->nombre_dueno)
                                 <div class="info-row-item">
                                     <div class="d-flex align-items-center">
                                         <div class="bg-info rounded-circle d-flex align-items-center justify-content-center mr-3"
@@ -822,23 +822,23 @@
                                         <div class="flex-grow-1">
                                             <small class="text-muted d-block mb-0 section-title">Nombre del Dueño</small>
                                             <strong
-                                                class="d-block info-value">{{ $ganado->datoSanitario->nombre_dueño }}</strong>
+                                                class="d-block info-value">{{ $ganado->datoSanitario->nombre_dueno }}</strong>
                                         </div>
                                     </div>
                                 </div>
                             @endif
-                            @if ($ganado->datoSanitario->carnet_dueño_foto)
+                            @if ($ganado->datoSanitario->carnet_dueno_foto)
                                 <div class="info-row-item">
                                     <small class="text-muted d-block mb-1 section-title">Carnet del Dueño</small>
                                     <div class="btn-inline-img">
-                                        <a href="{{ asset('storage/' . $ganado->datoSanitario->carnet_dueño_foto) }}"
+                                        <a href="{{ asset('storage/' . $ganado->datoSanitario->carnet_dueno_foto) }}"
                                             target="_blank" class="btn btn-success btn-sm">
                                             <i class="fas fa-id-card"></i> Ver Carnet
                                         </a>
-                                        <img src="{{ asset('storage/' . $ganado->datoSanitario->carnet_dueño_foto) }}"
+                                        <img src="{{ asset('storage/' . $ganado->datoSanitario->carnet_dueno_foto) }}"
                                             alt="Carnet Dueño" class="img-thumbnail img-preview-inline"
                                             style="max-width: 100px; max-height: 70px; cursor: pointer; object-fit: cover;"
-                                            onclick="window.open('{{ asset('storage/' . $ganado->datoSanitario->carnet_dueño_foto) }}', '_blank')"
+                                            onclick="window.open('{{ asset('storage/' . $ganado->datoSanitario->carnet_dueno_foto) }}', '_blank')"
                                             title="Click para ver imagen completa">
                                     </div>
                                 </div>
