@@ -30,7 +30,7 @@ El sistema gestiona usuarios con distintos roles (cliente, vendedor y administra
 
 1. Clonar el repositorio:
 ```bash
-git clone URL_DEL_REPOSITORIO
+git clone https://github.com/nicolealiendreah/Mercado-Agricola-Proyecto
 cd Proyecto-Agricola
 ````
 
@@ -101,7 +101,7 @@ http://localhost:8000
 1. Clonar el repositorio:
 
 ```bash
-git clone URL_DEL_REPOSITORIO
+git clone https://github.com/nicolealiendreah/Mercado-Agricola-Proyecto
 cd Proyecto-Agricola
 ```
 
