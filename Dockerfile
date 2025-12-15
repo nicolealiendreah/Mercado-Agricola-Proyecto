@@ -8,6 +8,9 @@ RUN apt-get update && apt-get install -y \
     zip \
     && docker-php-ext-install pdo pdo_pgsql zip
 
+# Copiar configuración PHP para permitir archivos grandes
+COPY php-upload.ini /usr/local/etc/php/conf.d/upload.ini
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
