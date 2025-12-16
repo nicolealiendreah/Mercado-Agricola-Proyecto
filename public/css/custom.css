@@ -286,16 +286,48 @@
     opacity: 0.65;
 }
 
-/* Asegurar que los iconos de flecha no sean enormes */
+/* Asegurar que los iconos de flecha no sean enormes - FORZAR TAMAÑO */
 .pagination .page-link i,
-.pagination .page-link svg {
-    font-size: 0.875rem !important;
-    width: 0.875rem !important;
-    height: 0.875rem !important;
-    max-width: 1rem !important;
-    max-height: 1rem !important;
+.pagination .page-link svg,
+.pagination svg,
+.pagination .w-5,
+.pagination .h-5,
+.pagination svg.w-5,
+.pagination svg.h-5,
+.pagination svg.w-5.h-5 {
+    font-size: 1rem !important;
+    width: 1rem !important;
+    height: 1rem !important;
+    max-width: 1.25rem !important;
+    max-height: 1.25rem !important;
+    min-width: 1rem !important;
+    min-height: 1rem !important;
     display: inline-block !important;
     vertical-align: middle !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Forzar tamaño de SVGs dentro de spans de paginación */
+.pagination span svg,
+.pagination .page-link span svg,
+.pagination [aria-label] svg {
+    width: 1rem !important;
+    height: 1rem !important;
+    max-width: 1.25rem !important;
+    max-height: 1.25rem !important;
+    min-width: 1rem !important;
+    min-height: 1rem !important;
+}
+
+/* Forzar tamaño de cualquier SVG con viewBox en paginación */
+.pagination svg[viewBox] {
+    width: 1rem !important;
+    height: 1rem !important;
+    max-width: 1.25rem !important;
+    max-height: 1.25rem !important;
+    min-width: 1rem !important;
+    min-height: 1rem !important;
 }
 
 /* Ocultar cualquier elemento de flecha gigante */
@@ -319,6 +351,25 @@
     font-size: 0.875rem !important;
 }
 
+/* Forzar tamaño de spans y contenedores dentro de paginación */
+.pagination span,
+.pagination .page-link span {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    max-width: 2rem !important;
+    max-height: 2rem !important;
+}
+
+/* Sobrescribir cualquier clase de Tailwind que pueda estar causando el problema */
+.pagination .w-5,
+.pagination .h-5 {
+    width: 1rem !important;
+    height: 1rem !important;
+    max-width: 1.25rem !important;
+    max-height: 1.25rem !important;
+}
+
 /* Ocultar cualquier flecha decorativa grande */
 .pagination::before,
 .pagination::after,
@@ -326,5 +377,39 @@
 .pagination .page-item::after {
     display: none !important;
     content: none !important;
+}
+
+/* === REGLA ULTRA ESPECÍFICA PARA SVGs GIGANTES === */
+/* Forzar tamaño de SVGs en paginación - máxima prioridad */
+.pagination svg[viewBox="0 0 20 20"],
+.pagination svg[fill="currentColor"],
+.pagination .page-link svg[class*="w-5"],
+.pagination .page-link svg[class*="h-5"],
+.pagination span svg[viewBox],
+.pagination [aria-label] svg {
+    width: 1rem !important;
+    height: 1rem !important;
+    max-width: 1.25rem !important;
+    max-height: 1.25rem !important;
+    min-width: 1rem !important;
+    min-height: 1rem !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+}
+
+/* Sobrescribir cualquier estilo inline o de framework */
+.pagination * svg {
+    width: 1rem !important;
+    height: 1rem !important;
+    max-width: 1.25rem !important;
+    max-height: 1.25rem !important;
+}
+
+/* Asegurar que los paths dentro de los SVGs no causen problemas */
+.pagination svg path {
+    max-width: 100% !important;
+    max-height: 100% !important;
 }
 
