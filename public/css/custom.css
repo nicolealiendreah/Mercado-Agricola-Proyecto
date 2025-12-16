@@ -228,3 +228,103 @@
     visibility: hidden !important;
 }
 
+/* === CORREGIR FLECHAS GRANDES DE PAGINACIÓN === */
+/* Normalizar tamaño de paginación de Laravel */
+.pagination {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.25rem !important;
+    margin: 1rem 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+.pagination .page-item {
+    margin: 0 !important;
+    display: inline-block !important;
+}
+
+.pagination .page-link {
+    display: block !important;
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+    color: #495057 !important;
+    background-color: #fff !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 0.25rem !important;
+    text-decoration: none !important;
+    min-width: auto !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+}
+
+.pagination .page-link:hover {
+    z-index: 2;
+    color: #495057;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+}
+
+.pagination .page-item.active .page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: var(--agro) !important;
+    border-color: var(--agro) !important;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    cursor: auto;
+    background-color: #fff;
+    border-color: #dee2e6;
+    opacity: 0.65;
+}
+
+/* Asegurar que los iconos de flecha no sean enormes */
+.pagination .page-link i,
+.pagination .page-link svg {
+    font-size: 0.875rem !important;
+    width: 0.875rem !important;
+    height: 0.875rem !important;
+    max-width: 1rem !important;
+    max-height: 1rem !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+/* Ocultar cualquier elemento de flecha gigante */
+.pagination *::before,
+.pagination *::after {
+    font-size: 0.875rem !important;
+    max-width: 1rem !important;
+    max-height: 1rem !important;
+}
+
+/* Corregir texto de Previous/Next */
+.pagination .page-link {
+    white-space: nowrap !important;
+    text-align: center !important;
+}
+
+/* Asegurar que no haya elementos con tamaño excesivo */
+.pagination > * {
+    max-width: 200px !important;
+    max-height: 50px !important;
+    font-size: 0.875rem !important;
+}
+
+/* Ocultar cualquier flecha decorativa grande */
+.pagination::before,
+.pagination::after,
+.pagination .page-item::before,
+.pagination .page-item::after {
+    display: none !important;
+    content: none !important;
+}
+
