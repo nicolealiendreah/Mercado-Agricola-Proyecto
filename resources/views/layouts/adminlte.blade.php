@@ -11,6 +11,21 @@
     <link rel="stylesheet" href="{{ asset('vendor/adminlte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+    <style>
+        /* Forzar tamaño de SVGs problemáticos - carga al final para máxima prioridad */
+        svg.w-5, svg.h-5, svg.w-5.h-5, svg[viewBox="0 0 20 20"] {
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+            max-width: 1.25rem !important;
+            max-height: 1.25rem !important;
+        }
+        .pagination svg, .pagination .page-link svg {
+            width: 1rem !important;
+            height: 1rem !important;
+            max-width: 1.25rem !important;
+            max-height: 1.25rem !important;
+        }
+    </style>
 </head>
 
 @yield('js')
