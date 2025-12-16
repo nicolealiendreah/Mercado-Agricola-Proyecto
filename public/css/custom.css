@@ -228,15 +228,15 @@
     visibility: hidden !important;
 }
 
-/* === CORREGIR FLECHAS GRANDES DE PAGINACIÓN === */
-/* Normalizar tamaño de paginación de Laravel */
+/* === DISEÑO MEJORADO DE PAGINACIÓN === */
+/* Normalizar y mejorar diseño de paginación de Laravel */
 .pagination {
     display: flex !important;
     flex-wrap: wrap !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 0.25rem !important;
-    margin: 1rem 0 !important;
+    gap: 0.5rem !important;
+    margin: 2rem 0 !important;
     padding: 0 !important;
     list-style: none !important;
 }
@@ -247,46 +247,53 @@
 }
 
 .pagination .page-link {
-    display: block !important;
-    padding: 0.375rem 0.75rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0.5rem 0.875rem !important;
     font-size: 0.875rem !important;
+    font-weight: 500 !important;
     line-height: 1.5 !important;
     color: #495057 !important;
     background-color: #fff !important;
-    border: 1px solid #dee2e6 !important;
-    border-radius: 0.25rem !important;
+    border: 1.5px solid #e0e0e0 !important;
+    border-radius: 0.5rem !important;
     text-decoration: none !important;
-    min-width: auto !important;
-    width: auto !important;
-    height: auto !important;
-    max-width: none !important;
-    max-height: none !important;
+    min-width: 2.5rem !important;
+    height: 2.5rem !important;
+    transition: all 0.2s ease-in-out !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
 }
 
 .pagination .page-link:hover {
     z-index: 2;
-    color: #495057;
-    background-color: #e9ecef;
-    border-color: #dee2e6;
+    color: var(--agro) !important;
+    background-color: #f8f9fa !important;
+    border-color: var(--agro) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 6px rgba(63, 126, 42, 0.15) !important;
 }
 
 .pagination .page-item.active .page-link {
     z-index: 3;
-    color: #fff;
+    color: #fff !important;
     background-color: var(--agro) !important;
     border-color: var(--agro) !important;
+    font-weight: 600 !important;
+    box-shadow: 0 2px 8px rgba(63, 126, 42, 0.3) !important;
 }
 
 .pagination .page-item.disabled .page-link {
-    color: #6c757d;
+    color: #adb5bd !important;
     pointer-events: none;
-    cursor: auto;
-    background-color: #fff;
-    border-color: #dee2e6;
-    opacity: 0.65;
+    cursor: not-allowed !important;
+    background-color: #f8f9fa !important;
+    border-color: #e9ecef !important;
+    opacity: 0.6 !important;
+    box-shadow: none !important;
 }
 
-/* Asegurar que los iconos de flecha no sean enormes - FORZAR TAMAÑO */
+/* Iconos de flecha con diseño mejorado */
 .pagination .page-link i,
 .pagination .page-link svg,
 .pagination svg,
@@ -295,17 +302,18 @@
 .pagination svg.w-5,
 .pagination svg.h-5,
 .pagination svg.w-5.h-5 {
-    font-size: 1rem !important;
-    width: 1rem !important;
-    height: 1rem !important;
-    max-width: 1.25rem !important;
-    max-height: 1.25rem !important;
-    min-width: 1rem !important;
-    min-height: 1rem !important;
+    font-size: 0.875rem !important;
+    width: 0.875rem !important;
+    height: 0.875rem !important;
+    max-width: 1rem !important;
+    max-height: 1rem !important;
+    min-width: 0.875rem !important;
+    min-height: 0.875rem !important;
     display: inline-block !important;
     vertical-align: middle !important;
     flex-shrink: 0 !important;
     box-sizing: border-box !important;
+    margin: 0 0.25rem !important;
 }
 
 /* Forzar tamaño de SVGs dentro de spans de paginación */
@@ -338,10 +346,23 @@
     max-height: 1rem !important;
 }
 
-/* Corregir texto de Previous/Next */
+/* Mejorar botones Previous/Next */
 .pagination .page-link {
     white-space: nowrap !important;
     text-align: center !important;
+}
+
+/* Estilo especial para botones Previous/Next */
+.pagination .page-item:first-child .page-link,
+.pagination .page-item:last-child .page-link {
+    padding: 0.5rem 1rem !important;
+    font-weight: 500 !important;
+    min-width: auto !important;
+}
+
+/* Números de página con mejor espaciado */
+.pagination .page-item:not(:first-child):not(:last-child) .page-link {
+    min-width: 2.5rem !important;
 }
 
 /* Asegurar que no haya elementos con tamaño excesivo */
